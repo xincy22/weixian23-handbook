@@ -1,0 +1,118 @@
+---
+title: "编程与数据分析工具选择对照表（2026 年 5 月更新）"
+---
+
+> 按用途和专业方向推荐工具，帮你快速找到合适的工具组合。
+> 最后更新：2026-05-20
+
+---
+
+## 按用途选择工具
+
+| 你想做什么 | 推荐工具 | 说明 |
+| --- | --- | --- |
+| 数据处理和分析 | Python (pandas, numpy) | 最通用的数据处理方案 |
+| 交互式数据探索 | Jupyter Notebook / JupyterLab | 边写代码边看结果，适合实验和课程 |
+| 数值计算和仿真 | MATLAB | 矩阵运算、信号处理、控制系统 |
+| 实验数据绘图 | Origin / matplotlib | Origin 适合快速出图，matplotlib 适合自定义 |
+| 论文级图表 | matplotlib / pgfplots (LaTeX) | 可精确控制每个细节 |
+| 写代码 | VS Code | 最通用的编辑器，插件生态丰富 |
+| AI 辅助写代码 | Cursor / Claude Code / GitHub Copilot | 集成 AI 的编程环境（详见 02-AI工具与API/AI工具大全.md） |
+| 版本管理 | Git + GitHub | 代码备份、协作、版本追踪 |
+| 服务器操作 | SSH + Linux 命令行 | 远程连接服务器跑实验 |
+| C/C++ 项目构建 | CMake + gcc/g++ | 跨平台构建系统 |
+| 深度学习 | PyTorch | 科研首选框架（2026 年市场份额 >80%） |
+| GPU 加速 | CUDA + cuDNN | 深度学习和并行计算 |
+| 环境隔离 | conda / uv / Docker | 避免不同项目的依赖冲突 |
+| Python 包管理 | uv（新）/ pip + venv（传统） | uv 比 pip 快 10-100 倍 |
+| 文档和笔记 | Markdown + VS Code / Obsidian | 轻量、可版本管理 |
+| 电路仿真 | Cadence / HSPICE / LTspice | 模拟电路设计和验证 |
+| 数字电路 | Vivado / Quartus | FPGA 开发 |
+| 芯片验证 | VCS + Verdi / ModelSim | SystemVerilog / UVM |
+| 有限元分析 | COMSOL / ANSYS / Abaqus | 结构、热、电磁仿真 |
+| PCB 设计 | Altium Designer / KiCad | 电路板设计（KiCad 免费开源） |
+| 3D 建模 | SolidWorks / Fusion 360 | 机械结构设计 |
+
+---
+
+## 按专业方向推荐
+
+### 集成电路 / 芯片
+
+| 工具 | 用途 |
+| --- | --- |
+| Cadence Virtuoso | 模拟 IC 设计 |
+| Synopsys VCS + Verdi | 数字验证和波形查看 |
+| Vivado | FPGA 开发 |
+| SystemVerilog | 硬件描述和验证语言 |
+| Python | 脚本自动化、数据分析 |
+| Linux | 所有 EDA 工具都跑在 Linux 上 |
+
+### 生物医学工程
+
+| 工具 | 用途 |
+| --- | --- |
+| Python (scipy, scikit-learn) | 信号处理、数据分析、机器学习 |
+| MATLAB | 生物信号处理、图像处理 |
+| PyTorch | 医学图像分割、分类 |
+| ImageJ / FIJI | 生物图像处理 |
+| R | 统计分析、生物信息学 |
+| COMSOL | 生物力学仿真 |
+
+### 材料科学
+
+| 工具 | 用途 |
+| --- | --- |
+| VASP / Gaussian | 第一性原理计算 |
+| LAMMPS | 分子动力学模拟 |
+| Materials Studio | 材料建模 |
+| Python (ASE, pymatgen) | 材料信息学 |
+| Origin | 实验数据绘图 |
+| MATLAB | 数值计算 |
+
+### 精密仪器 / 测控
+
+| 工具 | 用途 |
+| --- | --- |
+| LabVIEW | 数据采集和仪器控制 |
+| MATLAB / Simulink | 控制系统设计和仿真 |
+| Python | 数据处理和自动化 |
+| SolidWorks | 机械结构设计 |
+| COMSOL / ANSYS | 多物理场仿真 |
+| Altium Designer | PCB 设计 |
+
+### 人工智能 / 机器学习
+
+| 工具 | 用途 |
+| --- | --- |
+| Python | 一切 |
+| PyTorch | 深度学习框架（科研首选） |
+| Jupyter Notebook | 实验和可视化 |
+| Git + GitHub | 代码管理 |
+| Linux + CUDA | GPU 训练环境 |
+| Weights & Biases / TensorBoard | 实验追踪 |
+| Docker | 环境复现 |
+
+---
+
+## 工具获取方式
+
+| 工具 | 费用 | 获取方式 |
+| --- | --- | --- |
+| Python | 免费 | python.org / Miniconda |
+| uv | 免费 | astral.sh/uv |
+| VS Code | 免费 | code.visualstudio.com |
+| Git | 免费 | git-scm.com |
+| Cursor | 免费版可用 / Pro $20/月 | cursor.com |
+| MATLAB | 学校授权 | 学校正版软件平台 |
+| Origin | 学校授权 | 学校正版软件平台 |
+| Cadence / Synopsys | 实验室授权 | 通过实验室服务器使用 |
+| COMSOL / ANSYS | 学校/实验室授权 | 学校正版软件平台或实验室 |
+| Docker | 免费 | docker.com |
+| Overleaf | 免费版可用 / 学校可能有授权 | overleaf.com |
+| KiCad | 免费开源 | kicad.org |
+| LTspice | 免费 | analog.com |
+
+---
+
+*相关文档：[Python 环境配置](./python)、[Git 版本管理入门](./git)、[Linux 与编译环境](./linux)、[AI 编程工具详细对比](../ai-tools/ai-tools-list)*

@@ -1,0 +1,133 @@
+---
+title: "集成电路与芯片（2026 年 5 月更新）"
+description: "集成电路（IC）方向研究如何在硅片上设计、制造和验证芯片。涵盖从电路设计、逻辑综合、物理版图到制造工艺的全流程。研究对象包括数字芯片（处理器、FPGA）、模拟芯片（ADC、PLL、电源管理）、射频芯片和存储器等。这个方向直接支撑消费电子、通"
+---
+
+> 方向概述、入门关键词、推荐课程/书籍/工具、项目建议、学习路线。
+> 最后更新：2026-05-20
+
+---
+
+## 1. 这个方向主要研究什么？
+
+集成电路（IC）方向研究如何在硅片上设计、制造和验证芯片。涵盖从电路设计、逻辑综合、物理版图到制造工艺的全流程。研究对象包括数字芯片（处理器、FPGA）、模拟芯片（ADC、PLL、电源管理）、射频芯片和存储器等。这个方向直接支撑消费电子、通信、汽车、AI 加速器等产业。
+
+---
+
+## 2. 入门关键词
+
+| 中文 | 英文 |
+| --- | --- |
+| 数字集成电路设计 | digital IC design |
+| 模拟集成电路设计 | analog IC design |
+| 芯片验证 | chip verification, design verification |
+| 数字前端 | digital frontend, RTL design |
+| 数字后端 | digital backend, physical design, place and route |
+| 逻辑综合 | logic synthesis |
+| 时序分析 | static timing analysis (STA) |
+| 功耗分析 | power analysis, low power design |
+| FPGA | field-programmable gate array |
+| SystemVerilog | SystemVerilog |
+| UVM | Universal Verification Methodology |
+| EDA 工具 | electronic design automation |
+| 工艺节点 | technology node, process node |
+| 版图设计 | layout design |
+| 封装测试 | packaging and testing |
+| SoC | system on chip |
+| IP 核 | intellectual property core |
+| 时钟树综合 | clock tree synthesis (CTS) |
+
+---
+
+## 3. 推荐课程 / 公开课
+
+| 课程名称 | 平台 | 说明 |
+| --- | --- | --- |
+| 数字集成电路设计 | 校内课程 | 基础必修，学 Verilog 和数字设计流程 |
+| 模拟集成电路设计 | 校内课程 | 学运放、带隙基准、PLL 等模拟电路 |
+| VLSI Design | NPTEL / Coursera | 印度理工系列，内容扎实 |
+| Digital VLSI Design (RTL to GDS) | Udemy / YouTube | 数字后端全流程 |
+| SystemVerilog for Verification | Verification Academy | Synopsys 官方验证学习平台（免费注册） |
+| 芯片验证入门 | B站 | 搜索「UVM 入门」「芯片验证」有不少教程 |
+| Computer Architecture | ETH Zurich (Onur Mutlu) | YouTube 免费，处理器架构方向 |
+
+---
+
+## 4. 推荐书籍
+
+| 书名 | 作者 | 适合阶段 | 说明 |
+| --- | --- | --- | --- |
+| 数字设计和计算机体系结构 | Harris & Harris | 入门 | 从数字逻辑到处理器设计 |
+| CMOS VLSI Design | Weste & Harris | 入门/进阶 | 数字 VLSI 经典教材 |
+| Design of Analog CMOS Integrated Circuits | Razavi | 进阶 | 模拟 IC 圣经 |
+| Verilog HDL 高级数字设计 | Ciletti | 入门 | Verilog 语法和设计实践 |
+| SystemVerilog for Verification | Spear & Tumbush | 进阶 | UVM 验证方法学 |
+| Static Timing Analysis for Nanometer Designs | Bhasker & Chadha | 进阶 | STA 专题 |
+
+---
+
+## 5. 常用工具 / 软件
+
+| 工具 | 用途 | 获取方式 |
+| --- | --- | --- |
+| Cadence Virtuoso | 模拟 IC 原理图和版图设计 | 实验室服务器 |
+| Synopsys Design Compiler | 逻辑综合 | 实验室服务器 |
+| Synopsys VCS | Verilog/SV 仿真 | 实验室服务器 |
+| Synopsys Verdi | 波形查看和调试 | 实验室服务器 |
+| Cadence Innovus | 数字后端 P&R | 实验室服务器 |
+| Xilinx Vivado | FPGA 开发（Xilinx） | 免费下载 |
+| Intel Quartus | FPGA 开发（Intel/Altera） | 免费下载 |
+| ModelSim / QuestaSim | HDL 仿真 | 学校授权 |
+| HSPICE | 电路仿真 | 实验室服务器 |
+| Icarus Verilog + GTKWave | 开源 Verilog 仿真 | 免费，适合学习 |
+| Verilator | 开源高速 Verilog 仿真 | 免费 |
+
+---
+
+## 6. 适合做的小项目
+
+| 项目 | 难度 | 需要的基础 | 预计时间 |
+| --- | --- | --- | --- |
+| 用 Verilog 实现简单 CPU（如 RISC-V 单周期） | 中等 | 数字逻辑、Verilog 基础 | 4-6 周 |
+| FPGA 实现 UART / SPI / I2C 通信 | 入门 | Verilog 基础 | 2-3 周 |
+| 用 UVM 搭建简单验证环境 | 中等 | SystemVerilog、验证概念 | 3-4 周 |
+| 设计一个运算放大器（Cadence） | 中等 | 模拟电路基础 | 3-4 周 |
+| FPGA 实现图像处理流水线 | 进阶 | Verilog、图像处理基础 | 6-8 周 |
+
+---
+
+## 7. 相关方向
+
+| 名称 | 类型 | 方向 |
+| --- | --- | --- |
+| 各高校微电子/集成电路学院实验室 | 校内实验室 | 数字/模拟/射频/存储器 |
+| 华为海思 | 企业 | SoC 设计、验证 |
+| 中芯国际 (SMIC) | 企业 | 芯片制造 |
+| 紫光展锐 | 企业 | 手机芯片设计 |
+| 寒武纪 | 企业 | AI 芯片 |
+| 地平线 | 企业 | 自动驾驶芯片 |
+| 兆易创新 | 企业 | MCU、存储器 |
+| AMD / Intel / NVIDIA | 企业 | 处理器、GPU |
+| Synopsys / Cadence / Siemens EDA | 企业 | EDA 工具开发 |
+
+---
+
+## 8. 学习路线建议
+
+```
+入门阶段（1-2 个月）：
+→ 学好数字逻辑基础（组合逻辑、时序逻辑、状态机）
+→ 学 Verilog HDL 语法，能写简单模块并仿真
+→ 了解 FPGA 开发流程（Vivado）
+
+进阶阶段（2-4 个月）：
+→ 数字方向：学习 RTL 设计规范、时序约束、综合流程
+→ 模拟方向：学习 MOSFET 器件模型、基本放大器、运放设计
+→ 验证方向：学习 SystemVerilog、UVM 基础
+→ 做一个完整的小项目（如简单 CPU 或通信模块）
+
+项目/科研/实习阶段：
+→ 进实验室参与实际芯片设计项目
+→ 学习后端流程（综合、布局布线、时序收敛）
+→ 准备实习：刷数字 IC 面试题、做项目积累
+```

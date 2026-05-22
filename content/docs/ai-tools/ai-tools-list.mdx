@@ -1,0 +1,315 @@
+---
+title: "AI 工具大全"
+---
+
+> 纯工具参考文档。按类型分类，每个工具给出：是什么、多少钱、链接。
+> 最后更新：2026-05-21
+
+---
+
+## 快速选择
+
+| 我想做什么 | 用什么 | 费用 |
+| --- | --- | --- |
+| 日常问答/学习 | DeepSeek 网页版 | 免费 |
+| 读长文档/论文 | Kimi / NotebookLM | 免费 |
+| 快速搜索带引用 | 秘塔 AI 搜索 | 免费 |
+| 写代码/调试 | Claude Code / Cursor | 免费版可用 / $20/月 |
+| 英文润色 | Claude / GPT | 免费版可用 / $20/月 |
+| 数学推理 | DeepSeek R1（深度思考） | 免费 |
+| 基于自己资料问答 | NotebookLM | 免费 |
+| 批量处理/API调用 | DeepSeek V4 Flash API | $0.14/M 输入 |
+| 写 LaTeX 论文 + AI 辅助 | OpenAI Prism | 免费（ChatGPT 账号即可） |
+
+---
+
+## 一、对话模型（国内免费直接用）
+
+| 工具 | 模型 | 核心能力 | 费用 | 链接 |
+| --- | --- | --- | --- | --- |
+| **DeepSeek** | V4 / R1 | 代码、推理、数学、联网搜索 | 完全免费 | [chat.deepseek.com](https://chat.deepseek.com) |
+| **Kimi** | K2.6 | 长文档上传、联网搜索、深度研究 | 免费版可用；¥59/月解锁旗舰 | [kimi.moonshot.cn](https://kimi.moonshot.cn) |
+| **通义千问** | Qwen3.5 | 中文问答、文档处理、图像理解 | 完全免费 | [tongyi.aliyun.com](https://tongyi.aliyun.com) |
+| **豆包** | Doubao-Seed | 日常问答、写作、翻译 | 免费 | [doubao.com](https://www.doubao.com) |
+| **智谱清言** | GLM-5 | 推理、代码、Agent（清华系） | 免费 | [chatglm.cn](https://chatglm.cn) |
+| **腾讯元宝** | 混元 Hy3 | 微信生态、文档分析、联网搜索 | 完全免费 | [yuanbao.tencent.com](https://yuanbao.tencent.com) |
+
+---
+
+## 二、对话模型（国际，需翻墙或 API）
+
+| 工具 | 免费版 | 付费版 | 链接 |
+| --- | --- | --- | --- |
+| **ChatGPT** | 有（GPT-5.4 mini） | Plus $20/月, Pro $200/月 | [chatgpt.com](https://chatgpt.com) |
+| **Claude** | 有（限量） | Pro $20/月, Max $100-200/月 | [claude.ai](https://claude.ai) |
+| **Gemini** | 有（Flash 模型） | Advanced $19.99/月 | [gemini.google.com](https://gemini.google.com) |
+
+---
+
+## 三、AI 搜索工具
+
+| 工具 | 特点 | 费用 | 链接 |
+| --- | --- | --- | --- |
+| **秘塔 AI 搜索** | 无广告，结构化答案+来源引用+思维导图 | 完全免费，无限次 | [metaso.cn](https://metaso.cn) |
+| **Perplexity** | 联网搜索+引用来源，英文学术强 | Free / Pro $20/月 / Education $10/月 | [perplexity.ai](https://www.perplexity.ai) |
+| **UniFuncs（U深研）** | 深度研究，自动整合多来源生成报告 | 有免费额度 | [dr.unifuncs.com](https://dr.unifuncs.com) |
+| **Consensus** | 基于真实论文回答研究问题 | Free / Premium | [consensus.app](https://consensus.app) |
+
+---
+
+## 四、AI 编程工具
+
+2026 年 AI 编程工具分三类：**IDE 类**（编辑器内）、**终端 Agent 类**（命令行内）、**云端类**（浏览器/沙箱）。大多数开发者组合使用：IDE 做日常编码 + 终端 Agent 做大型重构。
+
+### IDE 类（在编辑器内写代码）
+
+| 工具 | 定价 | 核心特点 | 适合谁 | 链接 |
+| --- | --- | --- | --- | --- |
+| **Cursor** | Free / Pro $20/月 / Ultra $200/月 | VS Code 分支，多模型切换，Composer 并行 Agent，Tab 补全极快 | 日常编码首选，最成熟的 AI IDE | [cursor.com](https://www.cursor.com) |
+| **Windsurf** | Free / Pro $15/月 / Ultra $60/月 | Cascade 智能上下文追踪，免费版 Tab 补全无限 | 预算有限/入门者 | [windsurf.com](https://windsurf.com) |
+| **GitHub Copilot** | Free 有限额 / Pro $10/月 / Pro+ $39/月 | GitHub 深度集成，Agent Mode，Issue→PR 自动化 | 已有 GitHub 工作流，最低价起步 | [github.com/features/copilot](https://github.com/features/copilot) |
+| **Kiro** | Free 50 credits / Pro $19/月 | Spec 驱动开发（需求→设计→实现），Hooks 事件自动化 | 喜欢结构化开发流程 | [kiro.dev](https://kiro.dev) |
+| **华为码道（CodeArts）** | 免费（华为云账号） | VS Code 插件 + 云端 DevOps 平台，代码补全/生成/检查，6 大 Agent 覆盖全流程，中文友好 | 国内免费直接用、不想折腾翻墙/API Key | [huaweicloud.com/product/codearts](https://www.huaweicloud.com/product/codearts/ai.html) |
+
+### 终端 Agent 类（在命令行内工作）
+
+| 工具 | 定价 | 核心特点 | 适合谁 | 链接 |
+| --- | --- | --- | --- | --- |
+| **Claude Code** | API 按量 / Pro $20/月 / Max $100-200/月 | Anthropic 官方，Claude Opus 4.6 驱动，SWE-bench 80.8%，CLAUDE.md 持久上下文，子 Agent，Hooks，交互式协作 | 复杂架构工作、多文件重构、需要深度推理 | [docs.anthropic.com/claude-code](https://docs.anthropic.com/en/docs/claude-code) |
+| **OpenAI Codex CLI** | 开源免费（用 ChatGPT 订阅或 API Key） | 开源（Rust+TS，59k+ star），本地沙箱，支持 MCP | 想要开源透明、已有 ChatGPT 订阅 | [github.com/openai/codex](https://github.com/openai/codex) |
+| **OpenCode** | 免费开源（MIT） | 支持 75+ LLM，Go 编写，150k+ star | 注重隐私、想用任意模型 | [opencode.ai](https://opencode.ai) |
+| **Aider** | 免费开源 | Git 原生（每次编辑自动 commit），42k+ star | Git 工作流重度用户 | [aider.chat](https://aider.chat) |
+| **Antigravity CLI** | AI Ultra $100/月 | Google 出品，Gemini 3.5 Flash 驱动（2026.5 I/O 发布） | Google 生态用户 | [antigravity.codes](https://antigravity.codes) |
+
+### 桌面 App / 异步 Agent 类（派任务，后台执行）
+
+| 工具 | 定价 | 核心特点 | 适合谁 | 链接 |
+| --- | --- | --- | --- | --- |
+| **OpenAI Codex App** | 含在 ChatGPT Plus/Pro（$20-200/月） | GPT-5.3-Codex 驱动，桌面 App（macOS）+ Web Agent（chatgpt.com/codex），多任务并行，异步执行可提 PR，token 消耗约为 Claude 的 1/3 | 定义任务后交给 AI 自主完成、团队并行开发 | [openai.com/codex](https://openai.com/codex/) |
+| **Antigravity 桌面版** | AI Ultra $100/月 | Google 独立桌面 App，Agent-first 设计 | 想要 Google 生态的自主 Agent | [antigravity.codes](https://antigravity.codes) |
+| **Replit Agent** | Core $25/月 | 在线 IDE + AI Agent，从描述到部署 | 快速原型、不想管环境 | [replit.com](https://replit.com) |
+
+### Claude Code vs Codex：核心区别
+
+| 维度 | Claude Code | OpenAI Codex |
+| --- | --- | --- |
+| 工作哲学 | **交互式协作**：你在旁边，随时介入引导 | **异步委派**：定义任务，交出去，回来看结果 |
+| 最强场景 | 复杂架构、多文件重构、遗留代码理解 | 定义明确的 ticket、并行批量任务、PR 审查 |
+| SWE-bench Verified | 80.8% | 64.7% |
+| Terminal-Bench 2.0 | 65.4% | 77.3% |
+| Token 消耗 | 高（推理密集） | 低（约 1/3） |
+| 开源 | 否 | CLI 开源，App 闭源 |
+| 持久配置 | CLAUDE.md + 子 Agent + Hooks + Skills | 有限 |
+| 多表面 | 终端 / VS Code / JetBrains / 桌面 / Web | CLI / 桌面 App / Web / VS Code / Cursor |
+
+### 怎么选
+
+```
+预算为零：
+  → Copilot Free + Codex CLI/OpenCode/Aider（开源终端 Agent，用 DeepSeek API 极低成本）
+  → 国内直接用：华为码道（CodeArts）免费，VS Code 插件装上即用，无需翻墙
+
+预算 $10-20/月：
+  → Copilot Pro $10（日常补全）
+  → 或 Cursor Pro $20（IDE 内全搞定）
+  → 或 Claude Pro $20（含 Claude Code 额度）
+  → 或 ChatGPT Plus $20（含 Codex App + CLI）
+
+最主流组合（$20-40/月）：
+  → Cursor Pro（日常编码）+ Claude Code（复杂架构）或 Codex App（异步批量任务）
+
+高级玩法：
+  → Claude Code 写功能 + Codex 做 PR Review（两个 Agent 互补）
+  → 社区已有 Claude Code 内调用 Codex 的 Skill
+
+想白嫖：
+  → Kiro Free + Copilot Free + Codex CLI/OpenCode（开源）+ DeepSeek 网页版
+  → 纯国内方案：华为码道（CodeArts）+ 通义灵码 + DeepSeek 网页版
+```
+
+### IDE 类 vs 终端/Agent 类
+
+| 维度 | IDE 类 (Cursor/Windsurf) | 终端 Agent (Claude Code/Codex CLI) | 异步 Agent (Codex App) |
+| --- | --- | --- | --- |
+| 工作方式 | 编辑器内，有 GUI | 终端内，交互式 | 派任务，后台跑 |
+| 实时补全 | 有 Tab 补全 | 无 | 无 |
+| 适合 | 日常编码、小修改 | 大型重构、架构工作 | 明确的 ticket、并行批量 |
+| 人的参与度 | 高（实时交互） | 中（在旁边引导） | 低（定义后离开） |
+| 学习曲线 | 低 | 中 | 低 |
+
+---
+
+## 五、学术研究工具
+
+| 工具 | 功能 | 费用 | 链接 |
+| --- | --- | --- | --- |
+| **NotebookLM** | 上传文档后精确问答，不编造 | 免费（50次/天） | [notebooklm.google.com](https://notebooklm.google.com) |
+| **Semantic Scholar** | AI 论文推荐、TL;DR 摘要、影响力评分 | 免费 | [semanticscholar.org](https://www.semanticscholar.org) |
+| **Connected Papers** | 论文关系图谱可视化 | 免费 5 张/月 | [connectedpapers.com](https://www.connectedpapers.com) |
+| **ResearchRabbit** | 文献推荐，新论文推送 | 完全免费 | [researchrabbit.ai](https://www.researchrabbit.ai) |
+| **Elicit** | 论文筛选、数据提取 | Free / Plus $10/月 | [elicit.com](https://elicit.com) |
+| **Scispace** | 论文阅读、公式解释、图表解读 | Free / Premium | [typeset.io](https://typeset.io) |
+| **Zotero + PapersGPT** | Zotero 内 AI 论文问答 | 免费插件（需 API Key） | [papersgpt.com](https://www.papersgpt.com) |
+| **OpenAI Prism** | LaTeX 在线编辑器，集成 GPT-5.2，云端协作，期刊模板丰富 | 免费（需 ChatGPT 账号） | [prism.openai.com](https://prism.openai.com) |
+
+---
+
+## 六、多模型客户端（统一管理 API Key）
+
+| 工具 | 平台 | 特点 | 链接 |
+| --- | --- | --- | --- |
+| **Cherry Studio** | Win/Mac/Linux | 300+ 预置助手、MCP 支持、开源 | [cherry-ai.com](https://www.cherry-ai.com) |
+| **ChatBox** | 全平台 | 开源、界面简洁 | [chatboxai.app](https://chatboxai.app) |
+| **LobeChat** | 自部署 Web | 开源、插件系统 | [lobehub.com](https://lobehub.com) |
+| **NextChat** | 自部署 Web | 轻量、一键部署 Vercel | [GitHub](https://github.com/ChatGPTNextWeb/ChatGPT-Next-Web) |
+| **Open WebUI** | 自部署 Web | 支持 Ollama 本地模型 | [openwebui.com](https://openwebui.com) |
+
+---
+
+## 七、API 定价速查（2026 年 5 月）
+
+### 旗舰级
+
+| 模型 | 输入 $/M | 输出 $/M | 上下文 | 厂商 |
+| --- | ---: | ---: | --- | --- |
+| GPT-5.5 | $5.00 | $30.00 | 1M | OpenAI |
+| Claude Opus 4.7 | $5.00 | $25.00 | 1M | Anthropic |
+| Claude Sonnet 4.6 | $3.00 | $15.00 | 1M | Anthropic |
+| GPT-5.4 | $2.50 | $10.00 | 400K | OpenAI |
+| Gemini 3.1 Pro | $2.00 | $12.00 | 2M | Google |
+| Grok 4.3 | $1.25 | $2.50 | 1M | xAI |
+
+### 经济级
+
+| 模型 | 输入 $/M | 输出 $/M | 上下文 | 厂商 |
+| --- | ---: | ---: | --- | --- |
+| DeepSeek V4 Flash | $0.14 | $0.28 | 1M | DeepSeek |
+| DeepSeek V4 Pro | $0.435 | $0.87 | 1M | DeepSeek |
+| GPT-5.4 mini | $0.25 | $2.00 | 400K | OpenAI |
+| Gemini 3.1 Flash-Lite | $0.25 | $1.50 | 1M | Google |
+| Kimi K2.6 | ~$0.95 | ~$4.00 | 256K | Moonshot |
+
+### 成本规律
+
+- 输出比输入贵 2-6 倍
+- 缓存命中省 2-10 倍（重复对话、固定 system prompt）
+- Batch API 半价（OpenAI / Anthropic 均提供）
+- 正常学习使用，每月 ¥20-50 额度足够
+
+---
+
+## 八、AI 工具聚合站
+
+不知道有什么工具？去这些网站按需求搜索。
+
+### 国际站
+
+| 网站 | 特点 | 链接 |
+| --- | --- | --- |
+| **There's An AI For That** | 全球最大，2000 万+月活，按任务搜索 | [theresanaiforthat.com](https://theresanaiforthat.com) |
+| **Futurepedia** | 老牌目录，按类别浏览 | [futurepedia.io](https://www.futurepedia.io) |
+| **Toolify.ai** | 27000+ 工具，有中文界面 | [toolify.ai](https://www.toolify.ai) |
+| **OpenTools** | 2500+ 工具 + MCP Server 目录 | [opentools.ai](https://opentools.ai) |
+
+### 中文站
+
+| 网站 | 特点 | 链接 |
+| --- | --- | --- |
+| **AI55** | 中文 AI 导航，分类清晰 | [ai55.cc](https://ai55.cc) |
+| **AICPB（AI 产品榜）** | 按流量排名，数据透明 | [aicpb.com](https://www.aicpb.com) |
+| **酷学AI** | 国内外 AI 应用导航 | [apps.kuxai.com](https://apps.kuxai.com) |
+
+---
+
+## 九、MCP Server 目录
+
+MCP Server 是 AI 工具的"插件"，让 Claude Code / Cursor / Kiro 能连接外部服务。
+
+### 目录网站
+
+| 网站 | 收录量 | 链接 |
+| --- | --- | --- |
+| **PulseMCP** | 15000+ | [pulsemcp.com](https://www.pulsemcp.com/servers) |
+| **Smithery** | 3000+ | [smithery.ai](https://smithery.ai) |
+| **Glama** | 3000+ | [glama.ai/mcp](https://glama.ai/mcp/connectors) |
+| **mcp.so** | — | [mcp.so](https://mcp.so) |
+| **GitHub MCP Registry** | 官方 | [github.com/mcp](https://github.com/mcp) |
+
+### GitHub 合集
+
+| 仓库 | 链接 |
+| --- | --- |
+| modelcontextprotocol/servers（官方） | [GitHub](https://github.com/modelcontextprotocol/servers) |
+| punkpeye/awesome-mcp-servers（30k+ star） | [GitHub](https://github.com/punkpeye/awesome-mcp-servers) |
+| wong2/awesome-mcp-servers | [GitHub](https://github.com/wong2/awesome-mcp-servers) |
+
+---
+
+## 十、Skills / Rules / Custom Instructions
+
+给 AI 编程工具配置的"规则文件"，让 AI 按特定规范工作。
+
+| 资源 | 说明 | 链接 |
+| --- | --- | --- |
+| **awesome-cursorrules** | Cursor Rules 合集，按语言/框架分类 | [GitHub](https://github.com/PatrickJS/awesome-cursorrules) |
+| **cursor.directory** | Cursor Rules 在线目录 | [cursor.directory](https://cursor.directory) |
+| **Claude Code CLAUDE.md** | 项目级指令文件写法 | [Anthropic 文档](https://docs.anthropic.com/en/docs/claude-code/memory) |
+| **ChatGPT GPT Store** | 数十万个自定义 GPT | [chatgpt.com/gpts](https://chatgpt.com/gpts) |
+| **SkillsMP** | Agent Skills 市场（SKILL.md 标准） | [skillsmp.com](https://skillsmp.com) |
+
+---
+
+## 十一、Prompt 资源
+
+详见 → [Prompt模板/](./prompts/) 目录，包含 7 大场景模板（论文阅读、写作润色、代码调试、数据分析、概念学习、科研规划、Linux 配置）+ [Prompt资源与进阶](./prompts/prompt-resources)（外部仓库和学习资源汇总）
+
+---
+
+## 十二、推荐阅读与外部资源
+
+本文档只是精选导航。AI 工具变化极快，以下外部资源持续更新，建议收藏：
+
+### 综合指南（定期更新的高质量参考）
+
+| 资源 | 内容 | 链接 |
+| --- | --- | --- |
+| **Dupple AI Cheat Sheet 2026** | 模型对比、定价、场景推荐，每月更新 | [dupple.com/blog/ai-cheat-sheet](https://dupple.com/blog/ai-cheat-sheet) |
+| **Dupple Top AI Tools** | 按类别的工具目录，有编辑团队实测 | [dupple.com/top-tools](https://www.dupple.com/top-tools) |
+| **iternal.ai LLM Selection Guide** | 30+ 模型 benchmark 排名 + 定价对比 | [iternal.ai/llm-selection-guide](https://iternal.ai/llm-selection-guide) |
+| **LLM API Pricing (tldl.io)** | 实时 API 定价对比表 | [tldl.io/resources/llm-api-pricing-2026](https://www.tldl.io/resources/llm-api-pricing-2026) |
+
+### AI 编程工具深度对比
+
+| 资源 | 内容 | 链接 |
+| --- | --- | --- |
+| **lushbinary: AI Coding Agents 2026** | 7 大工具全面对比（Claude Code/Codex/Cursor/Kiro/Copilot/Windsurf/Antigravity） | [lushbinary.com](https://lushbinary.com/blog/ai-coding-agents-comparison-cursor-windsurf-claude-copilot-kiro-2026/) |
+| **buildfastwithai: Claude Code vs Codex** | 深度对比，含 benchmark、定价、高级工作流 | [buildfastwithai.com](https://www.buildfastwithai.com/blogs/claude-code-vs-codex-2026) |
+| **nxcode: Best AI Code Editor 2026** | 7 款编辑器实测排名 | [nxcode.io](https://www.nxcode.io/resources/news/best-ai-code-editor-2026-cursor-windsurf-copilot-zed-compared) |
+| **augmentcode: Best AI Coding Agent Desktop Apps** | 9 款桌面 Agent App 排名 | [augmentcode.com](https://www.augmentcode.com/tools/best-ai-coding-agent-desktop-apps) |
+| **jia.je: AI Coding Plan 知识库** | 清华博士生维护，国内外 Coding Plan 厂商套餐、额度、计费规则实测对比，每周更新（含 Kimi/GLM/MiniMax/阿里百炼/火山/腾讯/百度/讯飞等），含吐槽和避坑提示 | [jia.je/kb/software/coding_plan](https://jia.je/kb/software/coding_plan.html) |
+
+### GitHub Awesome 合集
+
+| 仓库 | 内容 | 链接 |
+| --- | --- | --- |
+| **ikaijua/Awesome-AITools** | AI 工具大合集（中英文），覆盖所有类别 | [GitHub](https://github.com/ikaijua/Awesome-AITools) |
+| **ai-boost/awesome-ai-for-science** | AI for Science 工具、库、论文、数据集 | [GitHub](https://github.com/ai-boost/awesome-ai-for-science) |
+| **handsome-rich/Awesome-Auto-Research-Tools** | 自动化科研工具合集（文献搜索、论文阅读、实验管理、代码生成） | [GitHub](https://github.com/handsome-rich/Awesome-Auto-Research-Tools) |
+| **PierrunoYT/awesome-ai-dev-tools** | AI 开发工具合集（编辑器、插件、效率工具） | [GitHub](https://github.com/PierrunoYT/awesome-ai-dev-tools) |
+| **wlemuel/awesome-ai-client** | AI 客户端合集（Web/桌面/移动端） | [GitHub](https://github.com/wlemuel/awesome-ai-client) |
+| **jqueryscript/awesome-claude-code** | Claude Code 生态工具、集成、框架 | [GitHub](https://github.com/jqueryscript/awesome-claude-code) |
+| **hyperai/awesome-ai4s** | AI for Science 论文解读合集（中文） | [GitHub](https://github.com/hyperai/awesome-ai4s) |
+
+### AI Newsletter（保持信息更新）
+
+| Newsletter | 频率 | 内容 | 链接 |
+| --- | --- | --- | --- |
+| **TLDR AI** | 每日 | AI 行业新闻精选，5 分钟读完 | [tldr.tech/ai](https://tldr.tech/ai) |
+| **The Rundown AI** | 每日 | AI 工具和新闻，面向实用 | [therundown.ai](https://www.therundown.ai) |
+| **Latent Space** | 每周 | 深度技术分析，面向工程师 | [latent.space](https://www.latent.space) |
+| **Ben's Bites** | 每日 | AI 产品和创业动态 | [bensbites.com](https://www.bensbites.com) |
+
+---
+
+> **本文档的定位**：精选导航 + 快速参考。不试图覆盖所有细节——细节去上面的外部资源看。
+> 如果发现信息过时，欢迎同学更新或在 99-待整理资源池 中补充。

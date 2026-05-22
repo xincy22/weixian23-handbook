@@ -1,0 +1,326 @@
+---
+title: "LaTeX 快速入门"
+description: "写课程报告、论文、毕设论文时用 LaTeX 的最少必要知识，配合 AI 工具可以快速上手。 > 不是教程大全，目标是让你 1 小时内能写出第一个文档，剩下的边写边查。 --- ## 一、什么时候用 LaTeX 适合： - 公式多的报告/论文"
+---
+
+写课程报告、论文、毕设论文时用 LaTeX 的最少必要知识，配合 AI 工具可以快速上手。
+
+> 不是教程大全，目标是**让你 1 小时内能写出第一个文档**，剩下的边写边查。
+
+---
+
+## 一、什么时候用 LaTeX
+
+适合：
+
+- 公式多的报告/论文（理工科首选）
+- 期刊投稿（绝大多数期刊提供 LaTeX 模板）
+- 毕业论文（学院通常提供 LaTeX 模板）
+- 需要精确排版的长文档（书、毕业设计）
+- 需要稳定的参考文献管理
+
+不适合：
+
+- 简单的课程作业（用 Word 更快）
+- 需要别人协作但他不会 LaTeX
+- 需要频繁改格式的非正式文档
+- 报告里大量插入截图、流程图、图表（Word 拖拽更方便）
+
+---
+
+## 二、选哪个 LaTeX 平台
+
+按"上手难度"排序：
+
+| 平台 | 类型 | 推荐度 | 适合谁 |
+|------|------|--------|--------|
+| **OpenAI Prism** | 在线 + AI 原生 | ⭐⭐⭐⭐⭐ | 想用 AI 辅助写论文，免费 |
+| **Overleaf** | 在线 | ⭐⭐⭐⭐⭐ | 新手首选，多人协作 |
+| **TeXLive + VS Code** | 本地 | ⭐⭐⭐⭐ | 想要离线 + 完全控制 |
+| **TeXstudio** | 本地 IDE | ⭐⭐⭐ | 喜欢传统 IDE 界面 |
+| **Crixet** | 在线，免费 | ⭐⭐⭐⭐ | Overleaf 替代品 |
+
+---
+
+## 三、OpenAI Prism（重点推荐）
+
+OpenAI 在 2026 年 1 月推出的免费 LaTeX 编辑器，把 ChatGPT 和 Codex 直接集成进 LaTeX 工作流。
+
+**地址：** [prism.openai.com](https://prism.openai.com/)
+
+**亮点：**
+
+- **完全免费**（ChatGPT 个人账号即可，包括 Free 用户）
+- **GPT-5.2 内置** — 直接在文档里调用 AI 帮你写、改、查
+- **LaTeX 原生** — 不是把 LaTeX 包成 Word 那种，是真正的 LaTeX 工作区
+- **云端协作** — 多人编辑一个文档
+- **AI 帮你做的事**：
+  - 选中段落让它润色
+  - 让它帮你写公式（自然语言 → LaTeX）
+  - 让它解释一段你不懂的别人的代码
+  - 自动 fix 编译报错
+  - 根据已有内容续写
+
+**限制：**
+
+- 必须有 ChatGPT 账号（Business/Enterprise 用户暂时不能用）
+- 国内访问需要科学上网
+- 部分高级期刊模板可能需要手动导入
+
+**适合谁：** 写论文重度依赖 AI、想要一站式体验的人。
+
+---
+
+## 四、Overleaf（最稳的选择）
+
+老牌 LaTeX 在线平台，几乎所有期刊都有 Overleaf 模板。
+
+**地址：** [overleaf.com](https://www.overleaf.com/)
+
+**清华学生：** 学校采购了 Overleaf Professional 授权，可以无限协作。在校园网内用 `@tsinghua.edu.cn` 邮箱注册免费升级。
+
+**优点：**
+
+- 不用装任何软件，浏览器打开就能写
+- 模板库丰富（点 New Project → Templates，几千个）
+- 多人协作（Pro 账号无限协作者）
+- 自动保存 + 历史版本
+- 每个期刊都有官方/社区维护的模板
+
+**缺点：**
+
+- 免费版协作人数有限（1 个）
+- 大文件编译慢
+- 对中文支持需要切到 XeLaTeX 编译器
+
+---
+
+## 五、本地安装（VS Code + LaTeX Workshop）
+
+如果你想离线写、或者已经在用 VS Code，这是最佳路径。
+
+### 安装步骤
+
+**Windows：**
+
+1. 装 [TeX Live](https://tug.org/texlive/)（约 6GB，建议下 ISO）
+2. 装 [VS Code](https://code.visualstudio.com/)
+3. VS Code 装扩展 `LaTeX Workshop`（James Yu 出的）
+4. 重启 VS Code，打开 `.tex` 文件，按 `Ctrl+Alt+B` 编译
+
+**macOS：**
+
+```bash
+brew install --cask mactex
+```
+
+### 推荐配置
+
+VS Code 的 settings.json 加一段（用 XeLaTeX，支持中文）：
+
+```json
+{
+  "latex-workshop.latex.tools": [
+    {
+      "name": "xelatex",
+      "command": "xelatex",
+      "args": [
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "%DOC%"
+      ]
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "xelatex",
+      "tools": ["xelatex"]
+    }
+  ]
+}
+```
+
+---
+
+## 六、最少必要知识
+
+### 一个最小可运行的 .tex 文件
+
+```latex
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[UTF8]{ctex}  % 中文支持
+
+\title{我的第一篇 LaTeX 文档}
+\author{XXX}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{引言}
+这是正文。Hello, \LaTeX!
+
+\section{公式}
+爱因斯坦质能方程 $E = mc^2$。
+
+更复杂的公式：
+\begin{equation}
+    \int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
+\end{equation}
+
+\end{document}
+```
+
+### 常用语法
+
+```latex
+% 章节
+\section{一级标题}
+\subsection{二级标题}
+\subsubsection{三级标题}
+
+% 强调
+\textbf{加粗} \textit{斜体} \underline{下划线}
+
+% 列表
+\begin{itemize}
+    \item 无序列表项
+\end{itemize}
+
+\begin{enumerate}
+    \item 有序列表项
+\end{enumerate}
+
+% 行内公式 vs 行间公式
+$x^2 + y^2 = z^2$           % 行内
+\[ x^2 + y^2 = z^2 \]        % 行间，无编号
+\begin{equation}             % 行间，带编号
+    x^2 + y^2 = z^2
+\end{equation}
+
+% 插图（需要 \usepackage{graphicx}）
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{filename.png}
+    \caption{图片标题}
+    \label{fig:my_figure}
+\end{figure}
+
+% 表格
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        a & b & c \\
+        \hline
+        1 & 2 & 3 \\
+        \hline
+    \end{tabular}
+    \caption{表格标题}
+\end{table}
+
+% 引用
+见公式 \ref{eq:my_eq}、图 \ref{fig:my_figure}
+
+% 参考文献（用 BibTeX）
+\bibliographystyle{plain}
+\bibliography{references}
+```
+
+---
+
+## 七、新手最容易踩的坑
+
+| 坑 | 解决 |
+|-----|------|
+| 中文编译报错 | 用 `\usepackage{ctex}` + XeLaTeX 编译器 |
+| 公式里中文不显示 | 公式里别写中文，写文字描述放公式外 |
+| 引用显示 `??` | 第一次编译生成 `.aux`，要编译 2-3 次才能正确显示交叉引用 |
+| 参考文献 BibTeX 编译复杂 | 用 Biber 替代 BibTeX，更现代；Overleaf 默认就是 |
+| 长文档编译慢 | 用 `\input{chapter1.tex}` 拆分章节，减少全文重编译 |
+| Overflow / Underfull \hbox 警告 | 大多数情况可忽略，确实丑了再调 |
+| 图片找不到 | 检查相对路径，文件名不要含中文和空格 |
+| Math mode 错误 | 数学符号必须包在 `$...$` 或 `\[...\]` 里 |
+
+---
+
+## 八、和 AI 配合用 LaTeX
+
+LaTeX 是 AI 最擅长的领域之一（语法简单、规则明确）。
+
+### 推荐工作流
+
+1. **写公式**：用自然语言描述，让 AI 转 LaTeX
+   - "二次方程的求根公式" → AI 给你 `x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}`
+
+2. **写表格**：把数据贴给 AI，让它生成 `\begin{tabular}` 代码
+
+3. **修编译错误**：把报错信息和代码贴给 AI，它能秒定位
+
+4. **改格式**：让它用某种学校/期刊模板的风格重写
+
+5. **生成 BibTeX 条目**：粘贴论文 DOI 或标题，让它生成
+
+### Prompt 例子
+
+```
+我用 LaTeX 写论文，请帮我把下面的公式写成 LaTeX 代码：
+
+[贴公式描述或截图]
+
+要求：
+- 用 equation 环境，加 label
+- 变量用斜体、向量加粗
+- 编号格式按 IEEE 规范
+```
+
+更多 Prompt 模板见 [Prompt模板/全部模板](../ai-tools/prompts/all-templates) 中"写作与润色"章节。
+
+---
+
+## 九、推荐学习资源
+
+### 入门
+
+- [Overleaf 官方教程](https://www.overleaf.com/learn/latex/Tutorials)（中英都有）
+- [一份不太简短的 LaTeX 介绍](https://www.ctan.org/tex-archive/info/lshort/chinese)（lshort，经典中文教程，免费 PDF）
+- B 站搜"LaTeX 入门"，李新颖老师的视频口碑不错
+
+### 工具与模板
+
+- [清华大学学位论文 LaTeX 模板（thuthesis）](https://github.com/tuna/thuthesis) — TUNA 维护，毕业论文必用
+- [arXiv LaTeX 模板](https://arxiv.org/help/submit_tex) — 投 arXiv 用
+- [Awesome-Beamer](https://github.com/luong-komorebi/Awesome-Beamer) — Beamer 演示文稿模板合集
+
+### 速查
+
+- [LaTeX 数学公式符号大全](https://www.caam.rice.edu/~heinken/latex/symbols.pdf)
+- [Detexify](https://detexify.kirelabs.org/) — 手写一个符号，告诉你对应的 LaTeX 命令（神器）
+
+### AI 工具
+
+- **Mathpix** ([mathpix.com](https://mathpix.com/)) — 截图公式 → LaTeX，免费版每月 50 次
+- **OpenAI Prism** — 文档级别的 AI 编辑
+- **GitHub Copilot** — VS Code 里写 LaTeX 时智能补全
+
+---
+
+## 十、毕业论文准备清单
+
+如果你是毕设阶段：
+
+1. **下载学院/学校官方模板**（找师兄师姐或学院网站，别用网上来路不明的）
+2. **创建 Overleaf 项目**（或本地 + Git）
+3. **配置参考文献**：用 Zotero 导出 BibTeX，丢进项目
+4. **学会用 `\input{}` 拆章节**：每章一个 .tex 文件，主文档 include
+5. **早点编译第一遍**：模板可能有坑，不要写完才发现
+6. **每天 commit/save 一次**：避免文件丢失
+
+参考 [Zotero使用指南](../literature/zotero) 配合管理参考文献。
+
+---
+
+> **最后更新：** 2026-05-21
+> **持续维护：** 班级共同维护，发现错误请直接修改或在 99-待整理资源池 反馈

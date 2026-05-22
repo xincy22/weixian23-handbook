@@ -1,0 +1,264 @@
+---
+title: "论文筛选标准与质量评估（2026 年 5 月更新）"
+description: "检索结果通常有几十到几百篇，不可能全部精读。用以下流程逐步缩小范围："
+---
+
+> 检索到几十上百篇论文后，怎么快速判断哪些值得读？本文档给出具体的筛选流程、评估维度和查询工具。
+> 最后更新：2026-05-20
+
+---
+
+## 一、四轮筛选流程
+
+检索结果通常有几十到几百篇，不可能全部精读。用以下流程逐步缩小范围：
+
+```
+第 1 轮：扫标题（10 秒/篇）
+  目标：从 100 篇缩小到 30 篇
+  判断：标题是否和你的研究问题直接相关？
+  技巧：注意关键方法词、应用场景词、"review/survey" 标记
+
+第 2 轮：读摘要（1-2 分钟/篇）
+  目标：从 30 篇缩小到 10-15 篇
+  判断：研究问题、方法、核心结论是否匹配你的需求？
+  技巧：重点看最后 1-2 句（通常是主要贡献）
+
+第 3 轮：看元数据（30 秒/篇）
+  目标：从 15 篇缩小到 8-10 篇
+  判断：期刊/会议级别、引用次数、发表年份、作者背景
+  技巧：用下方的工具快速查询
+
+第 4 轮：浏览图表和结论（3-5 分钟/篇）
+  目标：确定 5-8 篇进入精读
+  判断：实验结果是否有说服力？方法是否可借鉴/复现？
+  技巧：看 Figure 1（通常是方法框架图）和最后的 Table（对比实验）
+```
+
+---
+
+## 二、七个筛选维度
+
+| 维度 | 看什么 | 判断标准 | 权重 |
+| --- | --- | --- | --- |
+| **相关性** | 标题 + 摘要 | 是否直接回答你关心的问题 | 最高 |
+| **发表质量** | 期刊/会议级别 | 是否在领域认可的 venue | 高 |
+| **时效性** | 发表年份 | 前沿方向看近 3 年；经典方法可看更早 | 高 |
+| **影响力** | 引用次数 | 结合年份和领域判断（见下方参考） | 中 |
+| **方法可用性** | 方法描述 + 代码 | 方法是否清晰、是否有开源实现 | 中 |
+| **作者背景** | 作者和机构 | 是否来自该领域活跃团队 | 中 |
+| **数据可得性** | 数据集 | 使用的数据是否公开、实验是否可复现 | 低-中 |
+
+---
+
+## 三、期刊/会议质量评估
+
+### 核心指标解释
+
+| 指标 | 全称 | 含义 | 查询工具 |
+| --- | --- | --- | --- |
+| **IF** | Impact Factor（影响因子） | 期刊近 2 年论文的平均被引次数 | Web of Science JCR |
+| **中科院分区** | CAS Journal Ranking | 中国学术界最常用的分区（1-4 区） | LetPub、中科院分区表 |
+| **JCR 分区** | Journal Citation Reports | 国际通用分区（Q1-Q4） | Web of Science |
+| **CiteScore** | Scopus CiteScore | 基于 3 年窗口的引用指标 | Scopus |
+| **CCF 等级** | CCF 推荐列表 | 计算机领域专用（A/B/C 类） | CCF 官网 |
+| **接收率** | Acceptance Rate | 会议论文录用比例 | 各会议官网 |
+| **h-index** | h 指数 | 期刊/作者的综合影响力 | Scopus、Google Scholar |
+
+### 分区含义速查
+
+**中科院分区（国内最常用）：**
+
+| 分区 | 含义 | 大致对应 |
+| --- | --- | --- |
+| 1 区 | 各学科 IF 排名前 5% 的期刊 | 顶刊 |
+| 2 区 | IF 排名 5%-20% | 优秀期刊 |
+| 3 区 | IF 排名 20%-50% | 良好期刊 |
+| 4 区 | IF 排名 50% 以后 | 一般期刊 |
+
+**JCR 分区：**
+
+| 分区 | 含义 |
+| --- | --- |
+| Q1 | 各学科 IF 排名前 25% |
+| Q2 | 25%-50% |
+| Q3 | 50%-75% |
+| Q4 | 75% 以后 |
+
+**CCF 等级（计算机方向专用）：**
+
+| 等级 | 含义 | 举例 |
+| --- | --- | --- |
+| A 类 | 国际顶级 | CVPR、NeurIPS、SIGCOMM、DAC |
+| B 类 | 国际知名 | AAAI、DATE、ICCAD、ECCV |
+| C 类 | 国际一般 | 有一定学术价值 |
+
+### 查询工具清单
+
+| 工具 | 网址 | 能查什么 | 是否免费 |
+| --- | --- | --- | --- |
+| **LetPub** | [letpub.com.cn](https://www.letpub.com.cn/index.php?page=journalapp) | 中科院分区、IF、审稿周期、投稿经验 | 免费 |
+| **爱科学 iikx** | [iikx.com](https://www.iikx.com) | 中科院分区、IF、投稿经验 | 免费 |
+| **Web of Science JCR** | [jcr.clarivate.com](https://jcr.clarivate.com) | JCR 分区、IF、引用趋势 | 需校园网 |
+| **Scopus** | [scopus.com](https://www.scopus.com) | CiteScore、SJR、SNIP | 需校园网 |
+| **SCImago** | [scimagojr.com](https://www.scimagojr.com) | SJR 排名、h-index、国家分布 | 免费 |
+| **CCF 推荐列表** | [ccf.org.cn](https://www.ccf.org.cn/Academic_Evaluation/By_category/) | CCF A/B/C 分类 | 免费 |
+| **清华推荐列表 (TH-CPL)** | [GitHub](https://github.com/bugaosuni59/TH-CPL) | 清华计算机学科推荐列表 | 免费 |
+| **Conference Ranks** | [portal.core.edu.au](http://portal.core.edu.au/conf-ranks/) | 澳洲 CORE 会议排名 | 免费 |
+
+---
+
+## 四、各方向高质量 Venue 速查
+
+### AI / 机器学习 / 计算机视觉
+
+| 类型 | 顶级（CCF-A / 中科院 1 区） | 优秀（CCF-B / 中科院 2 区） |
+| --- | --- | --- |
+| 会议 | NeurIPS、ICML、ICLR、CVPR、ACL、SIGKDD | AAAI、IJCAI、ECCV、NAACL、WACV |
+| 期刊 | TPAMI、IJCV、JMLR、Nature Machine Intelligence | TIP、TNNLS、Pattern Recognition、Neural Networks |
+
+### 集成电路 / 芯片设计 / EDA
+
+| 类型 | 顶级 | 优秀 |
+| --- | --- | --- |
+| 会议 | DAC、ICCAD、ISSCC、DATE | ASP-DAC、VLSI Symposium、CICC |
+| 期刊 | JSSC、TCAD、TVLSI | IEEE Access（注意：已降为 3-4 区） |
+
+### 生物医学工程
+
+| 类型 | 顶级 | 优秀 |
+| --- | --- | --- |
+| 会议 | MICCAI、EMBC | ISBI、BHI |
+| 期刊 | Nature BME、IEEE TBME、Medical Image Analysis | IEEE JBHI、Computers in Biology and Medicine |
+
+### 材料科学
+
+| 类型 | 顶级 | 优秀 |
+| --- | --- | --- |
+| 期刊 | Nature Materials、Advanced Materials、ACS Nano | Nano Letters、Small、Materials Today |
+| 会议 | MRS Fall/Spring Meeting | ICMCTF |
+
+### 仪器 / 传感器 / MEMS
+
+| 类型 | 顶级 | 优秀 |
+| --- | --- | --- |
+| 会议 | Transducers、MEMS (IEEE) | IEEE Sensors Conference |
+| 期刊 | Sensors and Actuators A/B、IEEE Sensors Journal | Measurement、Smart Materials and Structures |
+
+### 计算机系统 / 网络
+
+| 类型 | 顶级（CCF-A） | 优秀（CCF-B） |
+| --- | --- | --- |
+| 会议 | OSDI、SOSP、SIGCOMM、NSDI | EuroSys、USENIX ATC、CoNEXT |
+| 期刊 | TOCS、TON、JSAC | TPDS、TC |
+
+---
+
+## 五、引用次数参考标准
+
+引用次数因**领域**和**年份**差异极大，不能跨领域比较。
+
+### 按年份的一般参考
+
+| 发表时间 | 参考标准 | 说明 |
+| --- | --- | --- |
+| &lt; 1 年 | 5-10 次就不错 | 新论文引用需要时间积累 |
+| 1-3 年 | 50+ 次有影响力 | 说明被同行关注 |
+| 3-5 年 | 100+ 次是高引 | 领域内重要工作 |
+| > 5 年 | 500+ 次是经典 | 教科书级别 |
+
+### 按领域的差异
+
+| 领域 | 引用普遍水平 | 原因 |
+| --- | --- | --- |
+| AI / 深度学习 | 很高（顶会论文 3 年可达 200+） | 领域大、从业者多、引用习惯 |
+| 芯片 / EDA | 中等（顶会 3 年 30-80） | 领域较小 |
+| 材料 / 化学 | 中等 | |
+| 数学 / 理论 | 较低（3 年 20-50 算不错） | 领域小、论文产出慢 |
+
+### 注意事项
+
+- **综述论文**引用通常远高于研究论文，不能直接比较
+- **自引**比例过高的论文需警惕
+- 用 Semantic Scholar 的 **Influential Citations** 功能区分「重要引用」和「顺带提及」
+- Google Scholar 的引用数通常比 WoS 高（因为包含预印本和非索引来源）
+
+---
+
+## 六、特殊类型论文的判断
+
+### 预印本（arXiv 等）
+
+| 判断维度 | 怎么看 |
+| --- | --- |
+| 作者背景 | 来自知名实验室（Google、DeepMind、清华等）可信度较高 |
+| 是否有代码 | 有开源代码 + 可复现结果 → 可信度高 |
+| 是否被会议录用 | 查 arXiv 页面是否标注 "Accepted at XXX" |
+| 版本数 | 多次修订（v3、v4）说明作者在持续改进 |
+| 社区反馈 | Papers with Code 排名、Twitter/X 讨论度 |
+
+**底线**：预印本未经同行评审，结论需谨慎对待。写论文时引用预印本要标注 "preprint"。
+
+### 综述论文（Review / Survey）
+
+| 判断维度 | 好的综述 | 差的综述 |
+| --- | --- | --- |
+| 覆盖面 | 系统性覆盖该方向主要工作 | 只引用自己团队的论文 |
+| 分类框架 | 有清晰的分类体系 | 只是论文列表堆砌 |
+| 时效性 | 包含最近 1-2 年的工作 | 最新引用已经是 3 年前 |
+| 发表 venue | 高质量期刊（IF > 10 的综述期刊） | 低质量/掠夺性期刊 |
+| 引用量 | 高引说明被领域认可 | |
+
+**入门建议**：新进入一个方向时，优先找 1-2 篇高引综述，从综述的参考文献列表扩展阅读。
+
+### 掠夺性期刊（Predatory Journals）识别
+
+| 警告信号 | 说明 |
+| --- | --- |
+| 审稿极快（&lt; 2 周） | 正常期刊审稿至少 1-3 个月 |
+| 频繁发邮件约稿 | 正规期刊不会主动群发约稿邮件 |
+| 版面费异常高且无减免 | |
+| 编委会成员不知名 | 查不到编委的学术背景 |
+| 期刊名和知名期刊相似 | 如 "International Journal of..." 仿冒 |
+| 不在 WoS / Scopus 索引中 | 最直接的判断方式 |
+
+查询工具：[Beall's List](https://beallslist.net/)（掠夺性期刊/出版商黑名单）
+
+---
+
+## 七、实操：拿到一篇论文的快速评估清单
+
+```
+□ 相关性：标题和摘要是否直接相关我的问题？
+□ Venue：发表在什么期刊/会议？
+  → LetPub 查中科院分区 / CCF 官网查等级
+□ 年份：是否足够新？（前沿方向 ≤ 3 年，经典方法不限）
+□ 引用：Google Scholar 看被引次数，结合年份和领域判断
+□ 作者：是否是该领域活跃研究者？
+  → Google Scholar 看作者 h-index 和近年发表
+□ 代码：是否有开源实现？
+  → 查 GitHub 链接或 Papers with Code
+□ 数据：使用的数据集是否公开可获取？
+□ 方法：从摘要/图表判断方法是否可借鉴
+
+以上大部分为「是」→ 进入精读流程
+只有 1-2 项为「是」→ 存入「待定」，后续需要时再看
+全部为「否」→ 跳过
+```
+
+---
+
+## 八、常见问题
+
+| 问题 | 建议 |
+| --- | --- |
+| 检索结果太多，不知道从哪看起 | 按引用次数排序，先看 top 10；或先找综述 |
+| 检索结果太少 | 关键词可能太窄，参考 [关键词检索方法](./keyword-search) 扩展 |
+| 只找到中文论文 | 用英文关键词在 Google Scholar / IEEE 重新搜索 |
+| 论文太新没有引用 | 看作者背景 + 发表 venue + 是否有代码 |
+| 不确定期刊是否正规 | 去 WoS / Scopus 确认是否被索引；查 Beall's List |
+| 同一方向有多篇类似论文 | 优先读：venue 最好的、引用最高的、有代码的 |
+| 导师推荐的论文看不懂 | 先找该论文引用的前置工作，从基础读起 |
+
+---
+
+*信息来源：[LetPub 期刊查询](https://www.letpub.com.cn/index.php?page=journalapp)、[CCF 推荐列表](https://www.ccf.org.cn/Academic_Evaluation/By_category/)、[SCImago Journal Rankings](https://www.scimagojr.com)、[Macquarie University Research Impact Guide](https://libguides.mq.edu.au/researchimpact/CiteScore_SJR_SNIP)、[Beall's List](https://beallslist.net/)*

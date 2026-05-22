@@ -1,0 +1,273 @@
+---
+title: "科研写作工具对比与选择（2026 年 5 月更新）"
+description: "` 第 1 步：注册 Overleaf（不用本地安装） → overleaf.com 注册免费账号"
+---
+
+> 本文档帮你选择合适的写作工具：什么场景用什么工具、各工具的优缺点、入门路径。
+> 最后更新：2026-05-20
+
+---
+
+## 一、工具选择速查表
+
+| 场景 | 推荐工具 | 原因 |
+| --- | --- | --- |
+| 课程报告（老师要 .docx） | Word + Zotero | 最简单，满足要求 |
+| 课程报告（公式多） | Overleaf | 公式排版质量高，不用配环境 |
+| 毕业论文 | LaTeX（学校模板）+ Overleaf | 大多数学校有 LaTeX 模板 |
+| 期刊/会议投稿 | LaTeX + Overleaf | 几乎所有期刊提供 LaTeX 模板 |
+| 个人笔记 | Markdown + Obsidian/VS Code | 轻量、版本管理方便 |
+| 组会 PPT | PowerPoint / Keynote / Beamer | 看个人偏好 |
+| 快速排版（不想学 LaTeX） | Typst | 语法简洁，编译极快 |
+| 团队项目文档 | Notion / 飞书 / Markdown+Git | 协作方便 |
+
+---
+
+## 二、各工具详细对比
+
+### 总览
+
+| 特性 | Word | LaTeX | Overleaf | Typst | Markdown |
+| --- | --- | --- | --- | --- | --- |
+| 学习成本 | 低 | 高 | 中 | 中低 | 低 |
+| 公式排版 | 一般 | 优秀 | 优秀 | 优秀 | 需插件 |
+| 长文档管理 | 差 | 优秀 | 优秀 | 优秀 | 一般 |
+| 编译速度 | 即时 | 慢（大文档 30-90s） | 慢 | **极快（&lt;1s）** | 即时 |
+| 协作 | 一般 | 差（需 Git） | **强（实时）** | 在线版可协作 | Git 协作 |
+| 模板生态 | 少 | **极丰富** | 极丰富 | 增长中 | 少 |
+| 期刊接受度 | 接受 | **首选** | 首选 | 少数接受 | 不接受 |
+| 免费 | 需购买/学校授权 | 免费 | 免费版有限制 | 免费 | 免费 |
+
+---
+
+## 三、LaTeX
+
+### 什么时候用
+
+- 公式密集的文档（数学、物理、工程推导）
+- 期刊/会议投稿（几乎所有 venue 提供 LaTeX 模板）
+- 毕业论文（大多数 985/211 有官方 LaTeX 模板）
+- 参考文献多（BibTeX/BibLaTeX 管理极方便）
+- 需要精确控制排版的长文档（>30 页）
+
+### 什么时候不用
+
+- 临时写个 2 页课程报告
+- 老师明确要求交 .docx
+- 纯文字无公式的短文档
+
+### 入门路径
+
+```
+第 1 步：注册 Overleaf（不用本地安装）
+  → overleaf.com 注册免费账号
+
+第 2 步：从模板开始
+  → Overleaf Templates 搜索你需要的模板
+  → 或从期刊/学校官网下载模板
+
+第 3 步：学会基础语法（2-3 小时）
+  → 文档结构：\documentclass, \begin{document}
+  → 章节：\section, \subsection
+  → 公式：$...$（行内）, \begin{equation}（独立行）
+  → 图表：\begin{figure}, \begin{table}
+  → 引用：\cite{key}, \ref{fig:xxx}
+
+第 4 步：学会 BibTeX 引用
+  → 配合 Zotero Better BibTeX 插件自动导出 .bib 文件
+  → 在 LaTeX 中用 \cite{key} 引用
+
+推荐学习资源：
+  → Overleaf 官方教程：overleaf.com/learn
+  → 一份不太简短的 LaTeX2e 介绍（lshort-zh-cn）
+  → TeX StackExchange（遇到问题搜这里）
+```
+
+### 常用包速查
+
+| 包 | 功能 |
+| --- | --- |
+| `amsmath` | 数学公式增强 |
+| `graphicx` | 插入图片 |
+| `booktabs` | 三线表 |
+| `hyperref` | 超链接和 PDF 书签 |
+| `cleveref` | 智能交叉引用 |
+| `algorithm2e` | 伪代码 |
+| `listings` / `minted` | 代码高亮 |
+| `tikz` | 绘图 |
+| `biblatex` | 现代参考文献管理 |
+| `ctex` | 中文支持 |
+
+---
+
+## 四、Overleaf
+
+### 定位
+
+在线 LaTeX 编辑器，不用本地安装任何东西。
+
+### 定价（2026 年）
+
+| 计划 | 价格 | 关键限制 |
+| --- | --- | --- |
+| Free | $0 | 编译超时 20s；1 位协作者；无 Git 集成 |
+| Standard | ~$7.4/月（年付 $89） | 编译超时 4 分钟；无限协作者 |
+| Professional | ~$14.6/月（年付 $175） | 编译超时 4 分钟；Git/GitHub 集成；优先编译 |
+| 学校授权 | 免费（学校付费） | 等同 Professional；**先查你的学校是否有** |
+
+**重要**：很多中国高校（清华、北大、浙大、上交等）已购买 Overleaf 校园版。用学校邮箱注册即可获得 Professional 功能。先去 `overleaf.com/edu` 查你的学校。
+
+### 使用建议
+
+- 先查学校是否有授权（免费升级 Professional）
+- 从模板开始：Templates → 搜索期刊名或 "thesis"
+- 大项目拆分文件：用 `\input{}` 分章节管理
+- 配合 Zotero：Better BibTeX 导出 .bib → 上传到 Overleaf
+
+---
+
+## 五、Typst（新一代排版工具）
+
+### 定位
+
+2023 年发布的现代排版系统，目标是替代 LaTeX。语法更简洁，编译速度极快。
+
+### 优势
+
+| 特性 | 说明 |
+| --- | --- |
+| 编译速度 | 毫秒级增量编译（LaTeX 大文档需要 30-90 秒） |
+| 语法简洁 | 类似 Markdown，学习曲线比 LaTeX 低很多 |
+| 错误信息 | 清晰可读（LaTeX 的报错信息出了名的难懂） |
+| 安装简单 | 单个二进制文件，或用在线版 typst.app |
+| 中文支持 | 原生 Unicode 支持，不需要额外配置 |
+| 脚本能力 | 内置类 Rust 的脚本语言，可编程排版 |
+
+### 劣势
+
+| 特性 | 说明 |
+| --- | --- |
+| 期刊模板 | 大多数期刊**尚未提供** Typst 模板（2026 年仍以 LaTeX 为主） |
+| 生态成熟度 | 包和模板数量远少于 LaTeX |
+| 学校模板 | 极少数学校有 Typst 毕业论文模板 |
+| 社区规模 | 遇到问题可参考的资料较少 |
+
+### 适合场景
+
+```
+✅ 适合用 Typst：
+- 个人项目报告、课程作业（不要求 LaTeX）
+- 简历、CV
+- 内部技术文档
+- 想要快速排版但不想学 LaTeX 的场景
+
+❌ 暂时不适合：
+- 期刊/会议投稿（没有模板）
+- 毕业论文（学校通常要求 LaTeX 或 Word）
+```
+
+### 语法示例
+
+```typst
+// Typst 语法示例
+#set document(title: "My Paper", author: "Zhang San")
+#set text(font: "New Computer Modern", size: 11pt)
+
+= Introduction  // 一级标题
+
+This is a paragraph with *bold* and _italic_ text.
+
+$ E = m c^2 $  // 行内公式
+
+$ integral_0^infinity e^(-x^2) dif x = sqrt(pi) / 2 $  // 独立公式
+
+#figure(
+  image("fig1.png", width: 80%),
+  caption: [Architecture overview],
+)
+```
+
+### 入门
+
+- 在线编辑器：[typst.app](https://typst.app)
+- 本地安装：`cargo install typst-cli` 或从 GitHub Releases 下载
+- 官方文档：[typst.app/docs](https://typst.app/docs)
+- VS Code 插件：Tinymist（语法高亮 + 实时预览）
+
+---
+
+## 六、Word
+
+### 什么时候用
+
+- 老师明确要求 .docx 格式
+- 中文行政材料（申请书、总结、通知）
+- 短文档（&lt;20 页）且公式不多
+- 不想学新工具
+
+### 提升 Word 写作效率的关键
+
+```
+1. 使用样式（Styles）
+   → 标题1、标题2、正文 → 不要手动调字号
+   → 好处：一键修改全文格式、自动生成目录
+
+2. 使用自动编号
+   → 图表编号：引用 → 插入题注
+   → 交叉引用：引用 → 交叉引用
+
+3. 使用 Zotero Word 插件
+   → 一键插入引用、自动生成参考文献列表
+   → 切换引用格式只需一键
+
+4. 使用分节符
+   → 不同章节可以有不同页眉页脚
+   → 页码从正文开始编号
+
+5. 使用导航窗格
+   → 视图 → 导航窗格 → 快速跳转章节
+```
+
+---
+
+## 七、Markdown
+
+### 什么时候用
+
+- 个人学习笔记
+- 技术文档、README
+- 资源整理和清单
+- 配合 Git 做版本管理
+- 写博客
+
+### 推荐编辑器
+
+| 编辑器 | 特点 | 适合 |
+| --- | --- | --- |
+| VS Code + Markdown 插件 | 免费、插件丰富 | 程序员 |
+| Obsidian | 双向链接、知识图谱 | 重度笔记用户 |
+| Typora | 所见即所得 | 喜欢即时预览 |
+| Notion | 在线协作 | 团队使用 |
+
+### Markdown 转 PDF/Word
+
+如果需要把 Markdown 转成正式文档：
+- **Pandoc**：`pandoc input.md -o output.pdf`（需要 LaTeX 引擎）
+- **Typora**：直接导出 PDF/Word
+- **VS Code**：Markdown PDF 插件
+
+---
+
+## 八、工具组合推荐
+
+| 你的身份 | 推荐组合 | 说明 |
+| --- | --- | --- |
+| 大一大二（课程为主） | Word + Zotero | 够用，学习成本低 |
+| 大三（开始科研） | Overleaf + Zotero + Markdown | 开始学 LaTeX，笔记用 Markdown |
+| 大四（毕设/投稿） | LaTeX + Overleaf + Zotero + Git | 正式科研写作全套 |
+| 计算机方向 | Typst 或 LaTeX + VS Code + Git | 可以尝试 Typst |
+| 团队项目 | Overleaf（论文）+ Notion/飞书（文档） | 协作为主 |
+
+---
+
+*信息来源：[Typst vs LaTeX Academic Publishing (2026)](https://biggo.com/news/202506230712_Typst_vs_LaTeX_Academic_Publishing)、[Overleaf Pricing](https://dev.saasworthy.com/product/overleaf/pricing)、[Overleaf for Universities](https://www.overleaf.com/for/universities)、[Typst 官方文档](https://typst.app/docs)*

@@ -1,0 +1,11 @@
+{
+  "title": "AI 工具与 API",
+  "description": "AI 工具大全、API 配置、Prompt 模板",
+  "icon": "Bot",
+  "pages": [
+    "index",
+    "ai-tools-list",
+    "api-setup",
+    "prompts"
+  ]
+}

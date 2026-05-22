@@ -1,0 +1,409 @@
+---
+title: "Word 公式快速输入：UnicodeMath 指南（2026 年 5 月更新）"
+description: "1. 按 Alt + = 进入公式编辑区 2. 输入 UnicodeMath 线性表达式 3. 按空格触发转换（\\alpha → α） 4. 按两次空格完成完整排版（积分、求和的上下限） 5. 括号 () 用于分组"
+---
+
+> Word 自带的公式编辑器支持 UnicodeMath 语法，可以像打字一样快速输入公式，不需要鼠标点击。
+> 掌握这套语法后，在 Word 里写公式的速度可以接近 LaTeX。
+> 最后更新：2026-05-20
+
+---
+
+## 一、基本操作
+
+### 进入公式模式
+
+| 操作 | 快捷键 |
+| --- | --- |
+| 插入公式 | `Alt` + `=` |
+| 线性格式 → 专业格式（排版好的公式） | 选中公式后 `Ctrl` + `=` |
+| 专业格式 → 线性格式 | 选中公式后 `Ctrl` + `Shift` + `=` |
+
+### 核心规则
+
+1. 按 `Alt` + `=` 进入公式编辑区
+2. 输入 UnicodeMath 线性表达式
+3. 按**空格**触发转换（`\alpha` → α）
+4. 按**两次空格**完成完整排版（积分、求和的上下限）
+5. 括号 `()` 用于分组
+
+---
+
+## 二、分数
+
+| 输入 | 渲染结果 | 说明 |
+| --- | --- | --- |
+| `a/b` | $\frac{a}{b}$ | 最基本的分数 |
+| `(a+b)/(c+d)` | $\frac{a+b}{c+d}$ | 括号分组 |
+| `1/(x^2+1)` | $\frac{1}{x^2+1}$ | 复杂分母 |
+| `(x^2+2x+1)/(x+1)` | $\frac{x^2+2x+1}{x+1}$ | 多项式分数 |
+
+**关键**：没有括号时，`/` 只把紧邻的单个字符作为分子/分母。多字符必须加括号。
+
+```
+错误：a+b/c+d   → a + (b/c) + d，只有 b 和 c 构成分数
+正确：(a+b)/(c+d) → 整个 a+b 在分子，c+d 在分母
+```
+
+---
+
+## 三、上标和下标
+
+| 输入 | 渲染结果 | 说明 |
+| --- | --- | --- |
+| `x^2` | $x^2$ | 上标 |
+| `x_i` | $x_i$ | 下标 |
+| `x_i^2` | $x_i^2$ | 同时有上下标 |
+| `x_(i+1)` | $x_{i+1}$ | 多字符下标用括号 |
+| `e^(i\pi)` | $e^{i\pi}$ | 多字符上标用括号 |
+| `a_(n+1)^(2k)` | $a_{n+1}^{2k}$ | 复杂上下标 |
+
+---
+
+## 四、根号
+
+| 输入 | 渲染结果 | 说明 |
+| --- | --- | --- |
+| `\sqrt(x)` | $\sqrt{x}$ | 平方根 |
+| `\sqrt(a^2+b^2)` | $\sqrt{a^2+b^2}$ | 复杂表达式的根号 |
+| `\sqrt(3&x)` | $\sqrt[3]{x}$ | 立方根 |
+| `\sqrt(n&x)` | $\sqrt[n]{x}$ | n 次根号 |
+| `\cbrt` | $\sqrt[3]{\phantom{x}}$ | 立方根符号 |
+| `\qdrt` | $\sqrt[4]{\phantom{x}}$ | 四次根号符号 |
+
+**语法**：`\sqrt(次数&被开方数)`，用 `&` 分隔次数和内容。
+
+---
+
+## 五、括号与分隔符（\open / \close）
+
+### 自动缩放括号
+
+在 Word 公式中，直接输入的括号 `(` `)` `[` `]` `{` `}` 会**自动缩放**以匹配内容高度。这是 UnicodeMath 相比 LaTeX 的一个便利之处——不需要写 `\left` `\right`。
+
+| 输入 | 渲染结果 | 说明 |
+| --- | --- | --- |
+| `(a/b)` | $\left(\frac{a}{b}\right)$ | 圆括号自动缩放 |
+| `[a/b]` | $\left[\frac{a}{b}\right]$ | 方括号自动缩放 |
+| `{a/b}` | $\left\{\frac{a}{b}\right\}$ | 花括号自动缩放 |
+
+### \open 和 \close（显式控制）
+
+当你需要**不匹配的括号**或**特殊分隔符**时，使用 `\open` 和 `\close`：
+
+| 输入 | 渲染结果 | 说明 |
+| --- | --- | --- |
+| `\open(a/b\close]` | $\left(\frac{a}{b}\right]$ | 左圆括号 + 右方括号（半开区间） |
+| `\open[a,b\close)` | $\left[a,b\right)$ | 左闭右开区间 |
+| `\open\|x\close\|` | $\left\|x\right\|$ | 范数（双竖线） |
+| `\open(x\close.` | $\left(x\right.$ | 只有左括号（右侧不可见） |
+| `\open.x\close)` | $\left.x\right)$ | 只有右括号（左侧不可见） |
+
+**语法**：`\open` + 左分隔符 + 内容 + `\close` + 右分隔符。用 `.` 表示不可见的一侧。
+
+### 特殊括号类型
+
+| 输入 | 渲染结果 | 名称 | 用途 |
+| --- | --- | --- | --- |
+| `\lfloor` ... `\rfloor` | $\lfloor x \rfloor$ | 下取整 | 取整函数 |
+| `\lceil` ... `\rceil` | $\lceil x \rceil$ | 上取整 | 取整函数 |
+| `\langle` ... `\rangle` | $\langle x \rangle$ | 尖括号 | 内积、期望值 |
+| `\|` ... `\|` | $\| x \|$ | 双竖线 | 范数 |
+| `|` ... `|` | $|x|$ | 单竖线 | 绝对值 |
+
+### 括号内分隔符（\vbar）
+
+`\vbar` 在括号内插入竖线分隔符（常用于条件概率、集合定义）：
+
+| 输入 | 渲染结果 | 用途 |
+| --- | --- | --- |
+| `{x\vbar x>0}` | $\{x \mid x>0\}$ | 集合定义 |
+| `(a/b\vbar x+y\vbar z)` | 带两个分隔符的表达式 | 多段分隔 |
+| `P(A\vbar B)` | $P(A \mid B)$ | 条件概率 |
+
+### 矩阵专用括号
+
+| 输入 | 渲染结果 | 说明 |
+| --- | --- | --- |
+| `\pmatrix(a&b@c&d)` | $\begin{pmatrix}a&b\\c&d\end{pmatrix}$ | 圆括号矩阵 |
+| `\bmatrix(a&b@c&d)` | $\begin{bmatrix}a&b\\c&d\end{bmatrix}$ | 方括号矩阵 |
+| `\Bmatrix(a&b@c&d)` | $\begin{Bmatrix}a&b\\c&d\end{Bmatrix}$ | 花括号矩阵 |
+| `\vmatrix(a&b@c&d)` | $\begin{vmatrix}a&b\\c&d\end{vmatrix}$ | 行列式（单竖线） |
+| `\Vmatrix(a&b@c&d)` | $\begin{Vmatrix}a&b\\c&d\end{Vmatrix}$ | 范数矩阵（双竖线） |
+
+---
+
+## 六、求和、积分、连乘
+
+| 输入 | 渲染结果 |
+| --- | --- |
+| `\sum_(i=1)^n` ␣␣ `a_i` | $\sum_{i=1}^{n} a_i$ |
+| `\int_0^\infty` ␣␣ `f(x)dx` | $\int_0^{\infty} f(x)\,dx$ |
+| `\iint_D` ␣␣ `f(x,y)dxdy` | $\iint_D f(x,y)\,dx\,dy$ |
+| `\oint_C` ␣␣ `F\cdot dr` | $\oint_C \mathbf{F}\cdot d\mathbf{r}$ |
+| `\prod_(i=1)^n` ␣␣ `x_i` | $\prod_{i=1}^{n} x_i$ |
+| `lim_(n\rightarrow\infty)` ␣ `a_n` | $\lim_{n\to\infty} a_n$ |
+| `\bigcup_(i=1)^n` ␣␣ `A_i` | $\bigcup_{i=1}^{n} A_i$ |
+| `\bigcap_(i=1)^n` ␣␣ `A_i` | $\bigcap_{i=1}^{n} A_i$ |
+
+（␣␣ 表示按两次空格）
+
+**关键**：n-ary 运算符需要**两次空格**——第一次解析符号和上下限，第二次排版。
+
+---
+
+## 七、希腊字母
+
+输入 `\` + 字母名 + 空格，自动转换。
+
+### 常用小写
+
+| 输入 | 符号 | 输入 | 符号 | 输入 | 符号 | 输入 | 符号 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `\alpha` | $\alpha$ | `\beta` | $\beta$ | `\gamma` | $\gamma$ | `\delta` | $\delta$ |
+| `\epsilon` | $\epsilon$ | `\zeta` | $\zeta$ | `\eta` | $\eta$ | `\theta` | $\theta$ |
+| `\iota` | $\iota$ | `\kappa` | $\kappa$ | `\lambda` | $\lambda$ | `\mu` | $\mu$ |
+| `\nu` | $\nu$ | `\xi` | $\xi$ | `\pi` | $\pi$ | `\rho` | $\rho$ |
+| `\sigma` | $\sigma$ | `\tau` | $\tau$ | `\phi` | $\phi$ | `\chi` | $\chi$ |
+| `\psi` | $\psi$ | `\omega` | $\omega$ | `\varepsilon` | $\varepsilon$ | `\varphi` | $\varphi$ |
+
+### 常用大写
+
+| 输入 | 符号 | 输入 | 符号 | 输入 | 符号 | 输入 | 符号 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `\Gamma` | $\Gamma$ | `\Delta` | $\Delta$ | `\Theta` | $\Theta$ | `\Lambda` | $\Lambda$ |
+| `\Xi` | $\Xi$ | `\Pi` | $\Pi$ | `\Sigma` | $\Sigma$ | `\Phi` | $\Phi$ |
+| `\Psi` | $\Psi$ | `\Omega` | $\Omega$ | | | | |
+
+---
+
+## 八、常用数学符号
+
+### 关系运算符
+
+| 输入 | 符号 | 含义 | 输入 | 符号 | 含义 |
+| --- | --- | --- | --- | --- | --- |
+| `\leq` | $\leq$ | 小于等于 | `\geq` | $\geq$ | 大于等于 |
+| `\neq` | $\neq$ | 不等于 | `\approx` | $\approx$ | 约等于 |
+| `\equiv` | $\equiv$ | 恒等于 | `\sim` | $\sim$ | 相似 |
+| `\propto` | $\propto$ | 正比于 | `\cong` | $\cong$ | 全等 |
+| `\ll` | $\ll$ | 远小于 | `\gg` | $\gg$ | 远大于 |
+| `\in` | $\in$ | 属于 | `\notin` | $\notin$ | 不属于 |
+| `\subset` | $\subset$ | 子集 | `\subseteq` | $\subseteq$ | 子集或等于 |
+| `\supset` | $\supset$ | 超集 | `\supseteq` | $\supseteq$ | 超集或等于 |
+| `\perp` | $\perp$ | 垂直 | `\parallel` | $\parallel$ | 平行 |
+
+### 运算符
+
+| 输入 | 符号 | 含义 | 输入 | 符号 | 含义 |
+| --- | --- | --- | --- | --- | --- |
+| `\pm` | $\pm$ | 加减 | `\mp` | $\mp$ | 减加 |
+| `\times` | $\times$ | 乘号 | `\div` | $\div$ | 除号 |
+| `\cdot` | $\cdot$ | 点乘 | `\circ` | $\circ$ | 复合 |
+| `\oplus` | $\oplus$ | 圈加 | `\otimes` | $\otimes$ | 圈乘 |
+| `\cup` | $\cup$ | 并集 | `\cap` | $\cap$ | 交集 |
+| `\wedge` | $\wedge$ | 逻辑与 | `\vee` | $\vee$ | 逻辑或 |
+| `\neg` | $\neg$ | 逻辑非 | `\nabla` | $\nabla$ | 梯度 |
+
+### 其他常用
+
+| 输入 | 符号 | 含义 | 输入 | 符号 | 含义 |
+| --- | --- | --- | --- | --- | --- |
+| `\infty` | $\infty$ | 无穷 | `\partial` | $\partial$ | 偏导 |
+| `\forall` | $\forall$ | 任意 | `\exists` | $\exists$ | 存在 |
+| `\emptyset` | $\emptyset$ | 空集 | `\degree` | $°$ | 度 |
+| `\therefore` | $\therefore$ | 所以 | `\because` | $\because$ | 因为 |
+| `\rightarrow` | $\rightarrow$ | 右箭头 | `\Rightarrow` | $\Rightarrow$ | 推出 |
+| `\leftrightarrow` | $\leftrightarrow$ | 双向 | `\Leftrightarrow` | $\Leftrightarrow$ | 等价 |
+| `\mapsto` | $\mapsto$ | 映射 | `\to` | $\to$ | 趋向 |
+
+---
+
+## 九、上方标记
+
+| 输入 | 渲染结果 | 用途 |
+| --- | --- | --- |
+| `x\hat` ␣␣ | $\hat{x}$ | 估计值 |
+| `x\bar` ␣␣ | $\bar{x}$ | 平均值 |
+| `x\vec` ␣␣ | $\vec{x}$ | 向量 |
+| `x\dot` ␣␣ | $\dot{x}$ | 一阶导数（物理） |
+| `x\ddot` ␣␣ | $\ddot{x}$ | 二阶导数（物理） |
+| `x\tilde` ␣␣ | $\tilde{x}$ | 波浪号 |
+| `\overbar(abc)` | $\overline{abc}$ | 长横线（共轭/闭包） |
+| `\overbrace(a+b+c)` | $\overbrace{a+b+c}$ | 上花括号 |
+| `\underbrace(a+b+c)` | $\underbrace{a+b+c}$ | 下花括号 |
+
+（␣␣ 表示按两次空格）
+
+---
+
+## 十、函数应用（\funcapply）
+
+### 背景
+
+Word 公式编辑器有一套**数学自动更正**（Math AutoCorrect）内置函数列表。当你在公式区域输入这些函数名时，Word 会自动将其识别为函数（正体显示、后面的内容作为参数处理）：
+
+```
+sin  cos  tan  cot  sec  csc
+arcsin  arccos  arctan
+sinh  cosh  tanh  coth
+log  ln  lg  exp
+lim  limsup  liminf
+max  min  sup  inf
+det  dim  ker  deg
+gcd  lcm  arg  mod
+Pr  hom
+```
+
+这些函数你直接打名字 + 空格就行，Word 自动处理。
+
+### 问题：自动更正列表之外的函数
+
+当你使用**不在上述列表中的函数名**时（比如 `tr`、`sgn`、`Var`、`softmax`），Word 不会自动识别它是函数，而是把每个字母当作独立变量，显示为斜体：$t \cdot r$ 而不是 $\operatorname{tr}$。
+
+### 解决：\funcapply
+
+`\funcapply`（Unicode U+2061，不可见的"函数应用"运算符）的作用是告诉 Word：**左边是函数名（应显示为正体），右边是它的参数**。
+
+它只在 Word 数学自动更正没有覆盖到的函数中才需要使用。
+
+### 用法
+
+| 输入 | 渲染结果 | 场景 |
+| --- | --- | --- |
+| `sgn\funcapply(x)` | $\operatorname{sgn}(x)$ | 符号函数 |
+| `tr\funcapply A` | $\operatorname{tr} A$ | 矩阵的迹 |
+| `diag\funcapply(a,b,c)` | $\operatorname{diag}(a,b,c)$ | 对角矩阵 |
+| `Var\funcapply(X)` | $\operatorname{Var}(X)$ | 方差 |
+| `Cov\funcapply(X,Y)` | $\operatorname{Cov}(X,Y)$ | 协方差 |
+| `softmax\funcapply(z)` | $\operatorname{softmax}(z)$ | 机器学习激活函数 |
+| `ReLU\funcapply(x)` | $\operatorname{ReLU}(x)$ | 激活函数 |
+| `rank\funcapply A` | $\operatorname{rank} A$ | 矩阵的秩 |
+| `span\funcapply(v_1,v_2)` | $\operatorname{span}(v_1,v_2)$ | 张成空间 |
+| `supp\funcapply f` | $\operatorname{supp} f$ | 支撑集 |
+
+### 带上下限的自定义函数
+
+```
+argmin_(x\in S)\funcapply f(x)
+```
+
+$$\operatorname*{argmin}_{x\in S} f(x)$$
+
+```
+argmax_\theta\funcapply L(\theta)
+```
+
+$$\operatorname*{argmax}_{\theta} L(\theta)$$
+
+### 总结
+
+```
+内置函数（sin、cos、log、lim 等）→ 直接打，Word 自动识别
+自定义函数（tr、Var、softmax 等）→ 函数名 + \funcapply + 参数
+```
+
+`\funcapply` 本身是不可见字符，不会出现在最终排版中，它只是一个语义标记。
+
+---
+
+## 十一、矩阵
+
+语法：`\matrix(行1列1&行1列2@行2列1&行2列2)` — `&` 分隔列，`@` 分隔行。
+
+| 输入 | 渲染结果 |
+| --- | --- |
+| `(\matrix(a&b@c&d))` | $\begin{pmatrix}a&b\\c&d\end{pmatrix}$ |
+| `[\matrix(1&0&0@0&1&0@0&0&1)]` | $\begin{bmatrix}1&0&0\\0&1&0\\0&0&1\end{bmatrix}$ |
+| `\|\matrix(a&b@c&d)\|` | $\begin{vmatrix}a&b\\c&d\end{vmatrix}$ |
+| `(\matrix(x@y@z))` | $\begin{pmatrix}x\\y\\z\end{pmatrix}$（列向量） |
+
+带省略号的矩阵：
+```
+(\matrix(a_(11)&\cdots&a_(1n)@\vdots&\ddots&\vdots@a_(m1)&\cdots&a_(mn)))
+```
+$$\begin{pmatrix}a_{11}&\cdots&a_{1n}\\\vdots&\ddots&\vdots\\a_{m1}&\cdots&a_{mn}\end{pmatrix}$$
+
+---
+
+## 十二、方程组和多行对齐
+
+### 方程组
+
+输入 `\eqarray(x+y&=1@x-y&=3)` 得到：
+
+$$\begin{aligned}x+y&=1\\x-y&=3\end{aligned}$$
+
+`@` 分隔行，`&` 是对齐点。
+
+### 分段函数
+
+输入 `f(x)={\eqarray(x^2,  &x\geq 0@-x^2,  &x<0)` 得到：
+
+$$f(x)=\begin{cases}x^2, & x\geq 0\\-x^2, & x&lt;0\end{cases}$$
+
+---
+
+## 十三、实战示例
+
+| 公式 | UnicodeMath 输入 |
+| --- | --- |
+| $x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}$ | `x=(-b\pm\sqrt(b^2-4ac))/(2a)` |
+| $\nabla\cdot\vec{E}=\frac{\rho}{\epsilon_0}$ | `\nabla\cdot E\vec =\rho/\epsilon_0` |
+| $F(\omega)=\int_{-\infty}^{\infty}f(t)e^{-j\omega t}dt$ | `F(\omega)=\int_(-\infty)^\infty f(t)e^(-j\omega t)dt` |
+| $\sum_{k=0}^{n}\binom{n}{k}x^k(1-x)^{n-k}=1$ | `\sum_(k=0)^n \matrix(n@k) x^k(1-x)^(n-k)=1` |
+| $\frac{\partial f}{\partial x}=\lim_{\Delta x\to 0}\frac{f(x+\Delta x)-f(x)}{\Delta x}$ | `(\partial f)/(\partial x)=lim_(\Delta x\rightarrow 0) (f(x+\Delta x)-f(x))/(\Delta x)` |
+| $\left\|Ax\right\| \leq \left\|A\right\|\cdot\left\|x\right\|$ | `\open\|Ax\close\| \leq \open\|A\close\|\cdot\open\|x\close\|` |
+
+---
+
+## 十四、UnicodeMath vs LaTeX 对比
+
+| 操作 | UnicodeMath | LaTeX | 渲染结果 |
+| --- | --- | --- | --- |
+| 分数 | `a/b` | `\frac{a}{b}` | $\frac{a}{b}$ |
+| 上标 | `x^2` | `x^{2}` | $x^2$ |
+| 下标 | `x_i` | `x_{i}` | $x_i$ |
+| 根号 | `\sqrt(x)` | `\sqrt{x}` | $\sqrt{x}$ |
+| n次根 | `\sqrt(n&x)` | `\sqrt[n]{x}` | $\sqrt[n]{x}$ |
+| 求和 | `\sum_(i=1)^n` | `\sum_{i=1}^{n}` | $\sum_{i=1}^n$ |
+| 积分 | `\int_0^\infty` | `\int_{0}^{\infty}` | $\int_0^\infty$ |
+| 矩阵 | `\pmatrix(a&b@c&d)` | `\begin{pmatrix}...` | $\begin{pmatrix}a&b\\c&d\end{pmatrix}$ |
+| 向量标记 | `x\vec` | `\vec{x}` | $\vec{x}$ |
+| 自动括号 | `(a/b)` | `\left(\frac{a}{b}\right)` | $\left(\frac{a}{b}\right)$ |
+| 半开区间 | `\open[a,b\close)` | `\left[a,b\right)` | $\left[a,b\right)$ |
+
+**结论**：UnicodeMath 更简洁（少打花括号，括号自动缩放），在 Word 中输入更快。
+
+---
+
+## 十五、效率技巧
+
+1. **不要用鼠标点公式面板** — `Alt`+`=` 进入后直接打字
+2. **善用括号分组** — 多字符的分子/分母/上下标都要加 `()`
+3. **记住两次空格** — 积分、求和等 n-ary 运算符需要两次空格完成排版
+4. **切换输入模式** — 公式区域右键可切换 UnicodeMath / LaTeX 模式
+5. **Math AutoCorrect** — 文件→选项→校对→自动更正→Math AutoCorrect，可在普通文本中也使用 `\alpha` 等
+
+---
+
+## 十六、常见问题
+
+| 问题 | 解决 |
+| --- | --- |
+| 按空格没有转换 | 确认光标在公式区域内（`Alt`+`=` 进入） |
+| 分数只有一个字符在分子 | 用括号分组：`(a+b)/(c+d)` |
+| 积分上下限没有排版 | 需要按两次空格 |
+| 想输入普通空格 | 按 `Ctrl`+`Shift`+空格 |
+| 公式字体不对 | 公式区域默认 Cambria Math，不要手动改 |
+| 想在公式中输入文本 | 用 `"text"` 双引号包裹 |
+| 括号没有自动变大 | 确认括号在公式区域内，且包裹了完整表达式 |
+
+---
+
+## 官方参考文档
+
+- **UnicodeMath 完整规范 (UTN#28)**：[unicode.org/notes/tn28](https://www.unicode.org/notes/tn28/)（PDF，Murray Sargent 编写，包含所有语法细节）
+- **Microsoft 官方文档**：[Linear format equations using UnicodeMath and LaTeX in Word](https://support.microsoft.com/en-us/office/linear-format-equations-using-unicodemath-and-latex-in-word-2e00618d-b1fd-49d8-8cb4-8d17f25754f8)
+- **Math in Office 博客**：[devblogs.microsoft.com/math-in-office](https://devblogs.microsoft.com/math-in-office/)（Murray Sargent 的博客，有大量技巧和更新）
+- **UnicodeMathML 在线试验场**：[murrayiii.github.io/UnicodeMathML/playground](https://murrayiii.github.io/UnicodeMathML/playground/)（在浏览器中实时测试 UnicodeMath 语法）

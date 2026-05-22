@@ -1,0 +1,296 @@
+---
+title: "AI 学术绘图指南"
+---
+
+> 科研论文中的图分两大类：**数据图**（实验结果可视化）和**示意图**（方法框架、流程图、原理图）。
+> 本文档覆盖两类图的工具选择、AI 辅助方法、期刊规范和实操技巧。
+> 最后更新：2026-05-21
+
+---
+
+## 一、论文配图的两大类型
+
+| 类型 | 举例 | 核心工具 | AI 能帮什么 |
+| --- | --- | --- | --- |
+| **数据图** | 折线图、柱状图、散点图、热力图、箱线图 | matplotlib / Origin / MATLAB | 生成绘图代码、调整样式、配色建议 |
+| **示意图** | 方法框架图、流程图、系统架构图、原理图 | draw.io / PPT / TikZ / AI 生成 | 生成初稿、优化布局、生成 SVG/TikZ 代码 |
+
+---
+
+## 二、数据图：用代码绘制期刊级图表
+
+### 2.1 期刊对图表的通用要求
+
+| 要求 | 具体标准 | 说明 |
+| --- | --- | --- |
+| 分辨率 | ≥300 DPI（位图）；矢量图无此限制 | 投稿用 300+，课程报告 150 够用 |
+| 格式 | PDF / EPS / SVG（矢量）> PNG > TIFF >> JPG | 矢量图优先；JPG 有损压缩，避免使用 |
+| 字体 | Arial / Helvetica / Times New Roman | 图中文字字体要和正文一致 |
+| 字号 | 最终印刷尺寸下 ≥ 7pt（建议 8-12pt） | 缩放后仍可读 |
+| 尺寸 | 单栏 8-8.5cm / 双栏 17-17.5cm | 按期刊要求设置，不要事后缩放 |
+| 线宽 | 0.5-1.5pt | 太细印刷看不清，太粗显得粗糙 |
+| 配色 | 色盲友好、黑白可区分 | 避免红绿对比；用线型/标记辅助区分 |
+| 图注 | 图片下方，能独立看懂 | 不看正文也能理解图在说什么 |
+
+### 2.2 matplotlib 期刊级绘图模板
+
+以下是一个可直接复用的 matplotlib 配置，满足大多数期刊要求：
+
+```python
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+
+# ===== 期刊级全局设置 =====
+plt.rcParams.update({
+    # 字体
+    'font.family': 'Arial',
+    'font.size': 9,
+    'axes.labelsize': 10,
+    'axes.titlesize': 10,
+    'xtick.labelsize': 8,
+    'ytick.labelsize': 8,
+    'legend.fontsize': 8,
+    
+    # 线条
+    'lines.linewidth': 1.2,
+    'axes.linewidth': 0.8,
+    'xtick.major.width': 0.6,
+    'ytick.major.width': 0.6,
+    
+    # 图例
+    'legend.frameon': False,
+    'legend.handlelength': 1.5,
+    
+    # 布局
+    'figure.dpi': 150,          # 屏幕显示
+    'savefig.dpi': 300,         # 保存分辨率
+    'savefig.bbox': 'tight',
+    'savefig.pad_inches': 0.02,
+    
+    # 去掉顶部和右侧边框
+    'axes.spines.top': False,
+    'axes.spines.right': False,
+})
+
+# ===== 单栏图尺寸（8.5cm 宽）=====
+fig, ax = plt.subplots(figsize=(3.35, 2.5))  # 英寸，8.5cm ≈ 3.35in
+
+# ===== 双栏图尺寸（17cm 宽）=====
+# fig, ax = plt.subplots(figsize=(6.7, 4.0))
+
+# 绘图...
+ax.plot(x, y, label='Method A', color='#2166AC', marker='o', markersize=4)
+ax.set_xlabel('Time (s)')
+ax.set_ylabel('Accuracy (%)')
+ax.legend()
+
+# 保存为矢量格式
+plt.savefig('fig1.pdf')
+plt.savefig('fig1.svg')
+# 如果期刊要求位图
+plt.savefig('fig1.png', dpi=600)
+```
+
+### 2.3 推荐配色方案
+
+| 配色方案 | 来源 | 特点 | 适合 |
+| --- | --- | --- | --- |
+| `tab10` | matplotlib 默认 | 10 色，区分度好 | 多条线对比 |
+| `Set2` | ColorBrewer | 柔和，色盲友好 | 柱状图、分类 |
+| `Paired` | ColorBrewer | 成对颜色 | 对比实验 |
+| `viridis` | matplotlib | 连续色，色盲友好 | 热力图、连续数据 |
+| 自定义学术配色 | 见下方 | 经典蓝红灰 | 2-4 组对比 |
+
+**经典学术配色（2-4 组对比）：**
+```python
+colors = {
+    'blue': '#2166AC',
+    'red': '#B2182B', 
+    'green': '#1B7837',
+    'orange': '#E08214',
+    'gray': '#666666',
+}
+```
+
+**色盲友好检查工具：** [Color Oracle](https://colororacle.org/)（免费桌面软件，模拟色盲视角）
+
+### 2.4 用 AI 生成绘图代码
+
+**推荐方式：** 把数据描述和图表要求告诉 AI，让它生成 matplotlib 代码，你再运行和微调。
+
+参见 [Prompt模板/全部模板](../ai-tools/prompts/all-templates) 中"实验数据分析"章节的模板。
+
+**关键点：**
+- 告诉 AI 你的数据格式（csv 的列名、数据范围）
+- 明确期刊要求（尺寸、字体、分辨率）
+- 让 AI 生成完整可运行的代码，不要片段
+- 自己运行后微调细节（标签位置、图例位置、颜色）
+
+---
+
+## 三、示意图：方法框架图和流程图
+
+### 3.1 工具选择
+
+| 工具 | 适合 | 优点 | 缺点 | 费用 |
+| --- | --- | --- | --- | --- |
+| **draw.io** (diagrams.net) | 流程图、架构图、系统图 | 免费、在线/离线、导出矢量图 | 美观度一般 | 免费 |
+| **PowerPoint / Keynote** | 简单示意图 | 上手快、灵活 | 不够精确、不易复用 | 学校授权 |
+| **Figma** | 精美示意图、UI 风格 | 免费、协作、矢量 | 学习成本中等 | 免费 |
+| **TikZ (LaTeX)** | 精确学术图、可复现 | 质量最高、可版本管理 | 学习成本高 | 免费 |
+| **Inkscape** | 矢量图编辑 | 免费开源、功能强 | 界面不够现代 | 免费 |
+| **Adobe Illustrator** | 专业级插图 | 功能最全 | 贵、学习成本高 | 付费 |
+| **AI 生成** | 快速出初稿 | 速度快 | 细节不可控、可能需大量修改 | 按量付费 |
+
+### 3.2 draw.io 实操建议
+
+draw.io（diagrams.net）是科研绘图性价比最高的选择：免费、支持在线和离线、导出 PDF/SVG/PNG。
+
+**使用方式：**
+- 在线版：[app.diagrams.net](https://app.diagrams.net)
+- VS Code 插件：搜索 "Draw.io Integration"
+- 桌面版：[GitHub Releases](https://github.com/jgraph/drawio-desktop/releases) 下载
+
+**科研绘图技巧：**
+```
+1. 使用网格对齐（View → Grid）
+2. 统一字体和字号（全选 → Format → Font）
+3. 使用图层管理复杂图（View → Layers）
+4. 导出时选择 PDF 或 SVG（矢量格式）
+5. 设置页面大小匹配期刊要求
+```
+
+**AI 辅助 draw.io：**
+- 可以让 AI 生成 draw.io 的 XML 代码，然后导入
+- Prompt 示例："帮我生成一个 draw.io XML 格式的流程图，描述以下方法流程：[描述]"
+- 也有开源项目 [next-ai-draw-io](https://github.com/DayuanJiang/next-ai-draw-io) 支持自然语言生成 draw.io 图
+
+### 3.3 用 AI 生成示意图
+
+**方式 A：AI 生成 TikZ 代码（质量最高）**
+
+让 Claude/GPT 生成 TikZ 代码，在 LaTeX 中编译：
+```
+请帮我用 TikZ 画一个方法框架图。
+结构如下：
+- 输入层：传感器数据（加速度、角速度、磁场）
+- 处理层：信号预处理 → 特征提取 → 分类器
+- 输出层：活动识别结果
+
+要求：
+- 方框用圆角矩形
+- 箭头连接各模块
+- 配色简洁（蓝色系）
+- 适合单栏论文宽度
+```
+
+**方式 B：AI 图像生成（快速出初稿）**
+
+| 工具 | 说明 | 适合 |
+| --- | --- | --- |
+| [SciDraw](https://sci-draw.com) | AI 科研插图平台，支持 SVG 导出 | 方法示意图、概念图 |
+| [SciFig](https://scifig.ai) | AI 科研图生成和矢量化 | 方法框架图 |
+| ChatGPT (GPT-5.5) | 原生图像生成 | 概念图、简单示意图 |
+| Gemini | 图像生成 | 概念图 |
+
+**注意事项：**
+- AI 生成的示意图通常需要大量手动修改才能达到投稿质量
+- AI 生成的图可能有细节错误（标签拼写、箭头方向、逻辑关系）
+- 部分期刊要求声明 AI 生成的图像（即使后续大幅编辑）
+- 建议：AI 生成初稿 → 在 draw.io/Figma/Illustrator 中精修
+
+**方式 C：AI 生成 SVG 代码**
+
+让 AI 直接生成 SVG 代码，可以在浏览器中预览，再用 Inkscape 编辑：
+```
+请帮我生成一个 SVG 格式的神经网络架构图，包含：
+- 输入层（3个节点）
+- 隐藏层1（5个节点）
+- 隐藏层2（5个节点）  
+- 输出层（2个节点）
+- 节点间用线连接
+- 标注每层名称
+```
+
+---
+
+## 四、配图规范速查
+
+### 4.1 常见期刊图片要求
+
+| 期刊/出版商 | 单栏宽度 | 双栏宽度 | 格式 | 分辨率 |
+| --- | --- | --- | --- | --- |
+| Nature 系列 | 89mm | 183mm | PDF/EPS/TIFF | 300 DPI |
+| IEEE | 3.5in (88mm) | 7.16in (182mm) | PDF/EPS/PNG | 300 DPI |
+| Elsevier | 90mm | 190mm | PDF/EPS/TIFF | 300 DPI |
+| ACS 系列 | 3.25in (83mm) | 7in (178mm) | TIFF/EPS | 600 DPI |
+| Wiley | 8.5cm | 17.5cm | TIFF/EPS | 300 DPI |
+
+### 4.2 图表编号和引用规范
+
+```
+图片标题在图片下方：
+  Fig. 1. Architecture of the proposed system.
+  图 1 系统架构示意图
+
+表格标题在表格上方：
+  Table 1. Comparison of different methods.
+  表 1 不同方法的对比
+
+正文引用：
+  英文：As shown in Fig. 1, ... / The results are summarized in Table 2.
+  中文：如图 1 所示，... / 结果如表 2 所示。
+
+注意：
+  - 每张图/表在正文中必须被引用
+  - 编号连续，不跳号
+  - 对比实验表中最优结果加粗
+```
+
+---
+
+## 五、学习资源
+
+### 系统教程
+
+| 资源 | 链接 | 说明 |
+| --- | --- | --- |
+| **Datawhale 科研绘图教程** | [happy-figure](https://datawhalechina.github.io/happy-figure/) | AI 辅助科研绘图，中文，系统性强 |
+| **Datawhale 科研论文配图** | [paper-chart-tutorial](https://github.com/datawhalechina/paper-chart-tutorial) | matplotlib/Origin/R 绘图教程 |
+| **Scientific Figures Guide** | [GitHub: nrokh/ScientificFigures](https://github.com/nrokh/ScientificFigures) | 英文，从设计原则到工具实操 |
+| **matplotlib for papers** | [GitHub: jbmouret/matplotlib_for_papers](https://github.com/jbmouret/matplotlib_for_papers) | matplotlib 论文绘图专题 |
+| **matplotlib 论文绘图技巧** | [allanchain blog](https://allanchain.github.io/blog/post/mpl-paper-tips/) | 实用技巧合集 |
+
+### 配色工具
+
+| 工具 | 链接 | 用途 |
+| --- | --- | --- |
+| ColorBrewer | [colorbrewer2.org](https://colorbrewer2.org) | 学术配色方案生成器 |
+| Color Oracle | [colororacle.org](https://colororacle.org) | 色盲模拟检查 |
+| Coolors | [coolors.co](https://coolors.co) | 配色方案生成 |
+| SciencePlots (Python) | [GitHub](https://github.com/garrettj403/SciencePlots) | matplotlib 学术风格预设 |
+
+### 绘图工具
+
+| 工具 | 链接 | 用途 |
+| --- | --- | --- |
+| draw.io | [app.diagrams.net](https://app.diagrams.net) | 流程图、架构图（免费） |
+| Figma | [figma.com](https://www.figma.com) | 精美示意图（免费） |
+| TikZiT | [tikzit.github.io](https://tikzit.github.io) | TikZ 可视化编辑器 |
+| Inkscape | [inkscape.org](https://inkscape.org) | 矢量图编辑（免费开源） |
+| BioRender | [biorender.com](https://www.biorender.com) | 生物医学示意图（学术免费） |
+| SciDraw | [sci-draw.com](https://sci-draw.com) | AI 科研插图生成 |
+
+---
+
+## 六、常见问题
+
+| 问题 | 解决 |
+| --- | --- |
+| 图片放大后模糊 | 使用矢量格式（PDF/SVG）或提高 DPI |
+| 图中文字太小看不清 | 按最终印刷尺寸设置字号（≥7pt） |
+| 配色不好看 | 用 ColorBrewer 选学术配色方案 |
+| 多子图对齐困难 | matplotlib 用 `gridspec`；draw.io 用网格对齐 |
+| 期刊要求 TIFF 但文件太大 | 用 LZW 压缩：`plt.savefig('fig.tiff', compression='tiff_lzw')` |
+| AI 生成的图细节有错 | AI 图只是初稿，必须在专业工具中精修 |
+| 不知道用什么工具 | 数据图用 matplotlib/Origin；示意图用 draw.io/Figma |

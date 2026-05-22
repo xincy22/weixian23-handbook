@@ -1,0 +1,11 @@
+{
+  "title": "就业实习与行业认知",
+  "description": "企业、岗位、实习、简历面试资源",
+  "icon": "Briefcase",
+  "pages": [
+    "index",
+    "industries",
+    "internship",
+    "resume"
+  ]
+}

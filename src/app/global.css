@@ -1,0 +1,166 @@
+@import 'tailwindcss';
+@import 'fumadocs-ui/css/neutral.css';
+@import 'fumadocs-ui/css/preset.css';
+@import 'katex/dist/katex.min.css';
+
+/* ============================================
+   清华紫主题 (Tsinghua Purple)
+   主色：#660874  (Tsinghua Purple)
+   亮模式 + 暗模式 全套配色
+   ============================================ */
+
+:root {
+  /* 主题色 - 亮模式 */
+  --color-fd-primary: oklch(38.5% 0.176 312);            /* 清华紫 #660874 */
+  --color-fd-primary-foreground: oklch(98% 0.005 285);
+
+  /* 强调色 */
+  --color-fd-accent: oklch(95% 0.03 312);
+  --color-fd-accent-foreground: oklch(38.5% 0.176 312);
+
+  /* 链接和高亮 */
+  --color-fd-ring: oklch(38.5% 0.176 312);
+}
+
+.dark {
+  /* 主题色 - 暗模式（亮一点的紫，对比度好） */
+  --color-fd-primary: oklch(72% 0.18 312);                /* 紫罗兰 */
+  --color-fd-primary-foreground: oklch(15% 0.02 285);
+
+  --color-fd-accent: oklch(28% 0.05 312);
+  --color-fd-accent-foreground: oklch(85% 0.06 312);
+
+  --color-fd-ring: oklch(72% 0.18 312);
+}
+
+/* ============================================
+   全局样式
+   ============================================ */
+
+html {
+  scrollbar-gutter: stable;
+}
+
+html > body[data-scroll-locked] {
+  margin-right: 0px !important;
+  --removed-body-scroll-bar-size: 0px !important;
+}
+
+/* ============================================
+   首页特效（粒子背景、流光、彩虹）
+   ============================================ */
+
+/* 渐变光晕背景 */
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+.bg-glow-purple {
+  background: radial-gradient(
+    circle at 50% 0%,
+    oklch(45% 0.2 312 / 0.35),
+    transparent 70%
+  );
+}
+
+.dark .bg-glow-purple {
+  background: radial-gradient(
+    circle at 50% 0%,
+    oklch(60% 0.2 312 / 0.4),
+    transparent 70%
+  );
+}
+
+/* 卡片流光边框 */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer-border {
+  position: relative;
+  background: linear-gradient(var(--bg, white), var(--bg, white)) padding-box,
+    linear-gradient(
+      90deg,
+      transparent,
+      oklch(45% 0.2 312),
+      oklch(70% 0.2 280),
+      oklch(45% 0.2 312),
+      transparent
+    ) border-box;
+  background-size: 200% 100%;
+  border: 1px solid transparent;
+  animation: shimmer 4s linear infinite;
+}
+
+/* 彩虹分割线 */
+.rainbow-divider {
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #ff0080,
+    #ff8c00,
+    #ffd700,
+    #00d2ff,
+    #5e60ce,
+    #c77dff,
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: shimmer 6s linear infinite;
+}
+
+/* 渐变文字 */
+.gradient-text {
+  background: linear-gradient(135deg, oklch(45% 0.2 312), oklch(60% 0.2 280));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* 雪花动画 */
+@keyframes snowfall {
+  0% {
+    transform: translateY(-10vh) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(110vh) translateX(40px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.snowflake {
+  position: absolute;
+  top: 0;
+  user-select: none;
+  pointer-events: none;
+  animation: snowfall linear infinite;
+  color: oklch(80% 0.1 312);
+  opacity: 0.8;
+}
+
+/* 滚动渐入 */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fade-in-up 0.6s ease-out backwards;
+}

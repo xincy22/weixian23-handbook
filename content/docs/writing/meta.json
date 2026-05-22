@@ -1,0 +1,14 @@
+{
+  "title": "科研写作与排版",
+  "description": "LaTeX、Overleaf、Word、英文润色",
+  "icon": "PenLine",
+  "pages": [
+    "index",
+    "writing-tools",
+    "writing-flow",
+    "latex",
+    "word-unicodemath",
+    "ai-figures",
+    "ai-writing-boundary"
+  ]
+}

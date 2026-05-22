@@ -1,0 +1,1222 @@
+---
+title: "Prompt 模板合集"
+---
+
+> 复制 → 替换【占位符】→ 粘贴到 AI 工具中使用。
+> 写好 Prompt 的核心：给角色、给结构、给约束、给背景。
+> 更多外部资源见 [Prompt资源与进阶](./prompt-resources)
+
+---
+
+## 目录
+
+1. [论文阅读与精读](#1-论文阅读与精读)
+2. [写作与润色](#2-写作与润色)
+3. [代码与调试](#3-代码与调试)
+4. [数据分析与绘图](#4-数据分析与绘图)
+5. [概念理解与学习](#5-概念理解与学习)
+6. [科研规划与申请](#6-科研规划与申请)
+7. [Linux与环境配置](#7-linux与环境配置)
+8. [写好Prompt的原则](#8-写好prompt的原则)
+
+---
+
+# 1. 论文阅读与精读
+
+## 1.1 快速总结（日常最常用）
+
+```
+You are a research assistant. Summarize this paper using EXACTLY this structure (2-3 sentences per section max):
+
+## Problem — What specific problem does this paper address?
+## Gap — What limitation of prior work motivates this paper?
+## Method — What is the proposed approach? Key technical contribution.
+## Results — Dataset(s), baselines, key numbers [metric: value].
+## Limitations — What does the paper NOT solve?
+## Verdict — Worth a deep read for someone working on [你的方向]? Why/why not?
+
+Rules:
+- If not mentioned, write "Not stated"
+- Keep technical terms in English
+- Numbers must be exact from paper
+
+Paper:
+[粘贴]
+```
+
+## 1.2 深度逻辑拆解
+
+```
+You are a senior researcher in [你的方向] with 10+ years reviewing for top venues.
+
+Analyze this paper critically. Do NOT simply summarize.
+
+## 1. Core Claim (1 sentence)
+What is the single most important claim this paper makes?
+
+## 2. Assumptions
+What does this paper assume to be true without proving it? List each assumption and assess whether it is reasonable.
+
+## 3. Method Decomposition
+Break the method into sequential steps. For each step:
+- What it does (1 sentence)
+- Why it's needed (motivation)
+- Whether it's novel or borrowed from prior work (cite if borrowed)
+
+## 4. Experimental Rigor
+- Are the baselines fair and up-to-date?
+- Are there missing ablations that should have been included?
+- Could the results be explained by confounding factors?
+
+## 5. Figures & Tables
+Interpret each key figure/table. What does it actually prove vs. what the authors claim it proves?
+
+## 6. Weaknesses (be specific)
+List 3-5 concrete weaknesses. For each, explain WHY it's a problem and suggest how it could be addressed.
+
+## 7. Relation to My Work
+My research focus is: [描述你的课题]
+- What can I borrow from this paper?
+- What gap does this paper leave that I could fill?
+
+## Formatting Rules
+- Use bullet points, not paragraphs
+- Keep technical terms in English
+- Mark speculation with [SPECULATION] tag
+- If information is missing from the paper, write [NOT STATED]
+
+Paper content below:
+---
+[粘贴论文]
+```
+
+## 1.3 组会汇报准备
+
+```
+Help me prepare a 5-8 minute lab meeting presentation about this paper.
+
+Audience: graduate students and professors in [方向].
+Goal: demonstrate deep understanding and critical thinking.
+
+Generate:
+
+## Slide Structure (6-8 slides)
+For each slide: title + 3-4 bullet points + which figure/table to show
+
+## Opening Hook (15 seconds)
+One sentence that makes the audience care about this problem.
+
+## Key Takeaway (1 sentence)
+What should the audience remember after my talk?
+
+## Anticipated Questions
+5 questions my advisor might ask, with suggested answers:
+- 2 basic comprehension questions
+- 2 critical/challenging questions
+- 1 "how does this relate to our work" question
+
+## What NOT to Present
+Parts to skip to stay within time.
+
+Paper:
+[粘贴]
+```
+
+## 1.4 复现可行性评估
+
+```
+You are a research engineer evaluating reproducibility.
+
+## Input Requirements
+- Data format, size, source. Publicly available? Closest alternative if not?
+
+## Computational Requirements
+- GPU memory, training time estimate
+- Can it run on a single RTX 4090 (24GB)?
+- Cheaper alternatives?
+
+## Code Availability
+- Official code? Link? Third-party implementations?
+- Code quality: documented? Matches paper?
+
+## Underspecified Details
+List EVERY detail missing or ambiguous that would block reproduction:
+- What's missing
+- What I'd need to guess
+- Suggested default based on common practice
+
+## Reproduction Plan
+Given [你的资源], step-by-step plan to reproduce key result (Table X / Figure Y).
+
+Paper (Method + Experiment sections):
+[粘贴]
+```
+
+## 1.5 批量筛选（10+ 篇）
+
+```
+For each paper below, give ONE-LINE verdict:
+- [MUST READ] — directly relevant to my specific problem
+- [USEFUL] — relevant method/dataset/insight I can borrow
+- [BACKGROUND] — good for context but not directly applicable
+- [SKIP] — not relevant enough
+
+My specific research focus: [描述你的具体课题，越具体越好]
+
+Papers:
+1. Title: ... Abstract: ...
+2. Title: ... Abstract: ...
+...
+
+Output as numbered list. After verdict, add ONE reason (max 10 words).
+```
+
+## 1.6 多篇对比分析
+
+```
+Compare these papers. Output as markdown table:
+| Paper | Year | Method Type | Key Innovation | Dataset | Best Result | Code? |
+
+Then write:
+1. What do they share? (assumptions, approaches)
+2. How do they differ? (key design choices)
+3. Best starting point for a newcomer? Why?
+4. What problem do ALL fail to solve?
+5. If I were to write the next paper, what would be a logical next step?
+
+Papers:
+1. [标题 + 方法 + 结果简述]
+2. [标题 + 方法 + 结果简述]
+3. ...
+```
+
+## 1.7 翻译+解释（读不懂时）
+
+```
+Translate AND explain this paragraph from an academic paper.
+
+Do NOT just translate:
+1. Chinese translation (keep key terms in English)
+2. Core idea in plain language (assume I just entered the lab)
+3. Implicit background knowledge needed — state explicitly
+
+My background: [例如：学过信号与系统，了解基本ML，不熟悉transformer]
+
+Paragraph:
+[粘贴读不懂的段落]
+```
+
+### 追问技巧（第一轮回答后深入）
+
+```
+- "Expand on weakness #3. Give a concrete failure case."
+- "The authors claim X in Section 4.2. What evidence would be needed to support this?"
+- "Compare this method's cost with [另一篇]. Which is more practical for my setup?"
+- "If I only have 2 weeks to implement a simplified version, what to keep and what to cut?"
+```
+
+
+---
+
+# 2. 写作与润色
+
+## 2.1 学术英文润色（精确控制版）
+
+```
+You are an academic English editor for a [IEEE/Nature/Elsevier] journal.
+
+Rules:
+- Preserve original meaning EXACTLY. Do NOT add claims not in original.
+- Maintain formal academic tone (no contractions, no colloquialisms).
+- Fix grammar, spelling, punctuation.
+- Improve clarity and conciseness. Remove redundancy.
+- Use active voice where appropriate.
+- If a sentence is logically unclear, flag with [LOGIC?] — don't guess.
+- Do NOT change technical terms or variable names.
+
+Output:
+1. Polished version
+2. Change log: "Original → Revised (reason)" for each significant change
+
+Text:
+[粘贴]
+```
+
+## 2.2 中文学术优化
+
+```
+你是中文学术写作编辑。优化以下文本。
+
+规则：
+- 不改变原意，不增加原文没有的信息
+- 去除口语化表达，使用正式学术语言
+- 修正语法和标点
+- 句子不超过 40 字，避免过长从句
+- 逻辑连接词恰当（然而、因此、此外、具体而言...）
+- 逻辑不通处用 [逻辑存疑] 标注，不帮我编造
+
+输出：
+1. 优化后文本
+2. 修改说明（列出主要改动及原因）
+
+原文：
+[粘贴]
+```
+
+## 2.3 逐句对照润色（最精细控制）
+
+```
+Polish each sentence individually. Format:
+
+- Original: [原句]
+- Revised: [修改后]
+- Change: [改了什么，为什么]
+- Score: [1-5, 5=perfect, 1=needs major rewrite]
+
+Only revise sentences scoring ≤3. Leave 4-5 unchanged.
+
+Text:
+[粘贴]
+```
+
+## 2.4 摘要撰写
+
+```
+Write an abstract based on:
+- Paper type: [journal article / conference paper / thesis]
+- Target venue: [具体期刊或会议]
+- Word limit: [150-250 words / 200-300 字]
+- Language: [English / 中文]
+
+Key info:
+- Problem: [研究什么问题]
+- Gap: [已有方法的不足]
+- Method: [你的方法，2-3 句]
+- Key results: [最重要的数字结果]
+- Significance: [为什么重要]
+
+Structure: Background (1-2 sentences) → Problem/Gap → Method → Results → Conclusion
+No citations in abstract. Mark places needing data with [DATA NEEDED].
+```
+
+## 2.5 论文各部分专用润色指令
+
+### Introduction
+```
+Polish this Introduction. It should:
+- Start broad, then narrow to the specific problem
+- Each sentence logically leads to the next
+- End with clear statement of THIS paper's contribution
+- Avoid "In recent years..." opening (cliché)
+[粘贴]
+```
+
+### Methods
+```
+Polish this Methods section. It should:
+- Be precise enough for reproduction
+- Past tense for what was done
+- Define all variables on first use
+- Concise — no motivation here, just procedure
+[粘贴]
+```
+
+### Results
+```
+Polish this Results paragraph. It should:
+- State findings objectively without interpretation
+- Reference specific figures/tables
+- Past tense
+- Highlight most important numbers
+- NOT explain why (save for Discussion)
+[粘贴]
+```
+
+### Discussion
+```
+Polish this Discussion. It should:
+- Interpret results (what do they mean?)
+- Compare with prior work
+- Acknowledge limitations honestly
+- Suggest future directions
+- NOT repeat Results — add new insight
+[粘贴]
+```
+
+## 2.6 文献综述对比表
+
+```
+Generate a comparison table for my literature review on [方向].
+
+Papers:
+1. [论文1]：方法..., 数据集..., 结果...
+2. [论文2]：方法..., 数据集..., 结果...
+3. [论文3]：方法..., 数据集..., 结果...
+
+Table columns:
+| Paper (author+year) | Method Category | Core Technique | Dataset | Key Metric & Value | Strengths | Limitations |
+
+Output as markdown table. Then write:
+1. Classification framework: how to group these methods
+2. Evolution: how the field progressed from paper 1 to N
+3. Open problems: what ALL papers fail to solve
+```
+
+## 2.7 Research Gap 分析
+
+```
+I've read these papers on [方向]. Help me find research gaps.
+
+Existing work:
+- [论文1]: solved X using method A
+- [论文2]: solved Y using method B
+- [论文3]: solved Z using method C
+
+Analyze:
+1. Common assumptions across ALL papers
+2. Problems none of them solve
+3. Scenarios none cover
+4. Methodological improvements possible
+5. Potential entry points for my research
+
+Distinguish "confirmed gaps" (papers explicitly mention as limitation) from "possible gaps" [SPECULATION].
+```
+
+## 2.8 中英互译（学术级）
+
+```
+Translate [中→英 / 英→中] for an academic paper in [领域].
+
+Rules:
+- Academic register
+- Standard field translations. If multiple exist, list alternatives with [?]
+- Sentence structure follows target language conventions
+- Do NOT over-translate idioms
+- Mark uncertain translations with [?]
+
+After translation, list:
+| Source Term | Translation Used | Alternatives |
+
+Source:
+[粘贴]
+```
+
+## 2.9 反向润色（学习好文章的写法）
+
+```
+Here is a well-written paragraph from a top paper in my field:
+---
+[粘贴一段你觉得写得好的论文段落]
+---
+
+Analyze WHY this is well-written:
+1. Sentence structure patterns used
+2. How it transitions between ideas
+3. Word choices that make it clear and precise
+4. What I can learn from this style for my own writing
+5. Give me 3 "sentence templates" I can reuse
+```
+
+
+---
+
+# 3. 代码与调试
+
+## 3.1 报错诊断（最常用）
+
+```
+Environment:
+- OS: [Ubuntu 22.04 / Windows 11 / macOS]
+- Language: [Python 3.11 / C++17 / MATLAB R2024a]
+- Key packages: [torch 2.4, numpy 1.26, cuda 12.4, ...]
+- IDE: [VS Code / PyCharm / terminal]
+
+Error (full traceback):
+```
+[完整粘贴，不要截断]
+```
+
+Code causing error (with 10-20 lines context):
+```text
+[粘贴]
+```
+
+What I was trying to do: [一句话]
+What I already tried: [列出已尝试的方法]
+
+---
+Diagnose:
+1. Root cause (one sentence, plain language)
+2. Fix (corrected code, highlight what changed)
+3. Why this fix works (so I learn)
+4. How to prevent this class of error in future
+```
+
+## 3.2 代码理解（读别人的代码）
+
+```
+You are a code reviewer. Explain this to someone who understands [你的基础，如：basic Python but not PyTorch internals].
+
+```text
+[粘贴代码]
+```
+
+1. **Purpose**: What does this accomplish? (1-2 sentences)
+2. **Flow**: Step-by-step execution (numbered)
+3. **Key decisions**: Why THIS way vs simpler alternatives?
+4. **Gotchas**: Subtle bugs, edge cases, non-obvious behavior?
+5. **Dependencies**: What does it assume about inputs/environment?
+
+Explain domain-specific concepts inline (e.g., attention mechanism, Kalman filter).
+```
+
+## 3.3 性能优化
+
+```
+This code works but is too slow / uses too much memory.
+
+Current performance: [运行时间 / 内存占用 / GPU利用率]
+Target: [期望指标]
+Constraints: [不能改接口 / 兼容Python 3.9+ / 不能用额外GPU / ...]
+
+```text
+[粘贴代码]
+```
+
+For each optimization:
+1. Modified code
+2. What changed and why faster/lighter
+3. Estimated speedup (e.g., "~3x because...")
+4. Tradeoffs (readability, accuracy, compatibility)
+
+Rank by impact (highest first). Note if any are mutually exclusive.
+```
+
+## 3.4 测试用例生成
+
+```
+Generate comprehensive tests for this function:
+
+```text
+[粘贴函数]
+```
+
+Framework: [pytest / unittest / 不限]
+
+Cover:
+1. Happy path (typical valid inputs) — at least 3
+2. Boundary values (empty, zero, max, min) — at least 3
+3. Error handling (wrong type, None, out of range) — at least 2
+4. Performance edge case (very large input) — 1
+
+Each test: one-line comment explaining WHAT it tests.
+Output: complete runnable test file.
+```
+
+## 3.5 CUDA / GPU 问题专用
+
+```
+GPU Environment:
+- GPU: [nvidia-smi 型号+显存]
+- Driver: [nvidia-smi Driver Version]
+- CUDA: [nvcc --version]
+- PyTorch: [torch.__version__, torch.cuda.is_available()]
+- cuDNN: [torch.backends.cudnn.version()]
+
+Problem: [OOM / CUDA error / 训练慢 / multi-GPU不工作 / ...]
+
+Code:
+```python
+[粘贴相关代码]
+```
+
+nvidia-smi output:
+```
+[粘贴]
+```
+
+Give strategies ranked by effort:
+1. Quick fixes (no code change, e.g., env vars, batch size)
+2. Minor code changes (gradient checkpointing, mixed precision)
+3. Architectural changes (model parallelism, etc.)
+```
+
+## 3.6 代码重构建议
+
+```
+This code works but is messy / hard to maintain / not following best practices.
+
+```text
+[粘贴代码]
+```
+
+Refactor with these goals (check applicable):
+- [ ] Improve readability
+- [ ] Reduce duplication (DRY)
+- [ ] Add type hints
+- [ ] Split into smaller functions
+- [ ] Add error handling
+- [ ] Make it more testable
+- [ ] Follow [PEP8 / Google style / ...]
+
+Show refactored code + explain each structural change.
+Do NOT change functionality.
+```
+
+### 什么时候不该问 AI
+
+- 报错信息本身已说明问题（如 `FileNotFoundError: 'data.csv'`）
+- 需要看实际硬件状态（先跑 `nvidia-smi`、`df -h`、`free -h`）
+- 涉及私有数据格式（先 `print(data.shape)` 自己检查）
+- AI 给的代码一定要自己跑一遍验证
+
+
+---
+
+# 4. 数据分析与绘图
+
+## 4.1 绘图代码生成
+
+```
+I have experimental data to plot.
+
+Data type: [XRD / IV曲线 / 应力-应变 / 频率响应 / 温度-电阻 / 荧光光谱 / ...]
+Format: [csv / txt / Excel]
+Sample (first 5-10 rows):
+[粘贴]
+
+Requirements:
+- Plot type: [折线/散点/柱状/热力图/多子图]
+- Axes: labels with units
+- Font: Arial, 9-10pt
+- Line width: 1.2pt
+- Figure size: [单栏 8.5cm / 双栏 17cm]
+- DPI: 300 (save) / 150 (display)
+- Export format: [PDF / SVG / PNG / TIFF]
+- Additional: [误差棒 / 拟合线 / 多组对比 / 图例 / 加粗最优值 / ...]
+
+Language: [Python matplotlib / MATLAB / Origin script]
+Give complete runnable code with comments.
+```
+
+## 4.2 曲线拟合
+
+```
+Fit this experimental data:
+
+Data (or description):
+[粘贴 x, y 数据]
+
+Suspected model:
+- [ ] Linear: y = ax + b
+- [ ] Polynomial: y = a₀ + a₁x + a₂x² + ...
+- [ ] Exponential: y = a·exp(bx) + c
+- [ ] Power law: y = a·x^b
+- [ ] Gaussian: y = a·exp(-(x-μ)²/(2σ²))
+- [ ] Custom: [写出公式]
+- [ ] Unsure — help me determine
+
+Give:
+1. Fitting code (Python scipy.optimize.curve_fit or MATLAB fit)
+2. Fitted parameters + uncertainties
+3. R² value or residual analysis
+4. Plot: original data + fitted curve
+5. If poor fit, suggest alternative models
+```
+
+## 4.3 多组数据对比图
+
+```
+I have multiple datasets to compare on one plot.
+
+Groups:
+- Group 1: [条件，如 "T = 25°C"]
+- Group 2: [条件，如 "T = 50°C"]
+- Group 3: [条件，如 "T = 75°C"]
+
+Requirements:
+1. All groups on same axes
+2. Different colors + line styles (colorblind-friendly, distinguishable in B&W print)
+3. Legend
+4. Error bars (if applicable)
+5. Figure width: [单栏 8.5cm / 双栏 17.5cm]
+6. Export as vector (PDF or SVG)
+
+Data format:
+[描述或粘贴]
+```
+
+## 4.4 统计分析
+
+```
+Experiment design:
+- Independent variable: [...]
+- Dependent variable: [...]
+- Repeats per group: n = [...]
+- Number of groups: [...]
+
+I need:
+1. Descriptive statistics (mean, SD, SE)
+2. Normality test (Shapiro-Wilk)
+3. Appropriate hypothesis test:
+   - [ ] t-test (2 groups)
+   - [ ] ANOVA (3+ groups)
+   - [ ] Non-parametric (if not normal)
+4. Post-hoc test (if ANOVA significant)
+5. Visualization: box plot or bar + error bars + significance markers (*, **, ***)
+6. How to report in paper (standard format, e.g., "t(18) = 2.45, p = 0.024")
+
+Data:
+[粘贴或描述]
+```
+
+## 4.5 期刊级 matplotlib 全局配置
+
+直接复制到代码开头，满足大多数期刊要求：
+
+```python
+import matplotlib.pyplot as plt
+
+plt.rcParams.update({
+    'font.family': 'Arial',
+    'font.size': 9,
+    'axes.labelsize': 10,
+    'axes.titlesize': 10,
+    'xtick.labelsize': 8,
+    'ytick.labelsize': 8,
+    'legend.fontsize': 8,
+    'lines.linewidth': 1.2,
+    'axes.linewidth': 0.8,
+    'xtick.major.width': 0.6,
+    'ytick.major.width': 0.6,
+    'legend.frameon': False,
+    'figure.dpi': 150,
+    'savefig.dpi': 300,
+    'savefig.bbox': 'tight',
+    'savefig.pad_inches': 0.02,
+    'axes.spines.top': False,
+    'axes.spines.right': False,
+})
+
+# 单栏图: figsize=(3.35, 2.5)  即 8.5cm 宽
+# 双栏图: figsize=(6.7, 4.0)   即 17cm 宽
+```
+
+
+---
+
+# 5. 概念理解与学习
+
+## 5.1 费曼式解释
+
+```
+Explain [概念名称] using the Feynman method:
+
+1. Core idea in ONE sentence (assume I'm a high schooler)
+2. Real-life analogy that captures the essence
+3. Formal technical definition
+4. How this concept is used in [你的方向，如：MEMS传感器 / 芯片验证 / 医学成像]
+5. Prerequisites: what do I need to know first?
+6. If there's math: explain each symbol's PHYSICAL meaning (not just "x is a variable")
+
+My background: [大四，学过信号与系统和数字电路，没学过通信原理]
+```
+
+## 5.2 公式推导解释
+
+```
+Explain this formula's derivation step by step:
+
+Formula:
+[粘贴公式，LaTeX 或文字描述]
+
+I need:
+1. What does this formula SAY? (physical/engineering meaning, not just math)
+2. Symbol table: each symbol = what (with units)
+3. Starting principle → each derivation step (DON'T skip steps, explain each transformation)
+4. Under what conditions does this formula hold? When does it break?
+5. One concrete numerical example to build intuition
+6. Common mistakes when applying this formula
+
+My math level: [学过线性代数和概率论，微积分还行，没学过泛函分析]
+```
+
+## 5.3 概念辨析（容易混淆的概念）
+
+```
+I confuse these concepts:
+- A: [名称]
+- B: [名称]
+- C: [名称]
+
+Compare in a table:
+| Concept | Definition (1 sentence) | Core Difference | When to Use | Why Confusing |
+
+Then:
+1. ONE concrete example where all three appear, showing how they differ
+2. Memory trick to quickly distinguish them
+3. Common mistakes students make
+
+My field: [你的方向]
+```
+
+## 5.4 知识点串联
+
+```
+I'm studying [课程/方向]. I've learned these topics but can't see how they connect:
+
+- [知识点1]
+- [知识点2]
+- [知识点3]
+- [知识点4]
+
+Help me:
+1. Draw the logical relationships (A is foundation for B, C applies A, etc.)
+2. Which are basic vs advanced concepts?
+3. Recommended learning order
+4. Am I missing intermediate knowledge? (learned A and C but skipped B?)
+5. ONE integrative scenario that uses ALL these concepts together
+```
+
+## 5.5 论文中的方法解释
+
+```
+I'm reading a paper that mentions [方法/技术名称] but assumes I already know it.
+
+Paper's description:
+[粘贴论文中关于这个方法的段落]
+
+I need:
+1. Basic principle from scratch (don't assume I know)
+2. Why the authors chose this method here (what advantage?)
+3. Input and output of this method
+4. Simpler alternatives (why didn't authors use them?)
+5. What to read to learn more (textbook chapter or classic paper)
+
+My background: [...]
+```
+
+## 5.6 学习路线规划
+
+```
+I want to learn [方向，如：深度学习 / 芯片验证 / 柔性传感器 / 材料信息学] in 4 weeks.
+
+My background:
+- Major: [大三/大四，专业]
+- Courses taken: [信号与系统、数字电路、C语言...]
+- Programming: [会Python基础，没用过深度学习框架]
+- Math: [线性代数和概率论学过但不熟]
+
+Goal:
+- [ ] Course learning (应对某门课)
+- [ ] Research entry (准备进实验室)
+- [ ] Project (大创/竞赛/毕设)
+- [ ] Internship prep (面试某类岗位)
+
+Time: ~[X] hours/week
+
+Design a 4-week plan. For each week:
+1. Specific learning goal (verifiable: "can do X by end of week")
+2. Resources (courses/books/tutorials, note if free/paid)
+3. Key concepts to master
+4. Practice exercise or mini-project
+5. Tools to install/configure
+6. Common pitfalls to avoid
+7. How to verify I've reached the goal
+```
+
+## 5.7 方向选择咨询
+
+```
+I'm interested in several directions but unsure which to choose:
+
+- Direction A: [名称]
+- Direction B: [名称]
+- Direction C: [名称]
+
+My situation:
+- Major: [...]
+- Strengths/likes: [喜欢动手实验 / 喜欢写代码 / 喜欢数学推导]
+- Weaknesses/dislikes: [不喜欢纯理论 / 不想做硬件]
+- Future plan: [读研 / 就业 / 还没想好]
+
+Analyze:
+1. What each direction actually does (plain language)
+2. Core skills needed for each
+3. Career/grad school prospects
+4. Which fits me best based on my situation
+5. Shared foundations I can build first if exploring multiple
+```
+
+
+---
+
+# 6. 科研规划与申请
+
+## 6.1 研究方案可行性评估
+
+```
+Evaluate feasibility of my research project. Be HONEST — don't avoid problems.
+
+- Topic: [课题名称]
+- Research question: [想解决什么]
+- Proposed method: [打算怎么做]
+- Timeline: [几个月]
+- Resources:
+  - Compute: [有/没有GPU，什么配置]
+  - Equipment: [有/没有，什么设备]
+  - Data: [公开数据集 / 需自己采集 / 实验室已有]
+  - Team: [一个人 / 几人]
+- My skills: [会什么 / 不会什么]
+
+Assess:
+1. Research value (novel? done before? meaningful?)
+2. Technical feasibility (can I do it with my skills/resources?)
+3. Time feasibility (realistic in given timeline?)
+4. Biggest risk point
+5. If too big → how to narrow scope
+6. If too small → how to expand
+7. Related papers to read
+```
+
+## 6.2 开题报告结构
+
+```
+Help me structure a [本科毕设 / 大创 / 硕士开题] report.
+
+Topic: [课题名称]
+Direction: [方向]
+Core work: [打算做什么]
+
+For each section, write 2-3 sentences explaining what to include:
+1. 研究背景与意义
+2. 国内外研究现状（文献综述）
+3. 研究内容与目标
+4. 研究方法与技术路线
+5. 预期成果
+6. 进度安排
+
+For each section also tell me:
+- What reviewers care about most
+- Common writing mistakes
+- What I should prepare
+```
+
+## 6.3 技术路线图设计
+
+```
+My research topic: [课题名称]
+Final goal: [最终要实现什么]
+
+Steps I've identified:
+1. [步骤1]
+2. [步骤2]
+3. ...
+
+Help me:
+1. Fill in missing steps
+2. Identify dependencies (which parallel, which sequential)
+3. Estimate time + key deliverable for each step
+4. Potential difficulties + backup plans for each
+5. Describe a technical roadmap structure (I'll draw it in draw.io)
+6. Suggest milestone checkpoints
+```
+
+## 6.4 大创/竞赛申报书优化
+
+```
+I'm writing a [大创/挑战杯/互联网+] proposal. Optimize this section:
+
+Project name: [...]
+Project type: [创新训练 / 创业训练]
+
+Current draft:
+[粘贴某个部分]
+
+Help me:
+1. Find unclear or illogical statements
+2. Make "innovation points" more prominent (reviewers care most about this)
+3. Remove empty phrases ("具有重要意义" = zero information)
+4. Suggest how to quantify expected outcomes (reviewers like specific metrics)
+5. Give revised version
+
+Do NOT fabricate technical details or exaggerate innovation.
+```
+
+## 6.5 模拟面试（保研/考研/博士申请）
+
+```
+Simulate a [保研/考研复试/博士申请] interview for [方向].
+
+My background:
+- Major: [...], GPA/rank: [...]
+- Research experience: [简述]
+- Publications/awards: [如有]
+- Target lab/professor: [如有]
+
+Ask me these types of questions:
+1. 3-5 core professional knowledge questions (my field's fundamentals)
+2. 2-3 deep questions about my research experience
+3. 1-2 research plan / future direction questions
+4. 1 open question (why this direction/lab)
+
+For each question provide:
+- What the interviewer expects to hear
+- Common weak answers (what NOT to say)
+- How to recover gracefully if I can't answer
+```
+
+## 6.6 联系导师邮件
+
+```
+Write an email expressing interest in joining a lab.
+
+Info:
+- Professor: [姓名+职称]
+- Their research: [方向]
+- Specific work I'm interested in: [某篇论文或项目]
+- My background: [专业/年级/相关经历]
+- Purpose: [读研 / 暑研 / 毕设]
+
+Requirements:
+- Formal but not overly humble
+- 200-300 words (中文) or 150-200 words (English)
+- Show I know their specific work (NOT a mass template)
+- Clear ask
+- List attachments I should prepare
+
+Language: [中文 / English]
+```
+
+## 6.7 个人陈述/研究计划审阅
+
+```
+Review my personal statement / research plan from an admissions committee perspective.
+
+Applying for: [方向]
+Target: [学校/项目]
+
+Evaluate:
+1. Logic flow: motivation → experience → ability → plan — coherent?
+2. Empty phrases? ("我对科研充满热情" = no information)
+3. Research description specific enough? (what, how, result?)
+4. Research plan feasible? (aware of current state of field?)
+5. Obvious red flags?
+6. Specific revision suggestions
+
+My text:
+[粘贴]
+```
+
+## 6.8 专业知识复习清单
+
+```
+I have a [方向] graduate interview coming up.
+
+Format: [口头问答 / 笔试 / 综合]
+Courses I've taken: [列出]
+
+Help me:
+1. List 15-20 most commonly tested knowledge points for this field
+2. For each: 2-3 sentence "interview-level" answer
+3. Mark which are "must-answer basics" vs "bonus advanced"
+4. For each: one likely follow-up question
+5. Suggest 3 topics I should prepare a 2-minute explanation for
+```
+
+
+---
+
+# 7. Linux与环境配置
+
+## 7.1 环境问题排查
+
+```
+I'm configuring a dev environment on Linux. Help me debug.
+
+Goal: [编译C++项目 / 安装Python包 / 配置CUDA / CMake构建 / SSH连接]
+
+System:
+- OS: [Ubuntu 22.04 / CentOS 7 / Arch]
+- Kernel: [uname -r output]
+- gcc: [gcc --version]
+- Python: [python3 --version]
+- CUDA: [nvcc --version, if applicable]
+- CMake: [cmake --version, if applicable]
+
+Commands I ran (in order):
+[列出]
+
+Error:
+[完整粘贴]
+
+Give:
+1. Error explanation (plain language)
+2. Diagnostic steps (what to check first)
+3. Fix commands (explain each one)
+4. Risks/caveats (needs sudo? affects other envs? irreversible?)
+```
+
+## 7.2 命令解释
+
+```
+Explain this Linux command:
+
+```bash
+[粘贴命令]
+```
+
+1. What does it do overall?
+2. Each flag/option meaning
+3. What effect after execution?
+4. Any risks? (deletes files? modifies system config?)
+5. Safer alternative if risky?
+```
+
+## 7.3 Shell 脚本编写
+
+```
+Write a shell script to:
+[描述任务，如：批量重命名 / 定时备份 / 自动配环境 / 批量提交slurm任务]
+
+Requirements:
+- OS: [Ubuntu 22.04]
+- Shell: [bash / zsh]
+- Error handling: [文件不存在 / 权限不足 / 磁盘满]
+- Logging: [是/否]
+
+Give:
+1. Complete script with comments
+2. Usage instructions (how to run, what permissions needed)
+3. How to test it safely before real use
+```
+
+## 7.4 SSH 与远程服务器
+
+```
+I need to configure SSH to a remote server. Having issues.
+
+Local: [Windows / macOS / Linux]
+Remote: [Ubuntu 22.04 / CentOS]
+Auth method: [password / key]
+Command tried: [ssh user@host ...]
+Error: [粘贴]
+
+Help me:
+1. Diagnose connection failure
+2. Step-by-step fix
+3. If key auth needed, complete setup steps
+4. Recommended ~/.ssh/config for this server
+5. How to set up port forwarding (for Jupyter / TensorBoard)
+```
+
+## 7.5 CUDA / GPU 环境配置
+
+```
+I need to set up CUDA for deep learning.
+
+Current state:
+- GPU: [nvidia-smi output: model + driver version]
+- Installed CUDA: [nvcc --version or ls /usr/local/cuda*]
+- PyTorch/TensorFlow version: [pip show torch]
+- Error (if any): [粘贴]
+
+Goal: [安装CUDA 12.x + PyTorch / 解决版本不兼容 / 多GPU配置]
+
+Give:
+1. Is current setup compatible?
+2. If not, recommended version combination
+3. Installation/fix steps
+4. Commands to verify success
+5. Common pitfalls for this GPU + CUDA combo
+```
+
+## 7.6 Docker 基础操作
+
+```
+I need to use Docker to [复现论文代码 / 部署服务 / 隔离环境].
+
+My situation:
+- OS: [...]
+- Docker installed: [是/否]
+- What I want to containerize: [描述]
+- GPU needed inside container: [是/否]
+
+Help me:
+1. If not installed, installation steps
+2. Dockerfile for my use case
+3. Build and run commands
+4. How to mount local files into container
+5. If GPU needed, nvidia-docker setup
+6. Common gotchas for beginners
+```
+
+## 7.7 服务器上跑长时间任务
+
+```
+I need to run a long training job on a remote server (SSH connection).
+
+Task: [python train.py, 预计跑 X 小时]
+Server: [有/没有 slurm 调度系统]
+
+Help me with:
+1. How to keep it running after SSH disconnects (tmux/screen/nohup)
+2. How to monitor progress remotely
+3. How to get notified when it finishes
+4. How to handle crashes and auto-restart
+5. Best practices for logging (stdout + file)
+
+Give complete commands, not just concepts.
+```
+
+---
+
+# 8. 写好 Prompt 的原则
+
+## 核心技巧速查
+
+| 技巧 | 做法 | 为什么有效 |
+| --- | --- | --- |
+| **角色设定** | "You are a senior researcher in X with 10+ years..." | 激活模型的专业知识分布 |
+| **结构化输出** | 用 ## 标题 + 编号列出期望格式 | 防止遗漏，输出可预测 |
+| **否定约束** | "Do NOT add info not in original" / "Do NOT simply summarize" | 防止过度发挥和幻觉 |
+| **标记规则** | "[NOT STATED]" / "[SPECULATION]" / "[LOGIC?]" | 区分事实和推测 |
+| **给背景** | "My background: 大四，学过..." | 回答匹配你的水平 |
+| **分步骤** | 复杂任务拆成多轮对话 | 每轮注意力集中，质量更高 |
+| **Few-shot** | 给一个期望输出的示例 | AI 模仿你的格式和深度 |
+| **元提示** | "What info should I provide to get the best result?" | 让 AI 帮你写 prompt |
+
+## 差 vs 好的对比
+
+```
+❌ "帮我总结这篇论文"
+✅ "Summarize using EXACTLY this structure: Problem (1 sentence), Method (2-3 sentences), Key Result (specific numbers), Limitation. If not mentioned, write 'Not stated'."
+
+❌ "帮我改一下这段话"
+✅ "Polish this academic English. Preserve meaning exactly. Flag unclear logic with [LOGIC?]. Output: revised text + change log with reasons."
+
+❌ "这个报错怎么解决"
+✅ "Environment: Python 3.11, torch 2.4, CUDA 12.4, Ubuntu 22.04. Error: [full traceback]. Code: [with context]. Already tried: [list]. Give: root cause + fix + why + prevention."
+```
+
+## 追问模式（第一轮回答后深入）
+
+```
+- "Expand on point #3. Give a concrete example."
+- "I'm not convinced by X. What evidence would be needed?"
+- "Compare this with [另一个方法]. Which is more practical for [我的场景]?"
+- "Simplify: if I only have 2 weeks, what's the minimum viable version?"
+- "What are you NOT sure about in your answer? Mark uncertainty."
+```
+
+## 元提示（不知道怎么问时）
+
+```
+"I want to use AI to help me [描述任务].
+What information should I provide to get the best result?
+Give me a ready-to-use prompt template."
+```
+
+---
+
+> 更多 Prompt 仓库、在线平台、学习资源 → [Prompt资源与进阶](./prompt-resources)

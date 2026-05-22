@@ -1,0 +1,13 @@
+{
+  "title": "文献检索与论文阅读",
+  "description": "找论文、读论文、管理文献",
+  "icon": "BookOpen",
+  "pages": [
+    "index",
+    "search-portals",
+    "keyword-search",
+    "paper-filter",
+    "reading-flow",
+    "zotero"
+  ]
+}

@@ -1,0 +1,287 @@
+---
+title: "Python 环境配置指南（2026 年 5 月更新）"
+description: "` 1. 下载 Anaconda（anaconda.com）或 Miniconda（docs.conda.io） 2. 运行安装程序 3. 建议勾选「Add to PATH」（方便在终端使用） 4. 安装完成后打开 Anaconda Pro"
+---
+
+> 本文档覆盖：Python 安装方式选择、虚拟环境管理、常用包安装、PyTorch 配置。
+> 最后更新：2026-05-20
+
+---
+
+## 一、选择安装方式
+
+| 场景 | 推荐方式 | 说明 |
+| --- | --- | --- |
+| 初学 / 课程使用 | Miniconda | 轻量，按需安装包，虚拟环境管理方便 |
+| 科学计算（想开箱即用） | Anaconda | 自带 numpy/pandas/matplotlib 等，体积大（~5GB） |
+| 项目开发 / 有经验 | **uv**（2026 推荐） | Rust 编写，比 pip 快 10-100 倍，替代 pip+venv+pyenv |
+| 深度学习 | Miniconda + PyTorch 官方命令 | 按 CUDA 版本选择安装命令 |
+| 只想快速跑别人的代码 | uv 或 conda | `uv run` 可以直接运行带依赖声明的脚本 |
+
+---
+
+## 二、Anaconda / Miniconda 安装
+
+### Windows
+
+```
+1. 下载 Anaconda（anaconda.com）或 Miniconda（docs.conda.io）
+2. 运行安装程序
+3. 建议勾选「Add to PATH」（方便在终端使用）
+4. 安装完成后打开 Anaconda Prompt 或 PowerShell
+5. 验证：conda --version
+```
+
+### Linux / macOS
+
+```bash
+# 下载 Miniconda（推荐）
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh
+
+# 按提示完成安装，重启终端
+conda --version
+```
+
+---
+
+## 三、虚拟环境管理
+
+### 为什么需要虚拟环境
+
+不同项目可能需要不同版本的包。虚拟环境让每个项目有独立的依赖，互不干扰。
+
+### conda 环境
+
+```bash
+# 创建环境
+conda create -n myproject python=3.11
+
+# 激活环境
+conda activate myproject
+
+# 安装包
+conda install numpy pandas matplotlib
+pip install some-package
+
+# 退出环境
+conda deactivate
+
+# 查看所有环境
+conda env list
+
+# 删除环境
+conda env remove -n myproject
+
+# 导出环境（分享给别人）
+conda env export > environment.yml
+
+# 从文件创建环境
+conda env create -f environment.yml
+```
+
+### venv（Python 自带）
+
+```bash
+# 创建环境
+python -m venv .venv
+
+# 激活环境
+# Linux/macOS:
+source .venv/bin/activate
+# Windows:
+.venv\Scripts\activate
+
+# 安装包
+pip install numpy pandas
+
+# 导出依赖
+pip freeze > requirements.txt
+
+# 从文件安装
+pip install -r requirements.txt
+```
+
+---
+
+## 四、Jupyter Notebook
+
+### 安装和启动
+
+```bash
+# 在 conda 环境中安装
+conda install jupyter
+
+# 或用 pip
+pip install jupyter
+
+# 启动
+jupyter notebook
+# 浏览器会自动打开
+```
+
+### JupyterLab（推荐，更现代的界面）
+
+```bash
+conda install jupyterlab
+jupyter lab
+```
+
+### VS Code 中使用 Jupyter
+
+1. 安装 VS Code 的 Python 和 Jupyter 扩展
+2. 新建 `.ipynb` 文件
+3. 选择 Python 解释器（右上角）
+4. 直接在 VS Code 中运行 Notebook
+
+---
+
+## 五、常用科学计算包
+
+| 包 | 用途 | 安装 |
+| --- | --- | --- |
+| numpy | 数组和矩阵运算 | conda install numpy |
+| pandas | 数据表处理 | conda install pandas |
+| matplotlib | 绘图 | conda install matplotlib |
+| scipy | 科学计算（优化、插值、信号处理） | conda install scipy |
+| scikit-learn | 机器学习 | conda install scikit-learn |
+| seaborn | 统计可视化 | conda install seaborn |
+| pytorch | 深度学习 | 见 pytorch.org 官网选择命令 |
+| opencv | 图像处理 | pip install opencv-python |
+| sympy | 符号计算 | conda install sympy |
+| tqdm | 进度条 | pip install tqdm |
+
+---
+
+## 六、PyTorch 安装
+
+PyTorch 安装需要根据你的系统和 GPU 选择正确的命令。
+
+```
+1. 打开 pytorch.org
+2. 选择：
+   - PyTorch 版本
+   - 操作系统
+   - 包管理器（conda / pip）
+   - CUDA 版本（有 GPU 选对应版本，没有选 CPU）
+3. 复制生成的安装命令
+4. 在虚拟环境中执行
+```
+
+### 验证安装
+
+```python
+import torch
+print(torch.__version__)
+print(torch.cuda.is_available())  # 有 GPU 应该返回 True
+```
+
+---
+
+## 七、常见问题
+
+| 问题 | 解决方法 |
+| --- | --- |
+| conda 命令找不到 | 重启终端，或检查是否加入 PATH |
+| pip install 报错 | 先升级 pip：`pip install --upgrade pip` |
+| 包版本冲突 | 创建新的虚拟环境，不要在 base 环境装太多包 |
+| import 报错 ModuleNotFoundError | 确认当前激活的环境是否安装了该包 |
+| Jupyter 找不到环境 | `conda install ipykernel` 然后 `python -m ipykernel install --user --name=myenv` |
+| 下载速度慢 | 配置国内镜像源（清华、中科大） |
+
+### 配置国内镜像源
+
+**conda（清华源）：**
+```bash
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
+conda config --set show_channel_urls yes
+```
+
+**pip（清华源）：**
+```bash
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
+---
+
+## 八、uv：2026 年新选择
+
+[uv](https://docs.astral.sh/uv/) 是 Astral（Ruff 团队）用 Rust 开发的 Python 包管理器，2024 年发布后迅速成为主流。它可以替代 pip、pip-tools、pipx、poetry、pyenv、virtualenv。
+
+### 安装
+
+```bash
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows (PowerShell)
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+### 核心用法
+
+```bash
+# 创建项目
+uv init my-project
+cd my-project
+
+# 添加依赖
+uv add numpy pandas matplotlib
+
+# 运行脚本
+uv run python main.py
+
+# 创建虚拟环境
+uv venv
+
+# 安装依赖（兼容 pip 语法）
+uv pip install torch torchvision
+
+# 锁定依赖（生成 uv.lock）
+uv lock
+
+# 从 requirements.txt 安装
+uv pip install -r requirements.txt
+```
+
+### 为什么推荐
+
+| 特性 | uv | pip + venv |
+| --- | --- | --- |
+| 安装速度 | 10-100x 更快 | 基准 |
+| 依赖解析 | 更准确，有 lockfile | 无 lockfile |
+| Python 版本管理 | 内置（替代 pyenv） | 需要额外工具 |
+| 虚拟环境 | 内置 | 需要 venv/virtualenv |
+| 兼容性 | 兼容 pip 命令 | — |
+
+### 什么时候用 uv vs conda
+
+```
+用 uv：纯 Python 项目、Web 开发、数据分析
+用 conda：需要非 Python 依赖（如 CUDA toolkit、MKL）、科学计算重度用户
+两者可以共存：conda 管理环境，uv 在环境内替代 pip
+```
+
+---
+
+## 九、项目结构建议
+
+```
+my_project/
+├── data/              ← 数据文件（加入 .gitignore）
+├── notebooks/         ← Jupyter Notebook
+├── src/               ← 源代码
+│   ├── __init__.py
+│   ├── data.py
+│   └── model.py
+├── tests/             ← 测试代码
+├── results/           ← 输出结果（加入 .gitignore）
+├── pyproject.toml     ← 项目配置和依赖声明（推荐）
+├── requirements.txt   ← 依赖列表（传统方式）
+├── README.md          ← 项目说明
+└── .gitignore         ← Git 忽略规则
+```
+
+---
+
+*信息来源：[uv 官方文档](https://docs.astral.sh/uv/)、[Python Dependency Management in 2026](https://cuttlesoft.com/blog/2026/01/27/python-dependency-management-in-2026/)、[PyTorch 安装指南](https://pytorch.org/get-started/locally/)*

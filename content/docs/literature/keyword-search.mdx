@@ -1,0 +1,369 @@
+---
+title: "各平台检索语法实操指南（2026 年 5 月更新）"
+description: "直接在 URL 中加参数比用界面更精确："
+---
+
+> 本文档的目的：同学打开后能直接照着在各平台进行有效检索。
+> 每个平台给出：检索入口、支持的操作符、字段代码、实际示例。
+> 最后更新：2026-05-20
+
+---
+
+## 一、Google Scholar
+
+**入口**：[scholar.google.com](https://scholar.google.com)
+
+### 支持的操作符
+
+| 操作符 | 语法 | 作用 | 示例 |
+| --- | --- | --- | --- |
+| 精确短语 | `"..."` | 精确匹配词组 | `"flexible pressure sensor"` |
+| 排除词 | `-` | 排除含某词的结果 | `flexible sensor -optical` |
+| 作者 | `author:` | 限定作者 | `author:zhang author:wang` |
+| 标题 | `intitle:` | 限定出现在标题中 | `intitle:CRISPR intitle:delivery` |
+| 来源 | `source:` | 限定期刊/会议名 | `source:"Nature Materials"` |
+| 站点 | `site:` | 限定网站域名 | `site:.edu "machine learning"` |
+| 年份范围 | `after:` / `before:` | 限定发表年份 | `after:2023 before:2026` |
+| OR | `OR` | 任一匹配 | `"deep learning" OR "neural network"` |
+
+### 高级搜索 URL 参数
+
+直接在 URL 中加参数比用界面更精确：
+
+```
+https://scholar.google.com/scholar?q="flexible+sensor"&as_ylo=2023&as_yhi=2026
+```
+
+| 参数 | 作用 |
+| --- | --- |
+| `q=` | 搜索词 |
+| `as_ylo=` | 起始年份 |
+| `as_yhi=` | 结束年份 |
+| `as_sauthors=` | 作者 |
+
+### 实战示例
+
+```
+# 找柔性传感器在健康监测方面的近3年论文
+"flexible sensor" "health monitoring" after:2023
+
+# 找某作者关于芯片验证的论文
+author:huang "chip verification" OR "UVM"
+
+# 找综述论文（标题含 review 或 survey）
+intitle:review "medical image segmentation" after:2022
+
+# 排除光学传感器，只看电学的
+"pressure sensor" -optical -fiber after:2024
+```
+
+### 技巧
+
+- **最多用 2 个操作符**：过多操作符反而降低召回率
+- **先宽后窄**：先不加限制搜一次看结果量，再逐步加条件
+- **利用 "Cited by"**：找到一篇核心论文后，点 "Cited by" 看谁引用了它
+- **设置 Alerts**：搜索后点右上角 "Create alert"，有新论文时邮件通知
+
+---
+
+## 二、Web of Science (WoS)
+
+**入口**：[webofscience.com](https://www.webofscience.com)（需校园网或 VPN）
+
+### 字段代码（Advanced Search 中使用）
+
+| 代码 | 含义 | 检索范围 |
+| --- | --- | --- |
+| `TS=` | Topic（主题） | 标题 + 摘要 + 作者关键词 + Keywords Plus |
+| `TI=` | Title（标题） | 仅标题 |
+| `AU=` | Author（作者） | 作者姓名 |
+| `SO=` | Source（来源） | 期刊/会议名称 |
+| `OG=` | Organization-Enhanced | 机构名（标准化） |
+| `DO=` | DOI | 数字对象标识符 |
+| `PY=` | Publication Year | 发表年份 |
+| `LA=` | Language | 语言 |
+
+### 布尔操作符
+
+| 操作符 | 作用 | 优先级（从高到低） |
+| --- | --- | --- |
+| `NEAR/n` | 两词间距不超过 n 个词 | 1（最高） |
+| `SAME` | 两词出现在同一句中 | 2 |
+| `NOT` | 排除 | 3 |
+| `AND` | 同时包含 | 4 |
+| `OR` | 任一包含 | 5（最低） |
+
+### 通配符
+
+| 符号 | 作用 | 示例 |
+| --- | --- | --- |
+| `*` | 0 到多个字符 | `nano*` → nanotube, nanoparticle, nanomaterial... |
+| `?` | 恰好 1 个字符 | `wom?n` → woman, women |
+| `$` | 0 或 1 个字符 | `colo$r` → color, colour |
+
+### 实战示例
+
+```
+# 搜索柔性传感器主题的论文
+TS=("flexible sensor" OR "wearable sensor") AND TS=("health monitoring")
+
+# 限定作者和年份
+AU=(Zhang L*) AND TS=("deep learning") AND PY=(2023-2026)
+
+# 限定期刊
+SO=("Advanced Materials" OR "Nature Materials") AND TS=(nanomaterial*)
+
+# 限定机构
+OG=(Tsinghua University) AND TS=("chip design")
+
+# 用 NEAR 找紧密相关的概念
+TS=("machine learning" NEAR/3 "materials discovery")
+```
+
+### 技巧
+
+- **用 TS= 而不是 TI=** 做初步检索（覆盖面更广）
+- **用 Refine Results** 侧边栏按学科、年份、文献类型筛选
+- **Citation Report** 功能可以看某组论文的引用趋势
+- **Create Alert** 保存检索式，有新论文时通知
+
+---
+
+## 三、IEEE Xplore
+
+**入口**：[ieeexplore.ieee.org](https://ieeexplore.ieee.org)（需校园网或 VPN）
+
+### Command Search 语法
+
+IEEE Xplore 的 Command Search 使用 `"Field Name":value` 格式。
+
+### 常用字段
+
+| 字段 | 语法 | 示例 |
+| --- | --- | --- |
+| 全部元数据 | `"All Metadata":` | `"All Metadata":RISC-V` |
+| 文档标题 | `"Document Title":` | `"Document Title":verification` |
+| 作者 | `"Authors":` | `"Authors":J. Smith` |
+| 摘要 | `"Abstract":` | `"Abstract":UVM` |
+| 作者关键词 | `"Author Keywords":` | `"Author Keywords":FPGA` |
+| 期刊/会议名 | `"Publication Title":` | `"Publication Title":"DAC"` |
+| 作者单位 | `"Author Affiliations":` | `"Author Affiliations":MIT` |
+| DOI | `"DOI":` | `"DOI":10.1109/TCAD.2024.xxx` |
+| ORCID | `"Author ORCID":` | `"Author ORCID":0000-0001-xxxx` |
+
+### 操作符
+
+| 操作符 | 作用 | 注意 |
+| --- | --- | --- |
+| `AND` | 同时包含 | 多词默认就是 AND |
+| `OR` | 任一包含 | |
+| `NOT` | 排除 | |
+| `NEAR` | 邻近（无序） | 不能和通配符一起用 |
+| `ONEAR` | 邻近（有序） | 不能和通配符一起用 |
+| `*` | 通配符 | `electro*` → electron, electronics... |
+| `?` | 单字符通配 | |
+| `"..."` | 精确短语 | `"machine learning"` |
+
+### 实战示例
+
+```
+# 搜索芯片验证相关论文
+"All Metadata":("chip verification" OR "design verification") AND "All Metadata":UVM
+
+# 搜索特定会议的论文
+"Publication Title":"Design Automation Conference" AND "Document Title":timing
+
+# 搜索某作者在某领域的工作
+"Authors":Zhang AND "Author Keywords":("neural network" OR "deep learning")
+
+# 用通配符扩展
+"All Metadata":nano* AND "All Metadata":sensor AND "All Metadata":flex*
+```
+
+### 技巧
+
+- **自动词干化**：搜 `run` 会自动匹配 running、runs（用引号 `"run"` 禁用）
+- **英美拼写自动匹配**：localization 和 localisation 都会被检索到
+- **Advanced Search 界面**不要在 OR 条件外加括号（IEEE 的 UI 限制）
+- **Command Search** 更灵活，入口在搜索页面左上角
+
+---
+
+## 四、CNKI（中国知网）
+
+**入口**：[cnki.net](https://www.cnki.net)（需校园网或 VPN）
+
+### 检索字段
+
+| 字段 | 说明 | 检索范围 |
+| --- | --- | --- |
+| 主题 | 最常用 | 标题 + 关键词 + 摘要 |
+| 篇名 | 仅标题 | 文章标题 |
+| 关键词 | 作者标注的关键词 | 关键词字段 |
+| 摘要 | 摘要全文 | 摘要 |
+| 作者 | 作者姓名 | |
+| 第一作者 | 仅第一作者 | |
+| 单位 | 作者单位 | |
+| 基金 | 基金项目名称 | |
+| 来源 | 期刊名称 | |
+
+### 操作符
+
+| 操作符 | 语法 | 作用 |
+| --- | --- | --- |
+| 并且 | 条件间选「并且」 | 同时满足 |
+| 或者 | 条件间选「或者」 | 满足任一 |
+| 不包含 | 条件间选「不包含」 | 排除 |
+| 精确 | 勾选「精确」 | 精确匹配，不做同义词扩展 |
+| 模糊 | 默认 | 自动扩展同义词 |
+
+### 实战示例
+
+```
+# 高级检索界面操作：
+第一行：主题 = 柔性传感器  [并且]
+第二行：主题 = 健康监测
+时间范围：2023-2026
+来源类别：勾选 SCI / EI / 核心期刊
+
+# 找某方向的综述
+篇名 = 综述 [并且] 主题 = 芯片验证
+
+# 找某作者的论文
+作者 = 张三 [并且] 单位 = 清华大学
+
+# 找某基金资助的论文
+基金 = 国家自然科学基金 [并且] 主题 = 深度学习
+```
+
+### 技巧
+
+- **用「主题」而非「篇名」**做初步检索（覆盖面更广）
+- **勾选「精确」**可以避免不相关的同义词扩展
+- **排序方式**：默认按相关度，可切换为「被引」「下载」「发表时间」
+- **分组浏览**：结果页左侧可按学科、期刊、年份、基金等分组筛选
+- **导出**：选中论文后可导出为 EndNote、NoteExpress、BibTeX 格式
+
+---
+
+## 五、Scopus
+
+**入口**：[scopus.com](https://www.scopus.com)（需校园网或 VPN）
+
+### 字段代码
+
+| 代码 | 含义 | 示例 |
+| --- | --- | --- |
+| `TITLE-ABS-KEY()` | 标题+摘要+关键词 | `TITLE-ABS-KEY("deep learning")` |
+| `TITLE()` | 仅标题 | `TITLE(review)` |
+| `AUTH()` | 作者 | `AUTH(zhang)` |
+| `SRCTITLE()` | 期刊名 | `SRCTITLE("Nature")` |
+| `AFFIL()` | 机构 | `AFFIL(tsinghua)` |
+| `PUBYEAR` | 年份 | `PUBYEAR > 2022` |
+| `DOCTYPE()` | 文献类型 | `DOCTYPE(re)` → review |
+
+### 实战示例
+
+```
+TITLE-ABS-KEY("flexible sensor" AND "health monitoring") AND PUBYEAR > 2022
+
+AUTH(zhang) AND AFFIL(tsinghua) AND TITLE-ABS-KEY("chip design")
+
+TITLE(review) AND TITLE-ABS-KEY("medical image segmentation") AND PUBYEAR > 2023
+```
+
+---
+
+## 六、arXiv
+
+**入口**：[arxiv.org](https://arxiv.org)
+
+### 搜索语法
+
+arXiv 使用简单的字段前缀：
+
+| 前缀 | 含义 | 示例 |
+| --- | --- | --- |
+| `ti:` | 标题 | `ti:"attention mechanism"` |
+| `au:` | 作者 | `au:vaswani` |
+| `abs:` | 摘要 | `abs:"graph neural network"` |
+| `cat:` | 分类 | `cat:cs.CV`（计算机视觉） |
+| `all:` | 全部字段 | `all:"transformer"` |
+
+### 常用分类代码
+
+| 代码 | 方向 |
+| --- | --- |
+| `cs.AI` | 人工智能 |
+| `cs.CV` | 计算机视觉 |
+| `cs.CL` | 计算语言学/NLP |
+| `cs.LG` | 机器学习 |
+| `cs.AR` | 计算机体系结构 |
+| `eess.SP` | 信号处理 |
+| `cond-mat.mtrl-sci` | 材料科学 |
+| `physics.ins-det` | 仪器与探测器 |
+
+### 实战示例
+
+```
+# 搜索 NLP 方向关于大语言模型的论文
+ti:"large language model" AND cat:cs.CL
+
+# 搜索某作者的最新预印本
+au:hinton AND cat:cs.LG
+
+# 搜索材料信息学
+abs:"materials informatics" AND cat:cond-mat.mtrl-sci
+```
+
+### 技巧
+
+- arXiv 是**预印本**，未经同行评审，结论需谨慎对待
+- 用 [arxiv-sanity-lite](https://arxiv-sanity-lite.com) 或 [Papers with Code](https://paperswithcode.com) 辅助筛选
+- 关注 Daily 邮件列表追踪最新论文
+
+---
+
+## 七、跨平台检索策略
+
+### 推荐工作流
+
+```
+第 1 步：Google Scholar 广泛搜索
+  → 了解大致有多少文献、哪些是高引论文
+  → 找到 1-2 篇核心论文和综述
+
+第 2 步：从核心论文扩展
+  → Connected Papers 生成关系图谱
+  → Google Scholar "Cited by" 追踪后续研究
+  → 看核心论文的参考文献列表
+
+第 3 步：专业数据库精确检索
+  → IEEE Xplore（电子/计算机/通信）
+  → Web of Science（跨学科高质量文献）
+  → PubMed（生物医学）
+  → CNKI（中文文献）
+
+第 4 步：追踪最新进展
+  → arXiv（AI/物理/数学预印本）
+  → Google Scholar Alerts
+  → ResearchRabbit 持续推送
+```
+
+### 关键词构造清单
+
+每次检索前，准备以下关键词：
+
+```
+□ 核心概念的英文表达
+□ 同义词 / 近义词
+□ 上位概念（更宽泛的类别）
+□ 下位概念（更具体的子类）
+□ 方法名称
+□ 应用场景
+□ 常见缩写
+```
+
+---
+
+*信息来源：[IEEE Xplore Help](https://ieeexplore.ieee.org/Xplorehelp/searching-ieee-xplore/command-search)、[Web of Science Advanced Search (Tufts)](https://researchguides.library.tufts.edu/c.php?g=249270&p=1660077)、[Google Scholar Features](https://lifetips.alibaba.com/tech-efficiency/google-scholar-search-features-every-student-should-know)、[Radboud IEEE Guide](https://libguides.ru.nl/IEEEXploreEN/searching)*

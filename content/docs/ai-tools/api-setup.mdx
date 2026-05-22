@@ -1,0 +1,252 @@
+---
+title: "API 使用与安全"
+description: "班级使用班主任重点计划经费，通过 API 中转平台为试点同学提供 AI 模型访问。"
+---
+
+> 面向班级 AI API 试点参与同学：中转平台选择、Key 配置方法、安全规范、额度管理。
+> 最后更新：2026-05-21
+
+---
+
+## 一、班级 API 试点方案
+
+班级使用班主任重点计划经费，通过 API 中转平台为试点同学提供 AI 模型访问。
+
+| 项目 | 说明 |
+| --- | --- |
+| 参与方式 | 报名制，根据学习/科研需求分配 |
+| 令牌类型 | 每人独立 API Key，不共享 |
+| 额度 | 每人设置固定月度额度（具体金额待确认） |
+| 可用模型 | 通过中转平台访问 Claude / GPT / DeepSeek / Gemini 等 |
+| 用途限制 | 仅限学习、科研、课程项目、编程调试 |
+| 禁止用途 | 商业用途、转借他人、违规内容生成 |
+
+---
+
+## 二、API 中转平台选型（2026 年 4 月横评数据）
+
+班级场景需要：国内直连、支持多模型、有额度管理功能。
+
+### 推荐方案
+
+| 平台 | 定位 | 模型数 | 国内直连 | 额度管理 | 适合班级的原因 |
+| --- | --- | ---: | --- | --- | --- |
+| **七牛云 AI** | 国内直连 SaaS，双协议 | 130+ | ✅ | ✅ 按量计费 | 支持 Claude + GPT 国内直连，新用户送 300 万 token |
+| **SiliconFlow 硅基流动** | 国内开源模型低价平台 | 50+ | ✅ | ✅ | 部分模型永久免费，DeepSeek/Qwen 极低价 |
+| **OpenRouter** | 全球最大模型聚合 | 400+ | ❌ 需翻墙 | ✅ | 模型最全，但需要海外网络 |
+| **new-api (自部署)** | 开源中转+计费系统 | 自配 | 取决于部署 | ✅ 内置计费 | 可自建，按人分配额度，MIT 开源 |
+
+### 班级推荐
+
+```
+方案 A（最简单）：七牛云 AI
+  - 注册后获得 API Key 和 Base URL
+  - 国内直连，支持 Claude Opus/Sonnet + GPT-5.4 + DeepSeek
+  - 充值后按量扣费，可设置预算上限
+  - Base URL: https://api.qnaigc.com/v1
+
+方案 B（最省钱）：SiliconFlow
+  - DeepSeek V4 Flash 极低价（$0.14/M 输入）
+  - 部分模型免费
+  - 适合日常大量使用
+  - Base URL: https://api.siliconflow.cn/v1
+
+方案 C（自建管理）：new-api 自部署
+  - Docker 一键部署，内置用户管理和计费
+  - 可以给每个同学分配独立 token 和额度
+  - 需要有同学负责运维
+```
+
+---
+
+## 三、API Key 配置方法
+
+### 通用配置信息
+
+拿到 Key 后，你需要三个信息：
+
+```
+Base URL:  中转平台提供的地址（如 https://api.qnaigc.com/v1）
+API Key:   分配给你的密钥（如 sk-xxxxxxxxxxxxxxxx）
+Model:     要使用的模型名称（如 claude-sonnet-4-6、deepseek-chat）
+```
+
+### 在各工具中配置
+
+#### Cherry Studio
+
+```
+设置 → 模型服务 → 添加服务
+  服务名称：班级API
+  API 地址：https://api.qnaigc.com/v1
+  API Key：你的 Key
+  → 点击「获取模型列表」自动加载可用模型
+```
+
+#### Cursor
+
+```
+Settings → Models → 滚动到底部 OpenAI API Key
+  API Key：你的 Key
+  Override OpenAI Base URL：https://api.qnaigc.com/v1
+  → 在模型列表中选择需要的模型
+```
+
+#### Claude Code（终端）
+
+```bash
+# Linux / macOS
+export ANTHROPIC_BASE_URL="https://api.qnaigc.com"
+export ANTHROPIC_API_KEY="sk-xxxxxxxx"
+
+# 写入 ~/.bashrc 或 ~/.zshrc 永久生效
+echo 'export ANTHROPIC_BASE_URL="https://api.qnaigc.com"' >> ~/.bashrc
+echo 'export ANTHROPIC_API_KEY="sk-xxxxxxxx"' >> ~/.bashrc
+source ~/.bashrc
+
+# 启动
+claude
+```
+
+```powershell
+# Windows PowerShell
+$env:ANTHROPIC_BASE_URL = "https://api.qnaigc.com"
+$env:ANTHROPIC_API_KEY = "sk-xxxxxxxx"
+
+# 永久设置
+[System.Environment]::SetEnvironmentVariable("ANTHROPIC_BASE_URL", "https://api.qnaigc.com", "User")
+[System.Environment]::SetEnvironmentVariable("ANTHROPIC_API_KEY", "sk-xxxxxxxx", "User")
+```
+
+#### Python 代码
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="sk-xxxxxxxx",
+    base_url="https://api.qnaigc.com/v1"
+)
+
+response = client.chat.completions.create(
+    model="claude-sonnet-4-6",  # 或 deepseek-chat, gpt-5.4 等
+    messages=[{"role": "user", "content": "你好"}]
+)
+print(response.choices[0].message.content)
+```
+
+#### Continue (VS Code 插件)
+
+编辑 `~/.continue/config.json`：
+
+```json
+{
+  "models": [
+    {
+      "title": "Claude Sonnet 4.6",
+      "provider": "openai",
+      "model": "claude-sonnet-4-6",
+      "apiKey": "sk-xxxxxxxx",
+      "apiBase": "https://api.qnaigc.com/v1"
+    }
+  ]
+}
+```
+
+---
+
+## 四、API Key 安全规范
+
+### 绝对不能做的事
+
+| 行为 | 后果 |
+| --- | --- |
+| 把 Key 发到微信群/QQ群 | 任何人都能用你的额度，且无法追回 |
+| 把 Key 提交到 GitHub 公开仓库 | 爬虫会在几分钟内发现并盗用 |
+| 把 Key 写在共享文档/飞书/Notion 中 | 多人可见 = 泄露 |
+| 截图展示完整 Key | 图片中的文字可以被 OCR 识别 |
+| 把 Key 硬编码在代码文件中 | 代码一旦分享或上传就泄露 |
+
+### 正确做法
+
+```
+1. 使用环境变量存储 Key（见上方配置方法）
+2. 如果项目中需要 Key，使用 .env 文件 + .gitignore 排除
+3. 客户端工具（Cherry Studio / Cursor）有专门的配置界面，直接填入
+4. 如果怀疑泄露，立即联系负责人停用并重新分配
+```
+
+### .env + .gitignore 示例
+
+```bash
+# 项目根目录创建 .env 文件
+echo 'API_KEY=sk-xxxxxxxx' > .env
+echo 'BASE_URL=https://api.qnaigc.com/v1' >> .env
+
+# 确保 .gitignore 包含 .env
+echo '.env' >> .gitignore
+```
+
+Python 中读取：
+
+```python
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+api_key = os.getenv("API_KEY")
+```
+
+---
+
+## 五、额度管理
+
+### 成本感知
+
+以 Claude Sonnet 4.6 为例（$3 输入 / $15 输出，每百万 token）：
+
+| 操作 | 大约消耗 token | 大约成本 |
+| --- | ---: | --- |
+| 一次普通对话（500 字问 + 1000 字答） | ~2K token | &lt; ¥0.01 |
+| 读一篇 10 页论文并总结 | ~15K token | ~¥0.15 |
+| 一次代码调试（含上下文） | ~5K token | ~¥0.05 |
+| 把整本书喂进去 | ~200K token | ~¥2.00 |
+
+**结论：正常学习使用，每月 ¥20-50 额度绑绑有余。**
+
+### 省钱技巧
+
+```
+1. 不要每次都把整个文件/整篇论文塞进去 → 只发相关片段
+2. 简单问题用便宜模型（DeepSeek V4 Flash 只要 $0.14/M）
+3. 复杂任务再用贵模型（Claude Sonnet/Opus）
+4. 利用缓存：同一个 system prompt 重复使用时，缓存命中价格降 10 倍
+5. 避免无意义循环：不要让 AI 反复生成同一内容
+6. 关注中转平台的用量面板，定期检查消耗
+```
+
+### 模型选择策略
+
+| 任务类型 | 推荐模型 | 原因 |
+| --- | --- | --- |
+| 日常问答、简单翻译 | DeepSeek V4 Flash | 最便宜，能力够用 |
+| 代码调试、项目开发 | Claude Sonnet 4.6 | 代码能力强，1M 上下文 |
+| 复杂推理、长文档分析 | Claude Opus 4.7 | 最强推理，但最贵 |
+| 快速分类、格式转换 | GPT-5.4 mini | 便宜且快 |
+
+---
+
+## 六、常见问题排查
+
+| 报错 | 原因 | 解决 |
+| --- | --- | --- |
+| `401 Unauthorized` | Key 错误或已失效 | 检查 Key 是否完整复制，联系负责人确认 |
+| `429 Rate Limit` | 请求太频繁 | 等几秒再试，或降低并发 |
+| `insufficient_quota` | 额度用完 | 联系负责人充值或等下月重置 |
+| `model_not_found` | 模型名称写错 | 检查中转平台支持的模型列表 |
+| `timeout` | 网络问题或模型响应慢 | 检查网络，或换个模型试试 |
+| 返回乱码 | 编码问题 | 确认请求头 `Content-Type: application/json; charset=utf-8` |
+
+---
+
+*信息来源：[OpenRouter 文档](https://openrouter.ai/docs)、[Anthropic 定价](https://www.anthropic.com/pricing)、[DeepSeek 定价](https://api-docs.deepseek.com/quick_start/pricing)、[SiliconFlow 官网](https://siliconflow.cn)*

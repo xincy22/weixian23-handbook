@@ -1,0 +1,13 @@
+{
+  "title": "编程与数据分析工具",
+  "description": "Python、MATLAB、Git、Linux",
+  "icon": "Code2",
+  "pages": [
+    "index",
+    "tools-matrix",
+    "python",
+    "matlab",
+    "git",
+    "linux"
+  ]
+}
