@@ -191,5 +191,5 @@ weixian23-handbook/
 ## 维护
 
 - 主仓库：[github.com/xincy22/weixian23-handbook](https://github.com/xincy22/weixian23-handbook)
-- 维护者：班主任 + 班级 maintainer 团队
+- 维护者：为先 23 同学
 - 同学贡献：开 Issue 或提 PR，详见 [CONTRIBUTING.md](./CONTRIBUTING.md)
