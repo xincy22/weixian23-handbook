@@ -183,8 +183,20 @@ weixian23-handbook/
 
 ## 协议
 
-文档内容采用 [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)。
-代码采用 MIT。
+本仓库采用**双协议**：
+
+| 内容 | 协议 |
+|---|---|
+| 代码（`src/`、配置文件等） | [MIT](./LICENSE) |
+| 文档内容（`content/docs/**`） | [CC BY-SA 4.0](./content/docs/LICENSE) |
+
+**使用本站内容时请保留署名**：
+
+> "为先 23 共享资源站" by 为先 23 同学
+> 原文：https://github.com/xincy22/weixian23-handbook
+> 协议：CC BY-SA 4.0
+
+向本站提交贡献即视为同意以上述协议发布。
 
 ---
 

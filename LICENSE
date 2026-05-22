@@ -1,0 +1,35 @@
+MIT License
+
+Copyright (c) 2026 为先 23 班
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+# 关于本仓库的协议适用范围
+
+本 LICENSE（MIT）仅适用于**代码部分**：
+
+- `src/` 目录下的所有源代码
+- `source.config.ts`、`next.config.mjs`、`tsconfig.json` 等配置文件
+- `package.json`、构建脚本
+
+文档内容部分（`content/docs/**` 下的所有 Markdown / MDX 文件、图片、文字内容）
+采用 **Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)**
+协议，详见 [content/docs/LICENSE](./content/docs/LICENSE)。
