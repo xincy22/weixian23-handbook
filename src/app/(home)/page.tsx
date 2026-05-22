@@ -6,7 +6,6 @@ import {
   Briefcase,
   Code2,
   Compass,
-  GitBranch,
   Inbox,
   PenLine,
   Sparkles,
@@ -14,6 +13,7 @@ import {
 import { ParticleBackground } from '@/components/home/particles';
 import { Snowflakes } from '@/components/home/snowflakes';
 import { StatCounter } from '@/components/home/stat-counter';
+import { GitHubIcon } from '@/components/github-icon';
 import {
   appDescription,
   appName,
@@ -133,7 +133,7 @@ export default function HomePage() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full border border-fd-border bg-fd-card/60 px-7 py-3 font-medium backdrop-blur transition hover:border-fd-primary/50 hover:bg-fd-card"
             >
-              <GitBranch className="size-4" />
+              <GitHubIcon className="size-4" />
               GitHub
             </Link>
           </div>
