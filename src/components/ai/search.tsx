@@ -42,6 +42,8 @@ interface UIMessage {
   searchMeta?: {
     query: string;
     count: number;
+    /** 是否成功读取了当前页全文 */
+    hasCurrentPage: boolean;
   };
 }
 
@@ -80,17 +82,23 @@ const SYSTEM_PROMPT = `你是「${appName}」（${appUrl}）的 AI 助手，帮�
 
 ## 工作方式
 
-1. 用户提问后，会自动在站内检索相关文档，把命中的内容连同问题一起交给你
-2. 基于检索到的站内文档回答，回答中用 markdown 链接引用相关页面（如 \`[文档标题](url)\`）
-3. 如果检索结果与问题无关或为空，先告诉用户"我没有在站点中找到相关内容"，再根据上面的"站点结构"建议他去哪个模块翻翻
+每次用户提问时，会自动给你以下上下文：
+1. **当前页面 URL** —— 用户正在看哪个文档
+2. **当前页面的完整 Markdown 全文**（截至 8000 字符）—— 这是最重要的信息，回答时优先基于它
+3. **站内全站检索结果**（基于用户问题搜的）—— 用于跨文档或当前页找不到答案的问题
+
+回答原则：
+1. 用户问"这页讲了什么/这段什么意思/总结一下"等指代当前页的问题 → 直接基于当前页全文回答
+2. 用户问跨文档或站内其他主题 → 用检索结果，并在回答中用 markdown 链接引用相关页面（如 \`[文档标题](url)\`）
+3. 如果当前页全文和检索结果都不够回答 → 诚实说"我没有在站内找到相关内容"，并根据"站点结构"建议用户去哪个模块翻翻
 4. 使用简体中文回答；技术术语保留英文原文（Git、Linux、API 这种）
 
 ## 约束
 
-- 优先基于检索到的站内文档回答，不要编造站内不存在的内容；引用必须给出真实存在的链接
+- 优先基于已注入的"当前页全文"和"检索结果"回答，不要编造站内不存在的内容
+- 引用 URL 用相对路径（如 \`/docs/coding/git\`），不要拼绝对域名
 - 与本站主题无关的问题（闲聊、生活、八卦等）礼貌拒绝，并提示本站的覆盖范围
 - 编程、AI、科研学习这些大方向的通用问题可以回答，但要顺带推荐站内相关页面
-- 引用 URL 用相对路径（如 \`/docs/coding/git\`），不要拼绝对域名
 - 答案简明扼要，不啰嗦，不复述原文段落，能给链接就给链接`;
 
 /** 客户端中文 Orama 实例工厂（必须和服务端构建索引时的 tokenizer 一致） */
@@ -144,6 +152,43 @@ async function searchDocs(query: string): Promise<
   return Array.from(byUrl.values()).slice(0, 8);
 }
 
+/**
+ * 把当前页 URL 转成对应的 markdown 内容直链。
+ * 例如 /docs/writing/word-unicodemath -> /llms.mdx/docs/writing/word-unicodemath/content.md
+ * 非 /docs/* 路径返回 null（首页等没有 markdown 文件）。
+ */
+function pageMarkdownUrl(url: string): string | null {
+  const u = (() => {
+    try {
+      return new URL(url);
+    } catch {
+      return null;
+    }
+  })();
+  if (!u) return null;
+  const pathname = u.pathname.replace(/\/$/, '');
+  if (!pathname.startsWith('/docs')) return null;
+  return `/llms.mdx${pathname || '/docs'}/content.md`;
+}
+
+/** 拉取当前页 markdown 全文（带超时和大小上限） */
+async function fetchCurrentPage(
+  pageUrl: string,
+  signal: AbortSignal,
+): Promise<string | null> {
+  const mdUrl = pageMarkdownUrl(pageUrl);
+  if (!mdUrl) return null;
+  try {
+    const res = await fetch(mdUrl, { signal });
+    if (!res.ok) return null;
+    const text = await res.text();
+    // 安全上限，防止把长文档全塞进去爆 token
+    return text.slice(0, 8000);
+  } catch {
+    return null;
+  }
+}
+
 function makeId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
@@ -177,15 +222,19 @@ function useChat(): ChatState {
       const ctrl = new AbortController();
       abortRef.current = ctrl;
 
-      // 1. 站内检索
+      // 1. 并发拉「当前页全文」+「站内全站检索」
       setStatus('searching');
-      let docs: Awaited<ReturnType<typeof searchDocs>> = [];
-      try {
-        docs = await searchDocs(userText);
-      } catch (e) {
-        // 检索失败也继续走（让 AI 兜底回答），但记一下
-        console.warn('docs search failed', e);
-      }
+      const [currentPage, docs] = await Promise.all([
+        fetchCurrentPage(location, ctrl.signal),
+        (async () => {
+          try {
+            return await searchDocs(userText);
+          } catch (e) {
+            console.warn('docs search failed', e);
+            return [] as Awaited<ReturnType<typeof searchDocs>>;
+          }
+        })(),
+      ]);
 
       // 在 assistant 占位消息里附上检索元信息，UI 会显示
       const assistantId = makeId();
@@ -193,11 +242,16 @@ function useChat(): ChatState {
         id: assistantId,
         role: 'assistant',
         content: '',
-        searchMeta: { query: userText, count: docs.length },
+        searchMeta: {
+          query: userText,
+          count: docs.length,
+          hasCurrentPage: currentPage !== null,
+        },
       };
       setMessages((prev) => [...prev, placeholder]);
 
-      // 2. 组装 system + 检索上下文 + 历史
+      // 2. 组装 system + 当前页 + 检索结果 + 历史
+      // 当前页和检索结果都给到 AI；当前页放在前面，因为大多数问题与当前页强相关
       const docsContext = docs
         .map(
           (d, i) =>
@@ -205,12 +259,21 @@ function useChat(): ChatState {
         )
         .join('\n\n');
 
+      const contextParts: string[] = [`当前页面 URL：${location}`];
+      if (currentPage) {
+        contextParts.push(
+          `\n以下是当前页面的完整 Markdown 内容（截至 8000 字符）：\n\n${currentPage}`,
+        );
+      } else {
+        contextParts.push('\n（当前不在某个文档页，或无法读取页面内容。）');
+      }
+      contextParts.push(
+        `\n以下是站内全站检索结果（基于用户问题"${userText}"，可能用于跨文档问题）：\n\n${docsContext || '（无相关结果）'}`,
+      );
+
       const messagesForAI: ChatMessage[] = [
         { role: 'system', content: SYSTEM_PROMPT },
-        {
-          role: 'system',
-          content: `当前页面：${location}\n\n以下是站内检索结果（基于用户问题"${userText}"）：\n\n${docsContext || '（无相关结果）'}`,
-        },
+        { role: 'system', content: contextParts.join('\n') },
         ...history.map<ChatMessage>((m) => ({ role: m.role, content: m.content })),
         { role: 'user', content: userText },
       ];
@@ -550,7 +613,10 @@ function Message({ message, ...props }: { message: UIMessage } & ComponentProps<
       {message.searchMeta && (
         <div className="flex flex-row gap-2 items-center mt-3 rounded-lg border bg-fd-secondary text-fd-muted-foreground text-xs p-2">
           <SearchIcon className="size-4" />
-          <p>检索到 {message.searchMeta.count} 条相关文档</p>
+          <p>
+            {message.searchMeta.hasCurrentPage ? '已读取当前页内容' : '当前不在文档页'}
+            ，全站检索到 {message.searchMeta.count} 条相关文档
+          </p>
         </div>
       )}
     </div>
