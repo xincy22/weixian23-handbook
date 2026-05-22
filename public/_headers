@@ -1,2 +1,13 @@
+# 静态资源长缓存（Next.js 构建产物，文件名带哈希）
 /_next/static/*
   Cache-Control: public,max-age=31536000,immutable
+
+# 站点级 Markdown 索引（给 LLM 直接读）
+/llms.txt
+  Content-Type: text/plain; charset=utf-8
+/llms-full.txt
+  Content-Type: text/plain; charset=utf-8
+
+# Fumadocs 的 "View as Markdown" 单页内容（路径形如 /llms.mdx/docs/xxx/content.md）
+/llms.mdx/*
+  Content-Type: text/markdown; charset=utf-8
