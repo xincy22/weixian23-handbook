@@ -1,18 +1,10 @@
 name = "weixian23-handbook"
-main = ".open-next/worker.js"
 compatibility_date = "2025-05-22"
-compatibility_flags = [
-  # 启用 Node.js API（OpenNext 必需）
-  # https://developers.cloudflare.com/workers/configuration/compatibility-flags/#nodejs-compatibility-flag
-  "nodejs_compat",
-  # 限制 fetch 仅访问公网（OpenNext 推荐）
-  # https://developers.cloudflare.com/workers/configuration/compatibility-flags/#global-fetch-strictly-public
-  "global_fetch_strictly_public",
-]
 
+# 纯静态资源 Worker：Next.js 静态导出 (output: 'export') 产物在 out/ 目录
+# Cloudflare 边缘直接返回这些文件，不计入 Workers 请求额度
+# 参考: https://developers.cloudflare.com/workers/static-assets/
 [assets]
-directory = ".open-next/assets"
-binding = "ASSETS"
-
-[observability]
-enabled = true
+directory = "./out"
+# SPA 行为：不存在的路径走 not_found_handling，让 Next.js 的 404 页生效
+not_found_handling = "404-page"

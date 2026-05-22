@@ -4,29 +4,35 @@
 # generated content
 .source
 
-# test & build
-/coverage
+# build output
 /.next/
 /out/
 /build
+/coverage
 *.tsbuildinfo
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.build.log
 
 # misc
 .DS_Store
 *.pem
 /.pnp
 .pnp.js
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
-# others
+# env / hosting
 .env*.local
 .vercel
+
+# editor
+.vscode/
+.idea/
+
+# next.js generated
 next-env.d.ts
 
-# OpenNext / Cloudflare
-.open-next
+# Cloudflare Wrangler
 .wrangler
-.dev.vars
-cloudflare-env.d.ts

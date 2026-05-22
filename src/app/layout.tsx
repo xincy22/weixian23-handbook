@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { RootProvider } from 'fumadocs-ui/provider/next';
+import { Providers } from '@/components/providers';
 import { Inter } from 'next/font/google';
 import { appDescription, appName, appUrl } from '@/lib/shared';
 import './global.css';
@@ -49,7 +49,7 @@ export default function Layout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="zh-CN" className={inter.className} suppressHydrationWarning>
       <body className="flex flex-col min-h-screen">
-        <RootProvider>{children}</RootProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

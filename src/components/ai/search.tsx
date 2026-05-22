@@ -5,6 +5,7 @@ import {
   type ReactNode,
   type SyntheticEvent,
   use,
+  useCallback,
   useEffect,
   useEffectEvent,
   useMemo,
@@ -23,19 +24,245 @@ import {
 } from 'lucide-react';
 import { cn } from '../../lib/cn';
 import { buttonVariants } from '../ui/button';
-import { useChat, type UseChatHelpers } from '@ai-sdk/react';
-import { DefaultChatTransport, type Tool, type UIToolInvocation } from 'ai';
 import { Markdown } from '../markdown';
 import { Presence } from '@radix-ui/react-presence';
-import type { ChatUIMessage, SearchTool } from '../../app/api/chat/route';
 import { isAIConfigured, useAIConfig } from './config-store';
 import { AISettingsDialog } from './settings';
+import { useDocsSearch } from 'fumadocs-core/search/client';
+import { create } from '@orama/orama';
+import { createTokenizer } from '@orama/tokenizers/mandarin';
+import { streamChat, type ChatMessage } from './openai-stream';
+import { appName } from '@/lib/shared';
+
+interface UIMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  /** 检索阶段（仅 user 之后的 assistant 消息有） */
+  searchMeta?: {
+    query: string;
+    count: number;
+  };
+}
+
+interface ChatState {
+  messages: UIMessage[];
+  status: 'idle' | 'searching' | 'streaming' | 'error';
+  error?: Error;
+  send: (text: string, location: string) => Promise<void>;
+  stop: () => void;
+  clear: () => void;
+  /** 重新生成上一条 assistant 回复 */
+  regenerate: () => Promise<void>;
+}
 
 const Context = createContext<{
   open: boolean;
   setOpen: (open: boolean) => void;
-  chat: UseChatHelpers<ChatUIMessage>;
+  chat: ChatState;
 } | null>(null);
+
+const SYSTEM_PROMPT = `你是「${appName}」的 AI 助手，帮助用户快速找到这个文档站里的内容。
+
+工作方式：
+1. 用户提问后，会先在站内检索，然后把命中的文档内容连同问题交给你
+2. 基于这些站内文档回答，回答中用 markdown 链接引用相关页面（如 [文档标题](url)）
+3. 如果检索结果与问题无关，直接说"我没有在站点中找到相关内容"，并建议更精确的搜索关键词
+4. 使用简体中文回答，技术术语保留英文
+
+约束：
+- 只基于检索到的站内文档回答，不编造站内不存在的内容
+- 不回答与本站内容无关的问题（编程、AI、科研学习等话题除外，因为本站就是这些主题的文档）
+- 引用 URL 时使用相对路径（站点内部链接）
+- 答案简明扼要，不啰嗦`;
+
+/** 客户端中文 Orama 实例工厂（必须和服务端构建索引时的 tokenizer 一致） */
+function initOramaCN() {
+  return create({
+    schema: { _: 'string' },
+    components: {
+      tokenizer: createTokenizer(),
+    },
+  });
+}
+
+/** 极简调用 fumadocs 静态搜索 client，外部使用 */
+async function searchDocs(query: string): Promise<
+  Array<{ url: string; title: string; description?: string; content?: string }>
+> {
+  // 直接调静态导出的 search index，避免引入额外依赖
+  // 这里复用浏览器全局的 fetch 而不是 fumadocs hook，方便在非组件 context 用
+  // 静态搜索的接口实现见 fumadocs-core，我们用 hook 中相同的 client 单独实例化
+  const { oramaStaticClient } = await import(
+    'fumadocs-core/search/client/orama-static'
+  );
+  const client = oramaStaticClient({ from: '/api/search', initOrama: initOramaCN });
+  const results = await client.search(query);
+
+  // 把结果按 url 去重（fumadocs 把每个 heading 也作为单独条目返回）
+  const byUrl = new Map<string, { url: string; title: string; content: string }>();
+  for (const r of results) {
+    if (r.type === 'page') {
+      byUrl.set(r.url, {
+        url: r.url,
+        title: r.content,
+        content: '',
+      });
+    } else {
+      // text/heading 片段，挂到对应页面下作为内容
+      const pageUrl = r.url.split('#')[0];
+      const existing = byUrl.get(pageUrl);
+      if (existing) {
+        existing.content += `\n${r.content}`;
+      } else {
+        byUrl.set(pageUrl, {
+          url: pageUrl,
+          title: r.content.slice(0, 40),
+          content: r.content,
+        });
+      }
+    }
+  }
+
+  return Array.from(byUrl.values()).slice(0, 8);
+}
+
+function makeId() {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function useChat(): ChatState {
+  const config = useAIConfig();
+  const [messages, setMessages] = useState<UIMessage[]>([]);
+  const [status, setStatus] = useState<ChatState['status']>('idle');
+  const [error, setError] = useState<Error | undefined>();
+  const abortRef = useRef<AbortController | null>(null);
+
+  const stop = useCallback(() => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setStatus('idle');
+  }, []);
+
+  const clear = useCallback(() => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setMessages([]);
+    setError(undefined);
+    setStatus('idle');
+  }, []);
+
+  const runTurn = useCallback(
+    async (history: UIMessage[], userText: string, location: string) => {
+      if (!isAIConfigured(config)) return;
+
+      setError(undefined);
+      const ctrl = new AbortController();
+      abortRef.current = ctrl;
+
+      // 1. 站内检索
+      setStatus('searching');
+      let docs: Awaited<ReturnType<typeof searchDocs>> = [];
+      try {
+        docs = await searchDocs(userText);
+      } catch (e) {
+        // 检索失败也继续走（让 AI 兜底回答），但记一下
+        console.warn('docs search failed', e);
+      }
+
+      // 在 assistant 占位消息里附上检索元信息，UI 会显示
+      const assistantId = makeId();
+      const placeholder: UIMessage = {
+        id: assistantId,
+        role: 'assistant',
+        content: '',
+        searchMeta: { query: userText, count: docs.length },
+      };
+      setMessages((prev) => [...prev, placeholder]);
+
+      // 2. 组装 system + 检索上下文 + 历史
+      const docsContext = docs
+        .map(
+          (d, i) =>
+            `[${i + 1}] ${d.title} (${d.url})\n${(d.content ?? '').slice(0, 800)}`,
+        )
+        .join('\n\n');
+
+      const messagesForAI: ChatMessage[] = [
+        { role: 'system', content: SYSTEM_PROMPT },
+        {
+          role: 'system',
+          content: `当前页面：${location}\n\n以下是站内检索结果（基于用户问题"${userText}"）：\n\n${docsContext || '（无相关结果）'}`,
+        },
+        ...history.map<ChatMessage>((m) => ({ role: m.role, content: m.content })),
+        { role: 'user', content: userText },
+      ];
+
+      // 3. 流式调用
+      setStatus('streaming');
+      try {
+        await streamChat({
+          baseURL: config.baseURL,
+          apiKey: config.apiKey,
+          model: config.model,
+          messages: messagesForAI,
+          signal: ctrl.signal,
+          onDelta: (delta) => {
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === assistantId ? { ...m, content: m.content + delta } : m,
+              ),
+            );
+          },
+        });
+        setStatus('idle');
+      } catch (e) {
+        if ((e as Error).name === 'AbortError') {
+          setStatus('idle');
+          return;
+        }
+        setError(e as Error);
+        setStatus('error');
+      } finally {
+        abortRef.current = null;
+      }
+    },
+    [config],
+  );
+
+  const send = useCallback(
+    async (text: string, location: string) => {
+      const message: UIMessage = {
+        id: makeId(),
+        role: 'user',
+        content: text,
+      };
+      setMessages((prev) => [...prev, message]);
+      // 注意：runTurn 接收的是「不包含本次 user 消息」的历史
+      const historySnapshot = messages;
+      await runTurn(historySnapshot, text, location);
+    },
+    [messages, runTurn],
+  );
+
+  const regenerate = useCallback(async () => {
+    // 删掉最后一条 assistant，用最后一条 user 重跑
+    const lastUserIdx = [...messages]
+      .reverse()
+      .findIndex((m) => m.role === 'user');
+    if (lastUserIdx === -1) return;
+    const idxFromStart = messages.length - 1 - lastUserIdx;
+    const before = messages.slice(0, idxFromStart);
+    const lastUser = messages[idxFromStart];
+    setMessages(before.concat(lastUser));
+    await runTurn(before, lastUser.content, location.href);
+  }, [messages, runTurn]);
+
+  return useMemo(
+    () => ({ messages, status, error, send, stop, clear, regenerate }),
+    [messages, status, error, send, stop, clear, regenerate],
+  );
+}
 
 export function AISearchPanelHeader({ className, ...props }: ComponentProps<'div'>) {
   const { setOpen } = useAISearchContext();
@@ -96,8 +323,8 @@ export function AISearchPanelHeader({ className, ...props }: ComponentProps<'div
 }
 
 export function AISearchInputActions() {
-  const { messages, status, setMessages, regenerate } = useChatContext();
-  const isLoading = status === 'streaming';
+  const { messages, status, clear, regenerate } = useChatContext();
+  const isLoading = status === 'streaming' || status === 'searching';
 
   if (messages.length === 0) return null;
 
@@ -128,7 +355,7 @@ export function AISearchInputActions() {
             className: 'rounded-full',
           }),
         )}
-        onClick={() => setMessages([])}
+        onClick={clear}
       >
         清空对话
       </button>
@@ -138,7 +365,7 @@ export function AISearchInputActions() {
 
 const StorageKeyInput = '__ai_search_input';
 export function AISearchInput(props: ComponentProps<'form'>) {
-  const { status, sendMessage, stop } = useChatContext();
+  const { status, send, stop } = useChatContext();
   const config = useAIConfig();
   const configured = isAIConfigured(config);
 
@@ -146,28 +373,13 @@ export function AISearchInput(props: ComponentProps<'form'>) {
     if (typeof window === 'undefined') return '';
     return localStorage.getItem(StorageKeyInput) ?? '';
   });
-  const isLoading = status === 'streaming' || status === 'submitted';
+  const isLoading = status === 'streaming' || status === 'searching';
   const onStart = (e?: SyntheticEvent) => {
     e?.preventDefault();
     if (!configured) return;
     const message = input.trim();
     if (message.length === 0) return;
-
-    void sendMessage({
-      role: 'user',
-      parts: [
-        {
-          type: 'data-client',
-          data: {
-            location: location.href,
-          },
-        },
-        {
-          type: 'text',
-          text: message,
-        },
-      ],
-    });
+    void send(message, location.href);
     setInput('');
     localStorage.removeItem(StorageKeyInput);
   };
@@ -178,9 +390,11 @@ export function AISearchInput(props: ComponentProps<'form'>) {
 
   const placeholder = !configured
     ? '请先点上方齿轮图标配置 AI 后开始使用'
-    : isLoading
-      ? 'AI 正在回答...'
-      : '问点什么...（按 Enter 发送，Shift+Enter 换行）';
+    : status === 'searching'
+      ? '正在检索站内文档...'
+      : status === 'streaming'
+        ? 'AI 正在回答...'
+        : '问点什么...（按 Enter 发送，Shift+Enter 换行）';
 
   return (
     <form {...props} className={cn('flex items-start pe-2', props.className)} onSubmit={onStart}>
@@ -301,25 +515,7 @@ const roleName: Record<string, string> = {
   assistant: 'AI',
 };
 
-function Message({ message, ...props }: { message: ChatUIMessage } & ComponentProps<'div'>) {
-  let markdown = '';
-  const searchCalls: UIToolInvocation<SearchTool>[] = [];
-
-  for (const part of message.parts ?? []) {
-    if (part.type === 'text') {
-      markdown += part.text;
-      continue;
-    }
-
-    if (part.type.startsWith('tool-')) {
-      const toolName = part.type.slice('tool-'.length);
-      const p = part as UIToolInvocation<Tool>;
-
-      if (toolName !== 'search' || !p.toolCallId) continue;
-      searchCalls.push(p);
-    }
-  }
-
+function Message({ message, ...props }: { message: UIMessage } & ComponentProps<'div'>) {
   return (
     <div onClick={(e) => e.stopPropagation()} {...props}>
       <p
@@ -331,68 +527,22 @@ function Message({ message, ...props }: { message: ChatUIMessage } & ComponentPr
         {roleName[message.role] ?? '未知'}
       </p>
       <div className="prose text-sm">
-        <Markdown text={markdown} />
+        <Markdown text={message.content} />
       </div>
 
-      {searchCalls.map((call) => {
-        return (
-          <div
-            key={call.toolCallId}
-            className="flex flex-row gap-2 items-center mt-3 rounded-lg border bg-fd-secondary text-fd-muted-foreground text-xs p-2"
-          >
-            <SearchIcon className="size-4" />
-            {call.state === 'output-error' || call.state === 'output-denied' ? (
-              <p className="text-fd-error">{call.errorText ?? '搜索失败'}</p>
-            ) : (
-              <p>{!call.output ? '正在搜索文档…' : `检索到 ${(call.output as unknown[]).length} 条结果`}</p>
-            )}
-          </div>
-        );
-      })}
+      {message.searchMeta && (
+        <div className="flex flex-row gap-2 items-center mt-3 rounded-lg border bg-fd-secondary text-fd-muted-foreground text-xs p-2">
+          <SearchIcon className="size-4" />
+          <p>检索到 {message.searchMeta.count} 条相关文档</p>
+        </div>
+      )}
     </div>
   );
 }
 
 export function AISearch({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
-  const config = useAIConfig();
-
-  const chat = useChat<ChatUIMessage>({
-    id: 'search',
-    transport: useMemo(
-      () =>
-        new DefaultChatTransport({
-          api: '/api/chat',
-          // 把用户的 AI 配置作为请求头传给后端
-          headers: () => {
-            // 这里要每次发送时实时读，避免 stale 闭包
-            const empty: Record<string, string> = {
-              'x-ai-base-url': '',
-              'x-ai-api-key': '',
-              'x-ai-model': '',
-            };
-            try {
-              const raw =
-                typeof window !== 'undefined'
-                  ? localStorage.getItem('weixian23.ai-config')
-                  : null;
-              if (!raw) return empty;
-              const cfg = JSON.parse(raw);
-              return {
-                'x-ai-base-url': typeof cfg.baseURL === 'string' ? cfg.baseURL : '',
-                'x-ai-api-key': typeof cfg.apiKey === 'string' ? cfg.apiKey : '',
-                'x-ai-model': typeof cfg.model === 'string' ? cfg.model : '',
-              };
-            } catch {
-              return empty;
-            }
-          },
-        }),
-      // chat 实例不需要在 config 变化时重建（因为 headers 是函数动态读取的）
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [],
-    ),
-  });
+  const chat = useChat();
 
   return (
     <Context value={useMemo(() => ({ chat, open, setOpen }), [chat, open])}>
@@ -501,7 +651,6 @@ export function AISearchPanel() {
 
 export function AISearchPanelList({ className, style, ...props }: ComponentProps<'div'>) {
   const chat = useChatContext();
-  const messages = chat.messages.filter((msg) => msg.role !== 'system');
 
   return (
     <List
@@ -513,7 +662,7 @@ export function AISearchPanelList({ className, style, ...props }: ComponentProps
       }}
       {...props}
     >
-      {messages.length === 0 ? (
+      {chat.messages.length === 0 ? (
         <div className="text-sm text-fd-muted-foreground/80 size-full flex flex-col items-center justify-center text-center gap-2">
           <MessageCircleIcon fill="currentColor" stroke="none" />
           <p onClick={(e) => e.stopPropagation()}>开始一段对话吧</p>
@@ -525,10 +674,10 @@ export function AISearchPanelList({ className, style, ...props }: ComponentProps
               <p className="text-xs text-fd-muted-foreground mb-1">
                 请求失败：{chat.error.name}
               </p>
-              <p className="text-sm">{chat.error.message}</p>
+              <p className="text-sm whitespace-pre-wrap">{chat.error.message}</p>
             </div>
           )}
-          {messages.map((item) => (
+          {chat.messages.map((item) => (
             <Message key={item.id} message={item} />
           ))}
         </div>
