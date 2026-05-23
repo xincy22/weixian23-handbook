@@ -1,0 +1,304 @@
+---
+title: "Skills 与规则文件"
+description: "把项目规矩写成文件让 AI 自动读取。CLAUDE.md / AGENTS.md / SKILL.md / Cursor Rules 一次说清楚。"
+---
+
+> 各家 AI 编程工具都有自己的"规则文件"机制：写一份文件，工具每次启动会自动读，省去每次开新对话都要重新讲项目背景。这一页把不同工具的规则文件放在一起对照，并给出常见的写法。
+>
+> 整理：2026-05
+
+---
+
+## 这一类东西在解决什么
+
+每天和 AI 协作时常见的痛点：
+
+```
+对话 1：「这是 Python 3.11，用 ruff 不是 black」
+对话 2：「这是 Python 3.11，用 ruff 不是 black」
+对话 3：「这是 Python 3.11，用 ruff 不是 black」
+…
+```
+
+各家工具给的方案都差不多——**写一个文件，AI 每次开对话自动读一遍**。只是名字各不一样：
+
+| 工具 | 文件 | 自动读取吗 |
+| --- | --- | --- |
+| Claude Code | `CLAUDE.md` | 是，session 启动时 |
+| OpenAI Codex | `AGENTS.md` | 是 |
+| GitHub Copilot | `.github/copilot-instructions.md` | 是 |
+| Cursor | `.cursor/rules/*.mdc` | 按 glob 触发 |
+| Windsurf | `.windsurfrules` | 是 |
+| Anthropic Skills | `SKILL.md` 目录 | **按需加载**（区别于上面） |
+| Aider | `CONVENTIONS.md` | 通过 `--read` 加载 |
+
+> **行业里有一个统一倾向**：`AGENTS.md` 正在变成跨工具的通用文件名，OpenAI Codex 和 [agents.md](https://agents.md) 都在推这个。如果不想为每个工具维护一份，写在 `AGENTS.md` 是比较稳的选择（Claude Code 也能读，做个 symlink 或者直接用 `AGENTS.md` 即可）。
+
+---
+
+## 一份规则文件该写什么
+
+OpenAI 在 [Harness Engineering 那篇文章](https://openai.com/index/harness-engineering/) 里专门讲过他们踩过的坑。最早他们试过"一份巨大的 AGENTS.md"，结果失败了，原因有四：
+
+> - 上下文是稀缺资源。一个巨大的指令文件会挤掉任务、代码和相关文档
+> - 过多的指导反而变得无效——当一切都"重要"时，一切都不重要了
+> - 它会立即腐烂——一本庞杂的手册会变成陈旧规则的坟场
+> - 它很难核实——单个 blob 不适合做机械检查
+
+最后他们的版本是 **大约 100 行的 AGENTS.md，作为目录而不是百科全书**，再链接到 `docs/` 目录里更深的内容。
+
+一个项目级的常见模板（约 80 行）：
+
+```markdown
+# 项目名
+
+## 这是什么
+（一两句话讲清楚项目目标和当前阶段）
+
+## 技术栈
+- 语言：Python 3.11
+- 框架：FastAPI + SQLAlchemy
+- 测试：pytest
+- Lint：ruff
+- 包管理：uv
+
+## 目录
+- src/      业务代码
+- tests/    测试，命名 test_*.py
+- scripts/  一次性脚本
+- docs/     设计文档（看 docs/index.md）
+
+## 常用命令
+- 装依赖：`uv sync`
+- 跑测试：`pytest -x`
+- 格式化：`ruff format && ruff check --fix`
+- 启动 dev：`make dev`
+
+## 代码风格
+- 函数 snake_case，类 PascalCase
+- 公开 API 必须有 type hint
+- 错误处理：抛自定义异常，不要 catch Exception
+- 日志用 logger，不要 print
+
+## 不应该做的事
+- 不要直接改 main 分支
+- 不要装新依赖前不问
+- 不要为了让测试通过去改测试本身
+- 不要在没读过相关代码前断言"这个 bug 是因为……"
+
+## 更多
+设计文档详见 docs/design/index.md
+架构图见 docs/architecture.md
+```
+
+经验法则：
+
+| 该写 | 别写 |
+| --- | --- |
+| 项目特有的约定 | 通用编程常识 |
+| 命令和脚本入口 | 整个 README 的全文 |
+| 反复出现摩擦的地方 | 临时的指令（"这次帮我改 xxx"） |
+| 希望 AI 不做什么 | 不做的事尤其重要 |
+
+Mitchell Hashimoto 在 [《My AI Adoption Journey》](https://mitchellh.com/writing/my-ai-adoption-journey) 里提到的一种用法：
+
+> 每次发现 agent 做了 Bad Thing，就花时间设计一个解决方案让它再也不犯。
+
+具体做法是观察 AI 的犯错模式，每错一次就往 AGENTS.md 加一行。本质上是把这份文件当**错题本**用。
+
+---
+
+## Claude Code 的几个进阶用法
+
+### 多层 CLAUDE.md
+
+Claude Code 会按层级合并多个 CLAUDE.md：
+
+```
+~/.claude/CLAUDE.md        ← 全局偏好（语气、习惯）
+project/CLAUDE.md          ← 项目级
+project/sub/CLAUDE.md      ← 子模块级，进入该目录时附加
+```
+
+全局层（`~/.claude/CLAUDE.md`）适合放跨项目的通用偏好，比如：
+
+```markdown
+- 回答用中文
+- 修改前先读相关文件，不要凭印象改
+```
+
+### 子 Agent
+
+`~/.claude/agents/` 下放 markdown 可以定义子 agent：
+
+```markdown
+---
+name: code-reviewer
+description: 严格的代码审查员
+---
+
+你是 code reviewer。审查时关注：
+1. 边界条件（空输入、超大输入、负数）
+2. 错误处理是真捕获还是被吞掉
+3. 命名一致性
+...
+```
+
+调用：`/agents code-reviewer 审一下 src/auth.py`
+
+### Hooks
+
+`.claude/settings.json` 里可以配 hook，AI 干完某些事自动触发命令：
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": "ruff check --fix $CLAUDE_FILE_PATHS" }
+        ]
+      }
+    ]
+  }
+}
+```
+
+效果：每次 AI 改完文件自动跑 ruff，错误信息反馈给 AI 让它修。这是把 [Harness](./harness.mdx) 那篇里讲的"让 AI 知道自己错了"机械化的标准做法。
+
+---
+
+## Cursor Rules（`.cursor/rules/*.mdc`）
+
+[Cursor 官方文档](https://docs.cursor.com/context/rules) 给的定义：
+
+> Rules provide persistent, reusable context at the prompt level. When applied, rule contents are included at the start of the model context.
+
+每个 `.mdc` 文件用 YAML frontmatter 控制激活方式：
+
+```mdc
+---
+description: Python 代码规范
+globs:
+  - "**/*.py"
+alwaysApply: false
+---
+
+- 必须用 type hints
+- 异常用 logger.exception，不用 print
+- 不允许 catch Exception，要 catch 具体异常
+```
+
+`.mdc` frontmatter 主要三个字段：
+
+| 字段 | 作用 |
+| --- | --- |
+| `description` | 规则在做什么。开启 "Apply Intelligently" 模式时 AI 看这个决定要不要加载 |
+| `globs` | 哪些文件路径触发这条规则 |
+| `alwaysApply` | true = 永远附加；false = 按 globs 或 description 触发 |
+
+社区有大量预制 Rules：
+
+- [PatrickJS/awesome-cursorrules](https://github.com/PatrickJS/awesome-cursorrules)（按语言/框架分类）
+- [cursor.directory](https://cursor.directory)（在线浏览）
+
+直接照抄一份再改是常见做法。
+
+---
+
+## Anthropic Skills（严格意义上的 Skill）
+
+[Anthropic 在 2025 年 10 月 16 日推出了 Agent Skills](https://www.anthropic.com/news/skills)，2025 年 12 月 18 日发布为 [开放标准](https://agentskills.io/)。
+
+Skill 不是单个文件，是一个**目录**：
+
+```
+my-skill/
+  ├── SKILL.md          入口（必需）
+  ├── reference.md      详细参考（按需加载）
+  ├── examples/         示例
+  └── scripts/          可执行脚本
+```
+
+`SKILL.md` 的 YAML frontmatter 是关键：
+
+```markdown
+---
+name: latex-paper-review
+description: 检查 LaTeX 论文的常见排版/引用问题。
+  当用户说"review my latex"、"检查 tex 文件"时使用。
+---
+
+# LaTeX 论文审查
+
+## 步骤
+1. 读取 .tex 文件
+2. 检查：
+   - 数学环境内外字体一致性
+   - 引用格式统一（\cite vs \citep）
+   - 图表 caption 缺失
+3. 输出问题清单
+```
+
+和 CLAUDE.md / Cursor Rules 的关键区别：**按需加载**。AI 启动时只看 frontmatter 里的 `name` + `description`，决定相关时才把 `SKILL.md` 全文加进 context，避免占用 context window。
+
+适合"同一类多步任务"，比如：
+
+- 论文 review 流程
+- 数据清洗的固定步骤
+- 写某种特定格式的报告
+
+只是想让 AI 记住"项目用 pnpm"这种简单偏好，写 CLAUDE.md 就够了，不用上 Skill。
+
+---
+
+## 几个东西的边界
+
+容易混的：
+
+| 东西 | 解决的问题 | 关键差别 |
+| --- | --- | --- |
+| **CLAUDE.md / AGENTS.md** | "项目应该按什么风格做事" | 静态文本，每次对话都附加 |
+| **Cursor Rules** | 同上，但更细粒度 | 按 glob/文件类型激活 |
+| **Skills（SKILL.md）** | "某种场景下应该怎么做" | 按需加载，可含脚本 |
+| **MCP Server** | "AI 能调用什么外部工具" | 协议 + 实际可执行代码 |
+| **子 Agent** | "复杂任务交给一个独立角色" | 隔离 context 的子会话 |
+
+完整工作流通常是组合的：
+
+```
+CLAUDE.md         告诉 AI 项目规矩（最先写）
+   ↓
+MCP Server        给 AI 接 GitHub / 文件系统
+   ↓
+Skill 包          针对特定任务的标准流程
+   ↓
+子 Agent          某些子任务派给专门角色
+```
+
+---
+
+## 常见的上手顺序
+
+1. **写一份 100 行内的 `AGENTS.md`**：性价比最高的一步。回答"是什么、栈是什么、不希望 AI 做什么"。
+2. **观察 AI 犯错模式**：每次发现 AI 重复犯错就往 `AGENTS.md` 加一行。
+3. **把硬要求自动化**：比如"代码必须 pass ruff"，配 hook 或 pre-commit。
+4. **多步任务做成 Skill**：到这一步通常是有具体重复需求才需要。
+5. **写 MCP server**：极少需要——先穷举现有的几乎都够用。
+
+---
+
+## 原始材料
+
+| 资源 | 链接 |
+| --- | --- |
+| Anthropic: Introducing Agent Skills (2025-10-16) | [anthropic.com/news/skills](https://www.anthropic.com/news/skills) |
+| Anthropic: Equipping agents for the real world with Agent Skills（工程深度） | [anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills) |
+| Anthropic: Best practices for Claude Code | [anthropic.com/engineering/claude-code-best-practices](https://www.anthropic.com/engineering/claude-code-best-practices) |
+| Cursor 官方 Rules 文档 | [docs.cursor.com/context/rules](https://docs.cursor.com/context/rules) |
+| awesome-cursorrules | [github.com/PatrickJS/awesome-cursorrules](https://github.com/PatrickJS/awesome-cursorrules) |
+| cursor.directory | [cursor.directory](https://cursor.directory) |
+| agents.md（跨工具 AGENTS.md 标准） | [agents.md](https://agents.md) |
+| anthropics/skills（官方示例 Skills） | [github.com/anthropics/skills](https://github.com/anthropics/skills) |
+| HumanLayer: Writing a good CLAUDE.md | [humanlayer.dev/blog/writing-a-good-claude-md](https://www.humanlayer.dev/blog/writing-a-good-claude-md) |

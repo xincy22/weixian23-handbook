@@ -1,0 +1,142 @@
+---
+title: "AI 工程演进总览"
+description: "Prompt → Context → MCP → Skills → Harness：把这两年的几个新词放在一条时间线上。"
+---
+
+> 这个子目录把 **Prompt → Context → MCP → Skills → Harness** 这条主线穿一下，方便理解每个新词的来源、解决什么问题、彼此什么关系。
+>
+> 整理：2026-05
+
+---
+
+## 一句话脉络
+
+| 阶段 | 关心什么 | 大致时间 | 一句话 |
+| --- | --- | --- | --- |
+| Prompt Engineering | 一句话怎么写 | 2023–2024 | 给模型角色 + 示例 + 格式约束，输出明显变好 |
+| Context Engineering | 给模型看什么 | 2024–2025 | 模型够强了，关键是上下文窗口里塞了什么 |
+| MCP | 工具怎么接入 | 2024-11 起 | Anthropic 提的开放协议，让 AI 客户端用统一方式接外部服务 |
+| Skills | 经验怎么沉淀 | 2025-10 起 | 把项目规矩、流程写成文件让 AI 自动读取 |
+| Harness Engineering | 整个运行环境怎么组织 | 2026-02 起 | 决定 Agent 表现的不是模型，是它周围的运行环境 |
+
+它们不是"一代换一代"。Anthropic 在 [Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) 里讲过：context engineering 是 prompt engineering 的**延伸**，不是替代。harness engineering 又是再外面一圈的延伸。下面那层一直都在。
+
+---
+
+## 这条线是怎么往外扩的
+
+### Prompt Engineering（2023 起）
+
+早期玩法。给 GPT-3.5 / GPT-4 写提示词，加角色、加示例、加格式约束。当时模型本身是瓶颈，一句好 prompt 能让结果明显变好。
+
+[Prompt 模板](../prompts/all-templates.mdx) 那一页里的 7 套常用模板就属于这个层级。
+
+到现在 prompt engineering 不算过时，只是从"主角"变成了基本功。下面所有层都依赖它。
+
+---
+
+### Context Engineering（2024 末–2025）
+
+模型变强之后，单改 prompt 边际收益变小。真正影响输出质量的是**整个 context window 里塞了哪些 token**。
+
+Anthropic 的官方定义：
+
+> Context engineering refers to the set of strategies for curating and maintaining the optimal set of tokens (information) during LLM inference.
+
+包括但不限于：
+
+- 相关文档要不要 RAG 进来
+- 历史对话什么时候该压缩
+- 工具描述按什么顺序展示
+- 项目知识库怎么建索引
+
+这一阶段大家都在卷 RAG、向量库、长上下文。Cursor、Windsurf 这类 AI IDE 大量精力都花在 context engineering 上。
+
+---
+
+### MCP（Model Context Protocol，2024-11 起）
+
+Anthropic [于 2024 年 11 月 25 日开源](https://www.anthropic.com/news/model-context-protocol) 的协议，解决"怎么把外部工具/数据接到 AI 客户端"这件事的标准化问题。
+
+在 MCP 之前，每加一个外部服务（GitHub、Notion、本地文件、数据库……），每个 AI 客户端都要写一遍胶水代码。MCP 让客户端和服务方各按协议实现一次，剩下的就互联互通。
+
+Anthropic 自己用的比喻是 [USB-C for AI](https://docs.anthropic.com/en/docs/agents-and-tools/mcp)。
+
+→ 详见 [MCP 协议](./mcp.mdx)
+
+---
+
+### Skills（2025-10 起）
+
+Anthropic 在 [2025 年 10 月 16 日](https://www.anthropic.com/news/skills) 推出了 "Agent Skills"：把 AI 应该怎么做某类任务打包成一个目录（含 `SKILL.md` + 脚本 + 资源），AI 在需要时按需加载。12 月 18 日发布为 [开放标准](https://agentskills.io/)。
+
+更广义地讲，"Skills" 现在是个**伞形术语**，覆盖了所有给 AI 工具配置的"持久化指令"：
+
+- Claude Code 的 `CLAUDE.md`
+- OpenAI Codex 的 `AGENTS.md`
+- Cursor 的 `.cursor/rules/*.mdc`
+- Anthropic 严格意义上的 `SKILL.md`
+
+它们都在解决同一个问题：**别每次开新对话都要把项目背景再讲一遍。**
+
+→ 详见 [Skills 与规则文件](./skills.mdx)
+
+---
+
+### Harness Engineering（2026-02 起）
+
+最新的一层。来源有清晰的时间线：
+
+- 2026 年 2 月 5 日，HashiCorp 联合创始人 Mitchell Hashimoto 在博客 [《My AI Adoption Journey》](https://mitchellh.com/writing/my-ai-adoption-journey) 第 5 步用了 "Engineer the Harness"，思路是：每次发现 Agent 犯错，就花时间改它周围的环境（AGENTS.md、工具、脚本），让它再也不犯同样的错。
+- 2 月 11 日，OpenAI 发了 [《Harness engineering: leveraging Codex in an agent-first world》](https://openai.com/index/harness-engineering/)，作者 Ryan Lopopolo 描述他们用 Codex 五个月写出 100 万行代码的产品（**人类一行没写**），把这套方法论叫 harness engineering。
+- 这之后社区才开始大规模采用这个词。Anthropic 早些时候（2025 年 11 月 26 日）已经发过一篇 [《Effective harnesses for long-running agents》](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)，讲的是同一类问题。
+
+它关心的不再是单条 prompt、不再是 context window 里的 token，而是**整个 Agent 的运行环境**：工具、权限、状态、错误恢复、跨会话怎么续上。
+
+OpenAI 那篇文章里的核心论断：
+
+> 当软件工程团队的主要工作不再是编写代码，而是设计环境、明确意图和构建反馈回路，从而使 Codex 智能体能够可靠地工作时，会发生哪些变化。
+
+→ 详见 [Harness Engineering](./harness.mdx)
+
+---
+
+## 三层楼板，不是接力赛
+
+社区里流传比较广的一个比喻：
+
+```
+┌────────────────────────────────────────────────┐
+│  Harness Engineering    整个 Agent 的运行环境   │  关注半径：最大
+│                         工具 / 权限 / 状态     │
+│                         恢复 / 验证 / 制度     │
+├────────────────────────────────────────────────┤
+│  Context Engineering    一整窗内容怎么拼       │
+│                         RAG / 历史 / 工具描述  │
+├────────────────────────────────────────────────┤
+│  Prompt Engineering     一句话怎么写           │  关注半径：最小
+│                         角色 / 示例 / 格式     │
+└────────────────────────────────────────────────┘
+
+  MCP 和 Skills 是横跨这几层的"基础设施"：
+    · MCP 让外部工具/数据接入标准化
+    · Skills 让经验沉淀可复用
+```
+
+下面那层从来没消失，只是被上面那层包了一圈。harness engineering 不能替代上下文工程，反过来上下文工程也不能替代 harness。
+
+---
+
+## 推荐读这几篇原始材料
+
+中文综述网上很多，但对照原文读会更清楚：
+
+| 作者 | 标题 | 时间 |
+| --- | --- | --- |
+| Anthropic | [Introducing the Model Context Protocol](https://www.anthropic.com/news/model-context-protocol) | 2024-11-25 |
+| Anthropic | [Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) | 2025-09 |
+| Anthropic | [Introducing Agent Skills](https://www.anthropic.com/news/skills) | 2025-10-16 |
+| Anthropic | [Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) | 2025-11-26 |
+| Mitchell Hashimoto | [My AI Adoption Journey](https://mitchellh.com/writing/my-ai-adoption-journey) | 2026-02-05 |
+| OpenAI (Ryan Lopopolo) | [Harness engineering: leveraging Codex in an agent-first world](https://openai.com/index/harness-engineering/) | 2026-02-11 |
+| Anthropic | [Best practices for Claude Code](https://www.anthropic.com/engineering/claude-code-best-practices) | — |

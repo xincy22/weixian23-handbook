@@ -1,0 +1,175 @@
+---
+title: "Harness Engineering（驾驭工程）"
+description: "2026 年初出来的新词。决定 Agent 表现的不是模型，是模型外面那一圈脚手架。"
+---
+
+> 2026 年初被 Mitchell Hashimoto 和 OpenAI 工程团队推上风口的术语。这一页梳理它的来源、社区里的几篇代表性原文，以及它和 prompt / context engineering 的关系。
+>
+> 整理：2026-05
+
+---
+
+## 起源：三篇原文
+
+这个词的"诞生"有清晰的时间线，下面三篇是绕不开的一手材料。
+
+### 1) Mitchell Hashimoto：Engineer the Harness（2026-02-05）
+
+HashiCorp 联合创始人（Vagrant、Terraform 作者）。他在 [《My AI Adoption Journey》](https://mitchellh.com/writing/my-ai-adoption-journey) 第 5 步用了 "Engineer the Harness"。原话：
+
+> I don't know if there is a broad industry-accepted term for this yet, but I've grown to calling this "harness engineering." It is the idea that anytime you find an agent makes a mistake, you take the time to engineer a solution such that the agent never makes that mistake again.
+
+他给的两种具体做法：
+
+> 1. Better implicit prompting (AGENTS.md). For simple things, like the agent repeatedly running the wrong commands or finding the wrong APIs, update the AGENTS.md (or equivalent).
+> 2. Actual, programmed tools. For example, scripts to take screenshots, run filtered tests, etc etc.
+
+Mitchell 不在 AI 公司工作（footnote 里特地说 "I don't work for, invest in, or advise any AI companies"），所以这篇博客的视角和厂商博客有所不同，常被引用作为术语的源头。
+
+### 2) OpenAI（Ryan Lopopolo）：Harness engineering（2026-02-11）
+
+[OpenAI 的官方工程博客](https://openai.com/index/harness-engineering/)。讲的是另一个故事：他们用 Codex 五个月做了一个软件产品，**100 万行代码人类一行没写**。
+
+文章的核心论断：
+
+> 当软件工程团队的主要工作不再是编写代码，而是设计环境、明确意图和构建反馈回路，从而使 Codex 智能体能够可靠地工作时，会发生哪些变化。
+
+里面给出的具体做法：
+
+- **AGENTS.md 控制在约 100 行**，作为目录而不是百科全书，链接到 `docs/` 里更深的内容
+- **执行计划是一流工件**：活跃计划、已完成计划、技术债务都进版本控制
+- **架构不变量靠自定义 linter 强制执行**，错误信息里直接嵌入修复指令
+- **可观测性面向 Agent**：日志、指标、追踪通过 LogQL/PromQL 暴露给 Codex
+- **代码仓库即记录系统**——AI 看不到的东西就不存在（Slack 讨论、Google Doc、人脑里的隐性知识都不算）
+
+### 3) Anthropic：Effective harnesses for long-running agents（2025-11-26）
+
+时间上其实是**最早**的。[Anthropic 这篇](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) 比 Mitchell 的博客早三个月，但当时还没有把 "harness engineering" 用作流行术语。
+
+要解的是另一类问题：**Agent 跨多个 context window 长时间工作怎么不崩**。给的具体方案：
+
+| 失败模式 | 解决 |
+| --- | --- |
+| 一上来就想 one-shot 整个项目 | initializer agent 写一份 200+ 个 feature 的清单，所有 feature 初始 status 都标 failing |
+| 把 context 用光，半个 feature 留给下一 session | 改用 incremental progress 模式，一次只做一个 feature |
+| 后续 session 看到有进展就宣告"完成了" | 通过 feature_list.json + git log + claude-progress.txt 让新 session 准确判断状态 |
+| 把 feature 标 done 但其实不工作 | 用 Puppeteer MCP 让 agent 像人一样测试 UI |
+
+文章里有一句被广泛引用的 meta 观点：
+
+> **设计 harness 时，每一个组件都编码了一个关于"模型自身做不到什么"的假设**。这些假设值得反复检验——它们可能本来就错了，也可能随模型进步很快过时。
+
+意思是 harness 不是一劳永逸的架构，是围绕**当前模型能力边界**搭起来的临时脚手架。
+
+---
+
+## 一句话定义（社区普遍接受的）
+
+社区里流传比较广的是这个 [Agent = Model + Harness] 公式：
+
+- **裸模型** = 概率生成器，给输入出输出
+- **Harness** = 模型周围的一切：system prompt、工具、权限、状态管理、错误恢复、验证机制、跨会话续作机制
+- **Agent** = 这两者加起来
+
+实际意思是：**同一个模型放在不同 harness 里，行为表现可以差得非常远，差距不在模型权重，在 harness。** Claude Code 跑 Claude 4.6，跟用一个简陋脚手架跑同一个 Claude 4.6，效果不是一回事。
+
+---
+
+## 它和 prompt / context engineering 的关系
+
+[Anthropic 2025 年那篇 Effective context engineering](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) 给过 context engineering 的定义：
+
+> Context engineering refers to the set of strategies for curating and maintaining the optimal set of tokens (information) during LLM inference.
+
+社区里通行的比喻是：这三者不是接力赛里的三棒，是楼板。
+
+```
+Harness Engineering    整个运行环境怎么组织
+                        ───────────────────
+Context Engineering    一整窗内容怎么拼
+                        ───────────────────
+Prompt Engineering     一句话怎么写
+```
+
+下面那层从来没消失，只是被上面那层包了一圈。
+
+为什么瓶颈往外移？模型变强了。**写一句好 prompt 在 GPT-3.5 时代有用，在 Opus 4.6 时代收益已经很小了**——它单次推理质量已经很高，问题出在长期运行的稳定性上。所以工程重心从"怎么写 prompt"转到"怎么组织上下文"再转到"怎么搭运行环境"。
+
+---
+
+## Harness 包含哪些东西
+
+把上面三篇加起来对齐看，常被提到的几块：
+
+| 组件 | 作用 | 具体例子 |
+| --- | --- | --- |
+| 分层的 system prompt | 不只是人格设定，是运行时规章 | 身份/工具/权限/工程约束分段，不同来源按优先级覆盖 |
+| Query loop（运行时主循环） | Agent 不是"请求-响应"，是带状态循环 | messages、tool use context、turn count、compact tracking |
+| 工具系统 | 受管的执行接口 | MCP server、本地脚本、API；要被调度、授权、审计 |
+| 上下文治理 | context compact、跨轮维护 | 决定什么留下、什么压缩、什么丢弃 |
+| 权限与沙箱 | 错误的爆炸半径 | Docker 沙箱 / 高危命令弹确认 / 限制可访问路径 |
+| 错误恢复 | 失败是日常天气 | 截断后续写、压缩失败时怎么呼吸、死循环熔断 |
+| 多代理与验证 | 验证最好独立 | implementer 和 reviewer 分开是常见做法 |
+| 本地规则与 hook | 经验沉淀 | CLAUDE.md / AGENTS.md / pre-commit / session-start hook |
+
+工具和规则文件这两块 → 详见 [MCP 协议](./mcp.mdx) 和 [Skills 与规则文件](./skills.mdx)。
+
+---
+
+## 三层 harness：通用、项目、任务
+
+社区里一个挺实用的划分方式：按和具体项目的关联程度分层。
+
+| 层级 | 关联度 | 谁负责 | 例子 |
+| --- | --- | --- | --- |
+| **通用 harness** | 弱相关 | Agent 工具厂商 | 终端交互、tool loop、权限系统、记忆、context compaction、hook 机制——Claude Code、Codex、OpenCode 这些工具已经把这层做掉了 |
+| **项目 harness** | 强相关 | 开发者自己 | AGENTS.md / CLAUDE.md、`docs/` 结构、lint 规则、质量标准、依赖选择原则 |
+| **任务 harness** | 单次任务相关 | 临时搭 | planner-generator-evaluator 多 agent 架构、跨 session 的 progress.txt、特定任务的 QA prompt |
+
+通用层选个工具就有了；任务层不可复用；长期值得投入的是项目层——AGENTS.md / lint / docs 结构这些。
+
+---
+
+## 为什么 2026 年初突然火
+
+不是某个人发明的概念。这之前 2025 年 3 月 swyx 提过 "agent engineering"，还有个 IMPACT 框架（Intent / Memory / Planning / Authority / Control Flow / Tools），讲的是同一类事，但当时没传开。
+
+这次火是因为时机对：
+
+```
+2023–2024 初：模型本身是瓶颈    → Prompt Engineering 是主话题
+2024 末–2025：上下文是瓶颈     → Context Engineering 成主话题
+                                  → Cursor 类 AI IDE 实用化
+                                  → Vibe Coding 流行
+2025 末–2026 初：长期运行是瓶颈 → Harness Engineering
+```
+
+主要矛盾从"模型够不够聪明"变成了"系统能不能让聪明的模型稳定地做事"。这时候 Mitchell 给了名字，OpenAI 给了背书的案例，社区开始集中讨论。
+
+加速这件事的还有一个意外事件：**2026 年 3 月 31 日，Claude Code 完整源码通过 npm 包的 source map 文件意外泄露**（[Ars Technica 报道](https://arstechnica.com/ai/2026/03/entire-claude-code-cli-source-code-leaks-thanks-to-exposed-map-file/)），相关推文超过 [2700 万次浏览](https://www.cnet.com/tech/anthropic-accidentally-exposes-source-code-for-claude-code/)。社区第一次能逐行看到一个生产级 agent harness 的实现，关于 harness engineering 的讨论从此有了对照源码看的具体素材。
+
+---
+
+## 几条值得记住的观点
+
+从这几篇原文里提炼出来的：
+
+- **AI 表现不好不一定是模型问题**——可能是它周围的环境不够好。先想能不能改环境，再考虑换模型。
+- **每次错误都是改进 harness 的机会**（Mitchell）。错一次就往 AGENTS.md 加一行，比一遍遍重复指令省得多。
+- **AI 看不到的东西就不存在**（OpenAI）。Slack 讨论、人脑里的隐性知识，AI 都不知道。如果重要，写下来塞进它能读到的地方。
+- **harness 是临时脚手架**（Anthropic）。现在管用的方法，下一代模型出来可能就不需要了。
+
+---
+
+## 原始材料
+
+| 作者 | 标题 | 时间 |
+| --- | --- | --- |
+| Mitchell Hashimoto | [My AI Adoption Journey](https://mitchellh.com/writing/my-ai-adoption-journey) | 2026-02-05 |
+| OpenAI / Ryan Lopopolo | [Harness engineering: leveraging Codex in an agent-first world](https://openai.com/index/harness-engineering/) | 2026-02-11 |
+| Anthropic | [Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) | 2025-11-26 |
+| Anthropic | [Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) | 2025-09 |
+| Anthropic | [Best practices for Claude Code](https://www.anthropic.com/engineering/claude-code-best-practices) | — |
+| Anthropic | [Harness design for long-running application development](https://www.anthropic.com/engineering/harness-design-long-running-apps) | 2026 |
+| Ars Technica | [Entire Claude Code CLI source code leaks](https://arstechnica.com/ai/2026/03/entire-claude-code-cli-source-code-leaks-thanks-to-exposed-map-file/) | 2026-03-31 |
+| swyx | [Extreme Harness Engineering — Ryan Lopopolo（深度访谈）](https://open.substack.com/pub/swyx/p/harness-eng) | 2026 |

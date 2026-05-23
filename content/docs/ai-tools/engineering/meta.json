@@ -1,0 +1,10 @@
+{
+  "title": "AI 工程演进",
+  "description": "Prompt → Context → MCP → Skills → Harness",
+  "pages": [
+    "index",
+    "mcp",
+    "skills",
+    "harness"
+  ]
+}

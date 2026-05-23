@@ -1,0 +1,277 @@
+---
+title: "MCP 协议（Model Context Protocol）"
+description: "AI 客户端和外部服务之间的统一接口。Anthropic 2024-11 开源，现在已经成事实标准。"
+---
+
+> MCP 是 Anthropic 在 2024 年 11 月开源的协议，目前已经被主流 AI 客户端广泛支持。这一页介绍它解决什么问题、协议结构、各家工具的配置方法和安全注意事项。
+>
+> 整理：2026-05
+
+---
+
+## 是什么、为什么会出现
+
+Anthropic [在 2024 年 11 月 25 日开源了 MCP](https://www.anthropic.com/news/model-context-protocol)。官方原话：
+
+> The Model Context Protocol is an open standard that enables developers to build secure, two-way connections between their data sources and AI-powered tools.
+
+[Anthropic 官方文档](https://docs.anthropic.com/en/docs/agents-and-tools/mcp) 用一个比喻概括它的作用——**USB-C for AI applications**。
+
+具体的问题是：
+
+```
+没有 MCP 的时候
+  Cursor 想接 GitHub  → 自己写一套
+  Claude 想接 GitHub  → 自己写一套
+  ChatGPT 想接 GitHub → 自己写一套
+  Cursor 想接 Notion  → 又自己写一套
+  ...
+  → N 个客户端 × M 个服务 = N×M 套胶水代码
+
+有 MCP 之后
+  GitHub 实现一个 MCP server
+  Notion 实现一个 MCP server
+  Cursor / Claude / ChatGPT 各实现一次 MCP client
+  → N + M 套，互通
+```
+
+到 2025 年 12 月，Anthropic 把 MCP 捐给了 Linux Foundation 旗下的 Agentic AI Foundation（OpenAI 也是发起方之一），它现在不是 Anthropic 的私有协议。
+
+---
+
+## 谁支持 MCP
+
+到 2026 年中，主流工具基本都支持：
+
+| 客户端 | 状态 |
+| --- | --- |
+| Claude Desktop / Claude Code | 原生支持（Anthropic 是协议作者） |
+| Cursor | 原生支持 |
+| Kiro | 原生支持 |
+| OpenAI Codex CLI | 原生支持 |
+| ChatGPT Desktop | 已支持 |
+| Cherry Studio | 原生支持 |
+| Continue（VS Code 插件） | 支持 |
+
+服务方那一侧增长更快。[PulseMCP](https://www.pulsemcp.com/servers) 上目前已经收录了 15000+ 个 server。
+
+---
+
+## 协议结构
+
+```
+┌──────────────────┐      JSON-RPC      ┌──────────────────┐
+│  MCP Client      │ ◄────────────────► │  MCP Server      │
+│  (Claude/Cursor) │   stdio / HTTP     │  (GitHub / 文件)  │
+└──────────────────┘                    └──────────────────┘
+       ↑                                          ↑
+   模型决定调用                                 实际执行的代码
+```
+
+server 向 client 暴露三类东西：
+
+| 类型 | 干嘛的 | 例子 |
+| --- | --- | --- |
+| Tools | 可调用的函数 | `search_repos(query)` |
+| Resources | 可读取的数据 | `file:///project/notes.md` |
+| Prompts | 预制的提示词模板 | "code review prompt" |
+
+普通用户不用关心协议本身，只要知道**装一个 MCP server = 给 AI 多接了一个能力**。
+
+---
+
+## 学生场景下常用的几个
+
+| Server | 用途 | 备注 |
+| --- | --- | --- |
+| **filesystem**（官方） | 让 AI 读写指定目录 | 最常用。给最小目录范围，别给整个 home |
+| **github**（官方） | 查 issue / PR / 代码 | 找代码引用比 grep 顺手 |
+| **fetch**（官方） | 让 AI 抓网页 | 论文综述场景常用 |
+| **sequential-thinking**（官方） | 显式多步推理 | 复杂数学题、证明题 |
+| **memory**（官方） | 跨会话简易记忆 | 玩具性质，正经持久化建议 CLAUDE.md |
+| **puppeteer / playwright**（官方） | 浏览器自动化 | 网页爬虫、UI 测试 |
+| **arxiv-mcp-server** | 搜 arXiv | 论文调研 |
+| **zotero-mcp** | 读 Zotero 文献库 | 写综述时常用 |
+
+完整目录见 [PulseMCP](https://www.pulsemcp.com/servers) / [punkpeye/awesome-mcp-servers](https://github.com/punkpeye/awesome-mcp-servers)。
+
+---
+
+## 配置方法
+
+### Claude Desktop
+
+配置文件位置：
+
+- macOS：`~/Library/Application Support/Claude/claude_desktop_config.json`
+- Windows：`%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "C:\\Users\\YOUR_NAME\\Documents\\projects"
+      ]
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_xxxxxxxx"
+      }
+    },
+    "fetch": {
+      "command": "uvx",
+      "args": ["mcp-server-fetch"]
+    }
+  }
+}
+```
+
+保存后**完全退出 Claude Desktop 再启动**（不是关掉窗口）。聊天框会出现一个工具图标。
+
+### Claude Code（终端）
+
+可以直接命令行配，比改 JSON 方便：
+
+```bash
+# 添加一个 server
+claude mcp add filesystem -- npx -y @modelcontextprotocol/server-filesystem ./
+
+# 带环境变量
+claude mcp add github -e GITHUB_PERSONAL_ACCESS_TOKEN=ghp_xxx -- \
+  npx -y @modelcontextprotocol/server-github
+
+# 看已配的
+claude mcp list
+
+# 删
+claude mcp remove filesystem
+```
+
+### Cursor
+
+Settings → MCP → Add new MCP server，或编辑 `~/.cursor/mcp.json`：
+
+```json
+{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_xxx"
+      }
+    }
+  }
+}
+```
+
+### Kiro
+
+两层配置，行为一样：
+
+- 用户级：`~/.kiro/settings/mcp.json`
+- 项目级：`.kiro/settings/mcp.json`
+
+```json
+{
+  "mcpServers": {
+    "fetch": {
+      "command": "uvx",
+      "args": ["mcp-server-fetch"],
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}
+```
+
+`autoApprove` 列出的 tool name 调用时不会再弹确认，方便但有风险，建议先空着。
+
+---
+
+## 运行依赖：npx 和 uvx
+
+90% 的 MCP server 都依赖这两者之一。
+
+| 命令 | 来自 | 怎么装 |
+| --- | --- | --- |
+| `npx` | Node.js | 装 [Node.js LTS](https://nodejs.org)，Windows 一路 next |
+| `uvx` | uv（Python 包管理器） | `pip install uv` 或参考 [uv 安装文档](https://docs.astral.sh/uv/getting-started/installation/) |
+
+`npx -y package-name` 和 `uvx package-name` 第一次跑会自动下载，不需要单独 install 步骤。
+
+---
+
+## 安全须知
+
+MCP server 本质是**让 AI 在本机上跑别人写的代码**，常见风险：
+
+| 风险 | 实际场景 |
+| --- | --- |
+| 装了来路不明的 server | 第三方 server 可能读环境变量、上传文件 |
+| filesystem 给整个 home 目录 | AI 可能误改/误删别的项目 |
+| 把 API Key 写在 env 但 server 不可信 | Key 直接被读走 |
+| Prompt injection | server 返回的内容里塞"忽略之前指令"，AI 真就照做 |
+
+通行的几条原则：
+
+1. 只装 [官方仓库](https://github.com/modelcontextprotocol/servers) 或 [awesome-mcp-servers](https://github.com/punkpeye/awesome-mcp-servers) 里 star 多的
+2. filesystem 给具体到当前项目的路径，别给整个用户目录
+3. 涉及账号凭证（GitHub PAT、API Key）的 server，先看 source 再装
+4. 共享机器上不建议配 MCP——配置文件里 token 是明文存的
+
+---
+
+## 常见问题
+
+| 报错 | 解决 |
+| --- | --- |
+| 配完不显示工具 | 完全退出客户端再启动，关窗口不行 |
+| `command not found: npx` | 装 Node.js |
+| `command not found: uvx` | `pip install uv` |
+| Server 起不来 | 终端里手动跑一次 server 命令看错误日志 |
+| AI 不主动调工具 | 在对话里显式说"调用 xxx 工具"，或检查 tool description 是否清晰 |
+| Token 一下涨很多 | 工具描述都进 context 了——只装当前任务用得上的，别一次开 20 个 |
+
+---
+
+## 什么时候不需要 MCP
+
+不是所有任务都得 MCP。一个简单的判断：
+
+```
+任务里 AI 需要拿/改本地之外的东西吗？
+  ├── 不需要 → 直接用聊天/IDE 就行
+  └── 需要
+       ├── 已有官方/可信 server？
+       │    ├── 是 → 装上
+       │    └── 否 → 复制粘贴 / 写脚本 / 自己实现
+       └── 频率高吗？只用一两次的话复制粘贴反而快
+```
+
+学生场景下：
+
+- **只用 Claude Code 写代码**：filesystem + github 就够
+- **用 AI 帮读论文**：zotero-mcp / arxiv-mcp-server
+- **数据分析项目**：sqlite/postgres server 让 AI 直接查
+- **不写代码、纯聊天**：基本不需要
+
+---
+
+## 原始资料
+
+| 资源 | 链接 |
+| --- | --- |
+| MCP 官方文档 | [modelcontextprotocol.io](https://modelcontextprotocol.io) |
+| Anthropic 介绍 MCP 的官方文档 | [docs.anthropic.com/en/docs/agents-and-tools/mcp](https://docs.anthropic.com/en/docs/agents-and-tools/mcp) |
+| Anthropic 发布博客（2024-11-25） | [anthropic.com/news/model-context-protocol](https://www.anthropic.com/news/model-context-protocol) |
+| 官方 Server 仓库 | [github.com/modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers) |
+| awesome-mcp-servers | [github.com/punkpeye/awesome-mcp-servers](https://github.com/punkpeye/awesome-mcp-servers) |
+| PulseMCP（Server 目录，15000+） | [pulsemcp.com](https://www.pulsemcp.com/servers) |
+| Smithery（带在线测试） | [smithery.ai](https://smithery.ai) |
