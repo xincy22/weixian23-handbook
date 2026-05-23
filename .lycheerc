@@ -1,0 +1,40 @@
+# lychee link checker config
+# Docs: https://lychee.cli.rs/usage/config/
+
+# 重试和超时
+max_retries = 2
+retry_wait_time = 2
+timeout = 20
+
+# 只检查这些 scheme
+scheme = ["https", "http"]
+
+# 不检查邮件 / 标签 / 路径片段
+include_mail = false
+include_fragments = false
+
+# 提高并发但别太狠
+max_concurrency = 16
+
+# 假冒一个普通浏览器 UA，避免被防爬墙挡
+user_agent = "Mozilla/5.0 (compatible; LinkChecker/0.1; +https://github.com/lycheeverse/lychee)"
+
+# 接受这些状态码为"OK"——很多站会对自动请求返回 403/429/500，但浏览器其实能打开
+accept = [200, 201, 203, 206, 301, 302, 303, 304, 307, 308, 401, 403, 429]
+
+# 排除一些已知会误报或没必要检查的域
+exclude = [
+  # 本站自身的链接（loop 没意义）
+  "weixian23\\.xylt-space\\.top",
+  # GitHub 上的 anchor / 行号链接，lychee 容易因 rate limit 误报
+  "github\\.com/.*#L\\d+",
+  # 学校内网，CI 访问不到
+  "tsinghua\\.edu\\.cn",
+  # 国内常见的反爬严密的站
+  "weixin\\.qq\\.com",
+  "mp\\.weixin\\.qq\\.com",
+  "weibo\\.com",
+  # localhost
+  "localhost",
+  "127\\.0\\.0\\.1",
+]

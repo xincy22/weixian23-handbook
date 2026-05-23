@@ -4,6 +4,7 @@ import {
   BookOpen,
   Bot,
   Briefcase,
+  Clock,
   CodeXml,
   Compass,
   Inbox,
@@ -20,6 +21,7 @@ import {
   appShortName,
   gitConfig,
 } from '@/lib/shared';
+import { getRecentUpdates, MODULE_LABELS } from '@/lib/recent-updates';
 
 const modules = [
   {
@@ -74,6 +76,8 @@ const stats = [
 ];
 
 export default function HomePage() {
+  const recentUpdates = getRecentUpdates(6);
+
   return (
     <main className="relative flex flex-col">
       {/* 雪花特效（全站背景） */}
@@ -217,6 +221,54 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
+
+      {/* 最近更新 */}
+      {recentUpdates.length > 0 && (
+        <section className="container mx-auto px-6 pb-8">
+          <div className="rounded-2xl border border-fd-border bg-fd-card/60 p-6 backdrop-blur sm:p-8">
+            <header className="mb-6 flex items-center gap-3">
+              <div className="inline-flex size-9 items-center justify-center rounded-lg bg-fd-primary/10 text-fd-primary">
+                <Clock className="size-4" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold">最近更新</h2>
+                <p className="text-sm text-fd-muted-foreground">
+                  最近改动的页面，按时间倒序
+                </p>
+              </div>
+            </header>
+
+            <ul className="divide-y divide-fd-border">
+              {recentUpdates.map((u) => {
+                const moduleLabel = MODULE_LABELS[u.module] ?? u.module;
+                const date = new Date(u.date);
+                const dateLabel = `${date.getFullYear()}-${String(
+                  date.getMonth() + 1,
+                ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+                return (
+                  <li key={u.href}>
+                    <Link
+                      href={u.href}
+                      className="group flex flex-col gap-1 py-3 transition sm:flex-row sm:items-center sm:gap-4"
+                    >
+                      <span className="inline-flex shrink-0 rounded-full bg-fd-secondary px-2 py-0.5 text-xs text-fd-muted-foreground sm:w-20 sm:justify-center">
+                        {moduleLabel}
+                      </span>
+                      <span className="flex-1 text-sm font-medium group-hover:text-fd-primary">
+                        {u.title}
+                      </span>
+                      <span className="text-xs text-fd-muted-foreground tabular-nums">
+                        {dateLabel}
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </section>
+      )}
 
       {/* 数据统计区 */}
       <section className="relative overflow-hidden">

@@ -205,3 +205,15 @@ weixian23-handbook/
 - 主仓库：[github.com/xincy22/weixian23-handbook](https://github.com/xincy22/weixian23-handbook)
 - 维护者：为先 23 同学
 - 同学贡献：开 Issue 或提 PR，详见 [CONTRIBUTING.md](./CONTRIBUTING.md)
+
+---
+
+## 贡献者
+
+感谢所有为这个站点提交内容、修复问题、补充资源的同学。
+
+<a href="https://github.com/xincy22/weixian23-handbook/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=xincy22/weixian23-handbook" alt="贡献者" />
+</a>
+
+由 [contrib.rocks](https://contrib.rocks) 自动生成。

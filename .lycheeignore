@@ -1,0 +1,4 @@
+# 单独要忽略的 URL/正则放这里，每行一条。
+# 比起 .lycheerc 里的 exclude，这个文件更适合临时禁用。
+# 例：
+# https://example.com/known-broken-link

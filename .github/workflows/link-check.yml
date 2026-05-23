@@ -1,0 +1,68 @@
+name: Link Check
+
+on:
+  # 每周一早上 8 点（北京时间）跑一次
+  schedule:
+    - cron: '0 0 * * 1'
+  # 也允许在 Actions 面板手动触发
+  workflow_dispatch:
+  # PR 改了文档时也跑一遍
+  pull_request:
+    paths:
+      - 'content/docs/**'
+      - 'README.md'
+      - 'CONTRIBUTING.md'
+      - '.lycheeignore'
+
+# 只允许同时跑一个，新触发会取消旧的
+concurrency:
+  group: link-check-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Restore lychee cache
+        uses: actions/cache@v4
+        with:
+          path: .lycheecache
+          key: cache-lychee-${{ github.sha }}
+          restore-keys: cache-lychee-
+
+      - name: Run lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # 扫所有文档和 README，跳 node_modules / 构建产物
+          args: >-
+            --config .lycheerc
+            --no-progress
+            --cache
+            --max-cache-age 7d
+            './content/docs/**/*.mdx'
+            './README.md'
+            './CONTRIBUTING.md'
+          fail: false
+          output: ./lychee-report.md
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: lychee-report
+          path: ./lychee-report.md
+          if-no-files-found: warn
+
+      - name: Open or update tracking issue
+        # 只在 schedule / 手动触发时建 issue（PR 上的检查靠 check status 看就行）
+        if: github.event_name != 'pull_request'
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: '[Link Check] 失效链接报告'
+          content-filepath: ./lychee-report.md
+          labels: link-check, automated
