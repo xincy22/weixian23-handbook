@@ -36,3 +36,6 @@ next-env.d.ts
 
 # Cloudflare Wrangler
 .wrangler
+
+# Kiro IDE 内部数据（spec、配置、agent 历史等）
+.kiro/

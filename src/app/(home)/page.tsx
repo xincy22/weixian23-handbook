@@ -4,7 +4,7 @@ import {
   BookOpen,
   Bot,
   Briefcase,
-  Code2,
+  CodeXml,
   Compass,
   Inbox,
   PenLine,
@@ -46,7 +46,7 @@ const modules = [
   {
     slug: 'coding',
     title: '编程与数据分析工具',
-    icon: Code2,
+    icon: CodeXml,
     description: 'Python、MATLAB、Git、Linux、CMake、CUDA 入门',
     accent: 'from-blue-500 to-cyan-500',
   },
