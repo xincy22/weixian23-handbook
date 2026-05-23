@@ -2,27 +2,27 @@
 
 import Giscus from '@giscus/react';
 import { useTheme } from 'next-themes';
+import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 /**
- * Giscus comments embed for "discussion-style" pages (e.g. /docs/inbox).
+ * Giscus comments embed.
  *
- * - Uses GitHub Discussions of `xincy22/weixian23-handbook` (category: Inbox).
- * - Mapping = `pathname`, so each docs page gets its own discussion thread
- *   when this component is enabled there.
- * - Theme follows the site's light/dark preference.
+ * Globally rendered at the bottom of every docs page (see the docs
+ * page renderer). One discussion thread per pathname.
  *
- * To enable comments on a docs page, drop `<Comments />` in the .mdx file
- * (after MDX components are wired up via `getMDXComponents`).
+ * Theme is synced with the site's light/dark preference. Re-mounts
+ * on pathname change to ensure the iframe re-loads the right thread
+ * during client-side navigation.
  */
 export function Comments() {
   const { resolvedTheme } = useTheme();
+  const pathname = usePathname();
+
   // Avoid theme flash before next-themes hydrates.
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  // `preferred_color_scheme` is a safe pre-hydration default; we'll switch
-  // to an explicit theme once we know the resolved one.
   const giscusTheme = !mounted
     ? 'preferred_color_scheme'
     : resolvedTheme === 'dark'
@@ -32,6 +32,7 @@ export function Comments() {
   return (
     <div className="mt-12 pt-8 border-t">
       <Giscus
+        key={pathname}
         id="comments"
         repo="xincy22/weixian23-handbook"
         repoId="R_kgDOSknbpg"
