@@ -1,0 +1,567 @@
+---
+title: "远程开发工作流"
+description: "进组之后大概率每天都用：SSH 连服务器、VS Code Remote、tmux、conda 不撑爆家目录、代码同步、实验追踪。"
+---
+
+进研究生阶段几乎人人都会面对：实验室有一台或几台共享 GPU 服务器，自己的电脑只是终端。
+
+这一页梳理"怎么把那台服务器用得顺手"——从 SSH 基础到 conda 不撑爆家目录的实操细节。
+
+> 整理：2026-05
+
+---
+
+## 一、SSH 基础和密钥
+
+### 为什么要用密钥而不是密码
+
+每次 ssh 都输密码烦，而且密码会被暴力破解。**用密钥认证**——本机有私钥（`id_ed25519`），服务器有公钥（`authorized_keys`），ssh 就不用再输密码。
+
+### 生成密钥（一次性）
+
+```bash
+ssh-keygen -t ed25519 -C "your-email@example.com"
+```
+
+- `-t ed25519`：用 ed25519 算法（比 RSA 更短更安全，OpenSSH 6.5 起支持）
+- 提示输入文件路径直接回车，默认存在 `~/.ssh/id_ed25519`
+- 提示输入 passphrase 可以回车留空（也可以设密码——见后面"ssh-agent"那节）
+
+会生成两个文件：
+
+```
+~/.ssh/id_ed25519       ← 私钥，绝对不要外传
+~/.ssh/id_ed25519.pub   ← 公钥，可以贴出去
+```
+
+### 把公钥放到服务器上
+
+最简单一行：
+
+```bash
+ssh-copy-id user@server.example.com
+```
+
+第一次会要你输服务器密码，之后就免密登录了。
+
+如果 `ssh-copy-id` 不可用（Windows 没有），手动做：
+
+```bash
+# 把公钥内容复制下来
+cat ~/.ssh/id_ed25519.pub
+
+# ssh 上去，把内容追加到 ~/.ssh/authorized_keys
+ssh user@server
+mkdir -p ~/.ssh && chmod 700 ~/.ssh
+echo "刚才复制的 ssh-ed25519 ... user@host" >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+```
+
+### 文件权限不对会拒绝登录
+
+SSH 对文件权限非常严格。如果出现 `Permissions are too open` 之类的报错：
+
+```bash
+# 本机
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/id_ed25519
+chmod 644 ~/.ssh/id_ed25519.pub
+chmod 600 ~/.ssh/config
+
+# 服务器
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys
+```
+
+---
+
+## 二、`~/.ssh/config` 完整模板
+
+每次 `ssh -p 2222 -i ~/.ssh/lab_key user@some.long.hostname.cn` 太烦。把这些塞进 `~/.ssh/config`，之后 `ssh lab` 就够。
+
+```sshconfig
+# 全局默认（所有连接都套用，除非被具体 Host 覆盖）
+Host *
+    ServerAliveInterval 60        # 每 60 秒发一次心跳，避免 NAT/防火墙断连
+    ServerAliveCountMax 3         # 心跳失败 3 次后认定断开
+    ForwardAgent no               # 默认不转发 ssh-agent（按需在具体 host 打开）
+    HashKnownHosts no
+    AddKeysToAgent yes
+
+# 实验室 GPU 服务器
+Host lab
+    HostName 10.x.x.x               # 或 some.host.tsinghua.edu.cn
+    User your-username
+    Port 22                         # 非默认端口在这里改
+    IdentityFile ~/.ssh/id_ed25519
+    # 长时连接复用：之后 ssh/scp/rsync 同一台机器都走这条 socket，不重新握手
+    ControlMaster auto
+    ControlPath ~/.ssh/sockets/%r@%h:%p
+    ControlPersist 10m
+```
+
+复用 socket 这件事第一次用要先建目录：
+
+```bash
+mkdir -p ~/.ssh/sockets
+```
+
+之后效果是：第一次 `ssh lab` 建好连接后，开第二个终端 `ssh lab` 几乎瞬间打开（不用重新握手、不用再输 passphrase）。VS Code Remote 也会受益。
+
+### ssh-agent：让带 passphrase 的私钥也好用
+
+私钥设了 passphrase 更安全，但每次 ssh 都输也烦。`ssh-agent` 在内存里缓存解锁过的私钥：
+
+**Linux/macOS**：
+
+```bash
+# 启动 agent（多数 shell 已自动启动，可以先 ssh-add -l 看看）
+eval "$(ssh-agent -s)"
+
+# 加载私钥（输入一次 passphrase 就行）
+ssh-add ~/.ssh/id_ed25519
+
+# 看当前 agent 里加载了哪些
+ssh-add -l
+```
+
+**Windows（OpenSSH）**：
+
+PowerShell 管理员里跑一次：
+
+```powershell
+Set-Service ssh-agent -StartupType Automatic
+Start-Service ssh-agent
+```
+
+之后 `ssh-add ~/.ssh/id_ed25519` 一次性解锁。
+
+---
+
+## 三、跳板机 / 多跳：ProxyJump
+
+很多实验室服务器**不能从外网直接访问**，要先 ssh 到一台跳板机（bastion / jumphost），再从跳板机跳到目标机。手动跳两次很烦：
+
+```bash
+# 笨办法
+ssh user@bastion
+# 然后在 bastion 上：
+ssh user@gpu-server
+```
+
+OpenSSH 7.3 起（2016 年）有 `-J` 一步搞定：
+
+```bash
+ssh -J user@bastion user@gpu-server
+```
+
+更好的是写进 config：
+
+```sshconfig
+Host bastion
+    HostName bastion.example.com
+    User your-username
+    IdentityFile ~/.ssh/id_ed25519
+
+Host gpu
+    HostName 10.0.0.5               # 内网 IP
+    User your-username
+    IdentityFile ~/.ssh/id_ed25519
+    ProxyJump bastion               # 关键
+```
+
+之后 `ssh gpu` 就自动走 bastion 跳。多级跳板用逗号：
+
+```sshconfig
+Host inner
+    ProxyJump first-hop,second-hop
+```
+
+`scp`、`rsync`、VS Code Remote 都会自动尊重 `ProxyJump` 配置——一次配好，所有工具受益。
+
+---
+
+## 四、VS Code Remote SSH
+
+到了 2026 年，"在自己电脑上写代码、代码实际跑在远程"这件事，**几乎没有比 VS Code Remote SSH 更顺手的方案**（JetBrains 的 Gateway 是另一选项，但生态和插件不如 VS Code 全）。
+
+### 装
+
+VS Code 装 [Remote - SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh) 扩展，这一步就够。它会自动读你的 `~/.ssh/config`。
+
+### 连
+
+`F1` → `Remote-SSH: Connect to Host` → 选 config 里的某个 Host（比如 `lab` 或 `gpu`）。第一次连需要等 1-2 分钟——VS Code 在远端 `~/.vscode-server/` 下安装一份"远端服务器"。之后每次连接秒开。
+
+打开远端目录后：终端里跑的命令是远端的，左边文件树是远端的，安装的扩展（语法高亮、Python LSP 之类）也跑在远端。本地相当于只是一个浏览器壳。
+
+### 几个常见坑
+
+| 症状 | 原因 / 解法 |
+|---|---|
+| 连接很久就超时 | 远端没装 git/curl/wget 之类基础工具，VS Code Server 装不了。`apt install wget ca-certificates` 或问管理员 |
+| 远端家目录配额满了 | `~/.vscode-server/` 占空间不小（几百 MB）。配额紧的话挪到其他盘：`ln -s /data/$USER/.vscode-server ~/.vscode-server` |
+| 连上之后插件全是灰的 | 远端的扩展和本地是分开装的，第一次连会要你"在远端安装"。等装完即可 |
+| 卡在 "downloading VS Code Server" | 远端没法访问 `update.code.visualstudio.com`。让管理员加白名单，或开启 [离线安装](https://code.visualstudio.com/docs/remote/troubleshooting#_installing-a-supported-ssh-server) |
+| 改完文件保存有延迟 | 网络问题，跟 VS Code 无关。检查 SSH 是否在跳板上，或换个时段 |
+
+详见官方 [Remote Development Tips and Tricks](https://code.visualstudio.com/docs/remote/troubleshooting)。
+
+### 端口转发：远端跑的 web 服务，本地浏览器看
+
+最常见场景：远端起了 Jupyter / TensorBoard / wandb，怎么在本地浏览器打开？
+
+VS Code Remote 自动做了端口转发：远端跑 `jupyter lab --no-browser --port=8888`，VS Code 的"端口"面板里会出现 8888，点一下就在本地浏览器打开。零配置。
+
+不用 VS Code 的话，手动转发：
+
+```bash
+# 本地 8888 ←→ 远端 8888
+ssh -L 8888:localhost:8888 lab
+```
+
+跑这个命令并保持终端开着，浏览器访问 `http://localhost:8888` 就到达远端的服务。
+
+---
+
+## 五、tmux：让 session 不掉
+
+**痛点**：你 ssh 到服务器跑了一个训练脚本，6 小时后宿舍断网/笔记本休眠，ssh 断了——脚本也跟着死了。早上回来发现训练全废。
+
+**解决**：用 tmux 把进程从 ssh 会话里"拆出来"。tmux 是 **terminal multiplexer**，远端开一个长期存在的 session，你的 ssh 只是临时连进去看；ssh 断了 session 还在跑。
+
+### 三个核心命令
+
+```bash
+# 在服务器上：
+tmux new -s train         # 新建一个叫 "train" 的 session，进入它
+# ...这里跑你的训练命令，比如 python train.py...
+
+# 现在按  Ctrl-b  然后  d         （detach，离开但 session 继续跑）
+# 你被踢回普通 shell。可以安全退出 ssh，session 仍在后台。
+
+# 第二天再连回来：
+ssh lab
+tmux attach -t train      # 重新连接到 train session，看到当时离开时的画面
+
+# 列出所有 session
+tmux ls
+```
+
+按键说明：tmux 的所有快捷键都先按 **prefix** 再按目标键。**默认 prefix 是 `Ctrl-b`**。所以"`Ctrl-b` 然后 `d`"= 按住 Ctrl 按 b 松开，再单独按 d。
+
+### 常用快捷键（都是先按 `Ctrl-b`）
+
+| 键 | 作用 |
+|---|---|
+| `d` | detach（离开 session，session 继续跑） |
+| `c` | 在 session 里新开一个 window |
+| `n` / `p` | 切换到下一个 / 上一个 window |
+| `,` | 重命名当前 window |
+| `%` | 把当前面板左右切分 |
+| `"` | 把当前面板上下切分 |
+| `方向键` | 在分屏面板间切换 |
+| `?` | 看完整快捷键列表 |
+| `[` 然后方向键 / 鼠标滚轮 | 进入滚动模式翻历史输出（按 `q` 退出） |
+
+### 替代品对比
+
+| 工具 | 特点 | 推荐情境 |
+|---|---|---|
+| **tmux** | 主流、分屏好、可配置 | 默认推荐 |
+| **screen** | 老牌、几乎所有 Linux 都预装 | 服务器没装 tmux 时备用 |
+| **nohup** | 让单个命令在后台跑、忽略 SIGHUP | 不需要交互的"扔后台跑"情境 |
+| **Mosh** | 解决 SSH 在弱网下断连慢的问题 | 校园网时常抽风时配 tmux 用 |
+
+`nohup` 最简单的用法：
+
+```bash
+nohup python train.py > train.log 2>&1 &
+```
+
+但它不能"重连看输出"，进度只能看日志文件——所以**一般还是 tmux 更舒服**。
+
+---
+
+## 六、conda 不撑爆家目录
+
+实验室服务器上同学最常踩的坑：**几个月后家目录配额满了，所有命令报 `Disk quota exceeded`，AI 训练直接死。**
+
+罪魁祸首通常是 conda：默认情况下，**所有的环境和缓存都堆在 `~/.conda/` 和 `~/miniconda3/envs/`** 里，每个深度学习环境（PyTorch + CUDA）就是 5-10 GB 起步。家目录通常只有 10-50 GB 配额，三五个环境就满。
+
+服务器上一般有更大的"项目盘" / "工作盘" / "scratch"，常见路径名：
+
+- `/data/$USER/`
+- `/home/$USER/data/`（家目录里的子盘，但配额单独算）
+- `/scratch/$USER/`
+- `/mnt/data/$USER/`
+
+**先问师兄/师姐：「我们组的存储分别是哪几个目录、哪个有大配额、哪个没有备份？」** 别急着写脚本前问清楚。
+
+### 把 conda 数据搬到大盘
+
+假设大盘叫 `/data/$USER`。编辑（或新建）`~/.condarc`：
+
+```yaml
+envs_dirs:
+  - /data/your-username/conda/envs
+pkgs_dirs:
+  - /data/your-username/conda/pkgs
+always_copy: true
+```
+
+第一次保存之后：
+
+```bash
+mkdir -p /data/$USER/conda/envs
+mkdir -p /data/$USER/conda/pkgs
+
+# 验证生效
+conda info | grep -E "envs|pkgs"
+```
+
+> `always_copy: true` 这一行很重要：如果你的大盘是 NFS 挂载的（实验室共享存储基本都是），conda 默认用硬链接（hardlink）复用 package 缓存，跨文件系统时会失败。`always_copy: true` 强制改用复制，避开这个坑（来源：[UW Hyak HPC 文档](https://hyak.uw.edu/blog/conda-disk-storage)）。
+
+### 已经撑满了怎么办
+
+```bash
+# 看哪个目录吃了配额
+du -h --max-depth=1 ~ | sort -h | tail -20
+
+# 删旧的环境
+conda env list
+conda env remove --name 那个不再用的
+
+# 清掉缓存
+conda clean --all
+```
+
+清掉 `~/miniconda3/pkgs/` 和 `~/.conda/pkgs/` 下的 tarball 通常能立刻空出 5-10 GB。
+
+### pip 缓存也会撑爆
+
+pip 默认把下载过的 wheel 缓存在 `~/.cache/pip/`。同样可以挪走：
+
+```bash
+mkdir -p /data/$USER/.pip
+cat > ~/.pip/pip.conf <<EOF
+[global]
+cache-dir = /data/$USER/.pip/cache
+EOF
+```
+
+### mamba：conda 太慢的备选
+
+`conda install` 解析依赖经常要等几十秒甚至几分钟。**conda 23.9 起，默认 solver 已经换成 libmamba**，速度比经典 solver 快很多——所以先确认 conda 是新版本：
+
+```bash
+conda --version          # 23.9 以下建议升级
+conda update -n base conda
+```
+
+如果还嫌慢，安装 [mamba](https://mamba.readthedocs.io/) 或 [micromamba](https://mamba.readthedocs.io/en/latest/user_guide/micromamba.html) 直接替换 conda 命令：
+
+```bash
+conda install -n base -c conda-forge mamba
+# 之后所有 conda install 改成 mamba install
+```
+
+---
+
+## 七、代码和数据怎么同步
+
+这是一个**永远绕不开**的话题：本地写代码 → 推到服务器跑 → 结果拷回本地分析。
+
+### 代码：用 Git
+
+不要用 rsync / scp 同步代码。代码用 Git，原因：
+
+- 改了哪行有记录、能回滚
+- 多人协作不冲突
+- 远端跑出问题时，能精确说"用的是哪个 commit"，可复现
+
+标准流程：
+
+```bash
+# 本地写完 → 推到 GitHub / 校内 GitLab / 实验室自建 Gitea
+git add .
+git commit -m "..."
+git push
+
+# 服务器上拉
+ssh lab
+cd ~/projects/myproject
+git pull
+
+# 跑
+python train.py
+```
+
+如果代码里有不想 commit 的"实验性改动"，用 `git stash` 或新开分支，**不要**用 rsync 绕过版本管理。
+
+### 数据：scp 或 rsync
+
+数据集、checkpoint、log、生成的图片这些**不该进 Git**（太大、变化频繁），直接用 SSH 系工具拷。
+
+**单个 / 几个文件 → `scp`**，命令最简洁：
+
+```bash
+# 本地推到远端
+scp ./report.pdf lab:/data/$USER/
+
+# 远端拉到本地
+scp lab:/data/$USER/runs/exp1/best.pt ./
+
+# 整目录加 -r
+scp -r ./figures/ lab:/data/$USER/
+```
+
+**整个目录 / 大量文件 / 反复同步 → [`rsync`](https://rsync.samba.org/)**，比 scp 强在三件事：增量（只传改动）、断点续传、能看细致进度。
+
+```bash
+# 把本地数据集推到服务器
+rsync -avzP --partial ./dataset/ lab:/data/$USER/dataset/
+
+# 把服务器上跑出来的 checkpoint 拉回本地
+rsync -avzP --partial lab:/data/$USER/exp/runs/ ./local-runs/
+```
+
+参数说明：
+
+- `-a` archive 模式（保留权限、时间戳、软链接）
+- `-v` verbose
+- `-z` 传输时压缩（带宽差时有用）
+- `-P` = `--partial --progress`（断点续传 + 进度条）
+- `--delete`（可选）：删掉目标里源没有的文件，做严格镜像。**用前想清楚**
+
+简单判断：临时传一两个文件用 scp；几十 GB 数据集 / 反复同步用 rsync。两个都熟。
+
+### 大数据集 + 频繁改动：考虑 syncthing
+
+如果在做"本地标注 → 服务器训练"这种数据集频繁双向修改的工作，[Syncthing](https://syncthing.net) 比手动 rsync 省心。但**模型 checkpoint、log 不要用 Syncthing 同步**——磁盘 IO 会一直被监控吃掉。
+
+---
+
+## 八、实验追踪：W&B / MLflow / TensorBoard 选哪个
+
+跑 10 次 PyTorch 训练之后必然遇到的问题：
+
+- 这个 checkpoint 是用什么 lr 跑的？
+- 上周那次 acc 86% 的实验，hidden_dim 是 256 还是 512？
+- 这个 git commit + 这组超参 → 这个 acc，怎么对应起来？
+
+不能用 Excel 记。三个主流工具：
+
+| 工具 | 怎么定位 | 学生场景 |
+|---|---|---|
+| **TensorBoard** | TF 原生，PyTorch 也支持。**只看曲线、不存元数据**。 | 单机跑、只关心 loss 曲线时够用 |
+| **Weights & Biases (wandb)** | 云端 SaaS。[对学生 / 学术研究者免费](https://wandb.ai/site/research)（永久）。集成最顺、UI 最好。 | 海外网络通畅、不介意把数据上传云端时首选 |
+| **MLflow** | 开源、可自部署。功能完整但 UI 一般。 | 国内访问 wandb 有问题 / 实验室自部署 / 数据敏感时用 |
+
+### wandb 极简上手
+
+```python
+import wandb
+
+wandb.init(
+    project="my-experiment",
+    config={
+        "lr": 1e-3,
+        "batch_size": 64,
+        "model": "resnet50",
+    },
+)
+
+for epoch in range(epochs):
+    loss = train_one_epoch(...)
+    wandb.log({"loss": loss, "acc": eval_acc})
+
+wandb.finish()
+```
+
+跑起来后 wandb 自动记录：
+
+- 你设的所有超参
+- 每个 step 的指标曲线
+- 系统指标（GPU 利用率、显存、CPU、磁盘）
+- 当前 git commit + diff（如果是 git 仓库）
+- 完整的 stdout/stderr
+
+之后在 [wandb.ai](https://wandb.ai/) 网页上看所有实验，按超参筛选 / 对比曲线。
+
+### TensorBoard 极简上手
+
+PyTorch：
+
+```python
+from torch.utils.tensorboard import SummaryWriter
+writer = SummaryWriter("runs/exp1")
+
+for step, loss in enumerate(losses):
+    writer.add_scalar("train/loss", loss, step)
+
+writer.close()
+```
+
+启动：
+
+```bash
+tensorboard --logdir runs --port 6006
+# 浏览器打开 http://localhost:6006（或经端口转发到本地）
+```
+
+TensorBoard 的弱点：每次重新跑实验需要换目录，超参不会自动记下来——所以**单纯 TensorBoard 长期会乱**，要么自己写命名规范，要么换 wandb / MLflow。
+
+---
+
+## 九、把上面这些组合成一天的工作流
+
+整套配好之后，典型的一天大概是这样：
+
+```
+[本地 macOS / Windows]
+  早上打开笔记本
+  → VS Code Remote-SSH 连上 lab：自动恢复昨天关掉时的所有打开文件
+  → 改完代码：git add / commit / push
+  
+[服务器 lab]
+  自动拉到 GPU 节点：
+  ssh lab → tmux attach -t exp1 → git pull
+  → wandb 上看昨晚那个 6 小时训练，曲线还在涨
+  → 改超参，再跑一次：python train.py
+  → tmux detach（Ctrl-b d），关电脑去吃饭
+
+[下午回来]
+  → ssh 上去，tmux attach 看进度
+  → rsync 把 checkpoint 拉回本地分析
+  → 继续改代码 / 跑下一组实验
+```
+
+整套关键技术点的"如果出问题去看哪一节"：
+
+| 症状 | 看哪一节 |
+|---|---|
+| ssh 一会儿就掉 | 一、二（ServerAliveInterval） |
+| 每次 ssh 都要输密码 | 一（ssh 密钥）+ 二（ssh-agent） |
+| 内外网都需要才能到目标机 | 三（ProxyJump） |
+| VS Code Remote 装好之后又卡住 | 四的"几个常见坑" |
+| 训练跑到一半 ssh 断了进程也死了 | 五（tmux） |
+| `Disk quota exceeded` | 六（conda 配额） |
+| `conda install` 半天没动 | 六（mamba / libmamba） |
+| 上周跑的实验找不回参数 | 八（wandb / MLflow） |
+
+---
+
+## 十、推荐阅读
+
+| 资源 | 内容 |
+|---|---|
+| [VS Code Remote Development](https://code.visualstudio.com/docs/remote/remote-overview) | 官方文档，所有 Remote SSH 细节 |
+| [VS Code Remote Tips and Tricks](https://code.visualstudio.com/docs/remote/troubleshooting) | 常见问题集合，比一搜各种博客都准确 |
+| [OpenSSH ProxyJump（Red Hat 博客）](https://www.redhat.com/en/blog/ssh-proxy-bastion-proxyjump) | 跳板机最清晰的中等深度讲解 |
+| [tmux Cheat Sheet](https://tmuxcheatsheet.com) | 最常用的快捷键速查 |
+| [conda 官方 disk usage 配置](https://docs.conda.io/projects/conda/en/stable/user-guide/configuration/custom-env-and-pkg-locations.html) | `envs_dirs` / `pkgs_dirs` 详细说明 |
+| [UW Hyak: Disk Storage Management with Conda](https://hyak.uw.edu/blog/conda-disk-storage/) | conda 撑爆家目录的完整诊断流程 |
+| [rsync 官方 manpage](https://download.samba.org/pub/rsync/rsync.1) | rsync 所有 flag |
+| [W&B Quickstart](https://docs.wandb.ai/quickstart) | wandb 快速上手 |
+| [Made With ML: Experiment tracking](https://madewithml.com/courses/mlops/experiment-tracking/) | wandb / MLflow 对比和实战 |

@@ -1,6 +1,6 @@
 {
   "title": "编程与数据分析工具",
-  "description": "Python、MATLAB、Git、Linux",
+  "description": "Python、MATLAB、Git、Linux、远程开发",
   "icon": "CodeXml",
   "pages": [
     "index",
@@ -8,6 +8,7 @@
     "python",
     "matlab",
     "git",
-    "linux"
+    "linux",
+    "remote-dev"
   ]
 }
