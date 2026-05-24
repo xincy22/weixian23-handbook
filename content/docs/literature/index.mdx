@@ -3,14 +3,44 @@ title: "文献检索与论文阅读指南"
 description: "帮助同学从「想找论文」到「能读懂论文」的全流程指南。"
 ---
 
+import { Search, Hash, Filter, BookOpen, Library } from 'lucide-react';
+
 帮助同学从「想找论文」到「能读懂论文」的全流程指南。
 
----
-
-## 本目录内容
-
-- [检索入口清单](./search-portals.mdx) — Google Scholar / WoS / IEEE / CNKI / arXiv 等平台
-- [关键词检索方法](./keyword-search.mdx) — 中英关键词构造、同义词、缩写
-- [论文筛选标准](./paper-filter.mdx) — 怎么判断一篇论文值不值得读
-- [阅读流程与一页式模板](./reading-flow.mdx) — 阅读顺序 + 论文笔记模板
-- [Zotero使用指南](./zotero.mdx) — 文献管理工具入门
+<ModuleCards>
+  <ModuleCard
+    icon={<Search />}
+    title="检索入口清单"
+    description="Google Scholar / WoS / IEEE / CNKI / arXiv 等平台"
+    href="/docs/literature/search-portals"
+    accent="from-purple-500 to-indigo-600"
+  />
+  <ModuleCard
+    icon={<Hash />}
+    title="关键词检索方法"
+    description="中英关键词构造、同义词、缩写"
+    href="/docs/literature/keyword-search"
+    accent="from-indigo-500 to-blue-600"
+  />
+  <ModuleCard
+    icon={<Filter />}
+    title="论文筛选标准"
+    description="怎么判断一篇论文值不值得读"
+    href="/docs/literature/paper-filter"
+    accent="from-blue-500 to-cyan-500"
+  />
+  <ModuleCard
+    icon={<BookOpen />}
+    title="阅读流程与一页式模板"
+    description="阅读顺序 + 论文笔记模板"
+    href="/docs/literature/reading-flow"
+    accent="from-violet-500 to-fuchsia-500"
+  />
+  <ModuleCard
+    icon={<Library />}
+    title="Zotero 使用指南"
+    description="文献管理工具入门"
+    href="/docs/literature/zotero"
+    accent="from-fuchsia-500 to-purple-600"
+  />
+</ModuleCards>

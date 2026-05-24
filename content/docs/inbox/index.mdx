@@ -3,6 +3,35 @@ title: "待整理资源池 / 班级讨论区"
 description: "找不到放在哪一页的资源补充和讨论，统一发到这里。其它页面也可以在底部评论区直接补充。"
 ---
 
+import { MessageSquare, FileEdit, AlertCircle } from 'lucide-react';
+
+<ModuleCards>
+  <ModuleCard
+    icon={<MessageSquare />}
+    title="在具体页评论"
+    description="发现某页有问题或想补充？直接到那页底部评论区，最直接也最容易归位"
+    href="/docs"
+    accent="from-fuchsia-500 to-purple-600"
+    cta="去看文档"
+  />
+  <ModuleCard
+    icon={<FileEdit />}
+    title="提 Issue / PR"
+    description="想要更正式地修订内容？欢迎在 GitHub 上提 Issue 或 PR"
+    href="https://github.com/xincy22/weixian23-handbook/issues/new"
+    accent="from-purple-500 to-indigo-600"
+    cta="去 GitHub"
+  />
+  <ModuleCard
+    icon={<AlertCircle />}
+    title="本页评论区"
+    description="还没归类好的零散资源、链接、踩坑经验，发到本页底部评论区即可"
+    href="#怎么用"
+    accent="from-purple-600 to-pink-500"
+    cta="跳到说明"
+  />
+</ModuleCards>
+
 > 现在站内**每一页底部都有评论区**，看到具体哪页有问题/想补充，直接在那页评论最方便。
 > 这一页留给那些**还没归类好的**资源、链接、踩坑经验。
 > 维护同学会定期把评论里的内容整理到对应板块。

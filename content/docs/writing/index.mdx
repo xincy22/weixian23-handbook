@@ -3,15 +3,51 @@ title: "科研写作与排版工具指南"
 description: "针对课程报告、文献综述、毕业论文、期刊投稿等写作需求的工具与流程指南。"
 ---
 
+import { Scale, ListChecks, FileCode, Sigma, ImagePlus, ShieldAlert } from 'lucide-react';
+
 针对课程报告、文献综述、毕业论文、期刊投稿等写作需求的工具与流程指南。
 
----
-
-## 本目录内容
-
-- [写作工具对比](./writing-tools.mdx) — Word / LaTeX / Overleaf / Typst / Markdown 适用场景
-- [写作基本流程](./writing-flow.mdx) — 从大纲到润色的标准流程、图表规范、参考文献管理
-- [LaTeX快速入门](./latex.mdx) — LaTeX 最少必要知识 + 推荐 Prism / Overleaf / VS Code 三种平台
-- [AI辅助写作的边界](./ai-writing-boundary.mdx) — AI 能做什么、不能做什么、合规声明模板
-- [AI学术绘图指南](./ai-figures.mdx) — 数据图和示意图的工具选择、AI 辅助方法、期刊规范
-- [Word公式输入UnicodeMath](./word-unicodemath.mdx) — Word 中像打字一样快速输入公式
+<ModuleCards>
+  <ModuleCard
+    icon={<Scale />}
+    title="写作工具对比"
+    description="Word / LaTeX / Overleaf / Typst / Markdown 适用场景"
+    href="/docs/writing/writing-tools"
+    accent="from-indigo-500 to-blue-600"
+  />
+  <ModuleCard
+    icon={<ListChecks />}
+    title="写作基本流程"
+    description="从大纲到润色的标准流程、图表规范、参考文献管理"
+    href="/docs/writing/writing-flow"
+    accent="from-blue-500 to-cyan-500"
+  />
+  <ModuleCard
+    icon={<FileCode />}
+    title="LaTeX 快速入门"
+    description="LaTeX 最少必要知识 + Prism / Overleaf / VS Code 三种平台"
+    href="/docs/writing/latex"
+    accent="from-violet-500 to-fuchsia-500"
+  />
+  <ModuleCard
+    icon={<Sigma />}
+    title="Word 公式输入 UnicodeMath"
+    description="Word 中像打字一样快速输入公式"
+    href="/docs/writing/word-unicodemath"
+    accent="from-fuchsia-500 to-purple-600"
+  />
+  <ModuleCard
+    icon={<ImagePlus />}
+    title="AI 学术绘图指南"
+    description="数据图和示意图的工具选择、AI 辅助方法、期刊规范"
+    href="/docs/writing/ai-figures"
+    accent="from-purple-500 to-indigo-600"
+  />
+  <ModuleCard
+    icon={<ShieldAlert />}
+    title="AI 辅助写作的边界"
+    description="AI 能做什么、不能做什么、合规声明模板"
+    href="/docs/writing/ai-writing-boundary"
+    accent="from-purple-600 to-pink-500"
+  />
+</ModuleCards>

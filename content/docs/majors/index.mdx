@@ -3,18 +3,54 @@ title: "专业方向资源导航"
 description: "帮同学了解一个专业方向时知道「从哪里开始」。每个方向页面遵循统一模板，方便横向对比。"
 ---
 
+import { Cpu, Microscope, Gauge, FlaskConical, Brain, MonitorSmartphone } from 'lucide-react';
+
 帮同学了解一个专业方向时知道「从哪里开始」。每个方向页面遵循统一模板，方便横向对比。
 
----
-
-## 本目录内容
-
-- [集成电路与芯片](./ic.mdx) — 数字/模拟/EDA/制造/封装等细分方向
-- [生物医学工程](./biomedical.mdx) — 医学影像、医疗器械、生信、可穿戴
-- [精密仪器与测控](./instrument.mdx) — 传感器、精密测量、惯导、机器人
-- [材料科学与工程](./materials.mdx) — 锂电、半导体材料、显示、新能源
-- [人工智能与机器学习](./ai.mdx) — CV / NLP / RL / LLM / 多模态
-- [计算机与软件开发](./cs.mdx) — 系统、网络、数据库、Web、分布式
+<ModuleCards>
+  <ModuleCard
+    icon={<Cpu />}
+    title="集成电路与芯片"
+    description="数字 / 模拟 / EDA / 制造 / 封装等细分方向"
+    href="/docs/majors/ic"
+    accent="from-violet-500 to-fuchsia-500"
+  />
+  <ModuleCard
+    icon={<Microscope />}
+    title="生物医学工程"
+    description="医学影像、医疗器械、生信、可穿戴"
+    href="/docs/majors/biomedical"
+    accent="from-fuchsia-500 to-purple-600"
+  />
+  <ModuleCard
+    icon={<Gauge />}
+    title="精密仪器与测控"
+    description="传感器、精密测量、惯导、机器人"
+    href="/docs/majors/instrument"
+    accent="from-purple-500 to-indigo-600"
+  />
+  <ModuleCard
+    icon={<FlaskConical />}
+    title="材料科学与工程"
+    description="锂电、半导体材料、显示、新能源"
+    href="/docs/majors/materials"
+    accent="from-indigo-500 to-blue-600"
+  />
+  <ModuleCard
+    icon={<Brain />}
+    title="人工智能与机器学习"
+    description="CV / NLP / RL / LLM / 多模态"
+    href="/docs/majors/ai"
+    accent="from-blue-500 to-cyan-500"
+  />
+  <ModuleCard
+    icon={<MonitorSmartphone />}
+    title="计算机与软件开发"
+    description="系统、网络、数据库、Web、分布式"
+    href="/docs/majors/cs"
+    accent="from-purple-600 to-pink-500"
+  />
+</ModuleCards>
 
 ---
 

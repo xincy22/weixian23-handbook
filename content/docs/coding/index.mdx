@@ -3,16 +3,58 @@ title: "编程与数据分析工具指南"
 description: "服务于课程项目、科研数据处理、代码调试等场景，覆盖多个专业方向。"
 ---
 
+import { TableProperties, Code2, FunctionSquare, GitBranch, GitFork, Terminal, Server } from 'lucide-react';
+
 服务于课程项目、科研数据处理、代码调试等场景，覆盖多个专业方向。
 
----
-
-## 本目录内容
-
-- [工具选择对照表](./tools-matrix.mdx) — Python / MATLAB / Origin / VS Code / Git / Linux 等
-- [Python环境配置](./python.mdx) — Anaconda、虚拟环境、Jupyter
-- [MATLAB入门指南](./matlab.mdx) — MATLAB 快速上手 + 新手避坑 + Simulink 入门
-- [Git版本管理入门](./git.mdx) — 课程项目和科研代码的版本管理
-- [GitHub使用指南](./github.mdx) — 注册、SSH、Fork + PR 协作、Issues、Pages、Student Pack
-- [Linux与编译环境](./linux.mdx) — 基础命令、SSH、CMake、CUDA 入门
-- [远程开发工作流](./remote-dev.mdx) — SSH、VS Code Remote、tmux、conda 配额、代码同步、实验追踪
+<ModuleCards>
+  <ModuleCard
+    icon={<TableProperties />}
+    title="工具选择对照表"
+    description="Python / MATLAB / Origin / VS Code / Git / Linux 等"
+    href="/docs/coding/tools-matrix"
+    accent="from-blue-500 to-cyan-500"
+  />
+  <ModuleCard
+    icon={<Code2 />}
+    title="Python 环境配置"
+    description="Anaconda、虚拟环境、Jupyter"
+    href="/docs/coding/python"
+    accent="from-violet-500 to-fuchsia-500"
+  />
+  <ModuleCard
+    icon={<FunctionSquare />}
+    title="MATLAB 入门指南"
+    description="MATLAB 快速上手 + 新手避坑 + Simulink 入门"
+    href="/docs/coding/matlab"
+    accent="from-fuchsia-500 to-purple-600"
+  />
+  <ModuleCard
+    icon={<GitBranch />}
+    title="Git 版本管理入门"
+    description="课程项目和科研代码的版本管理"
+    href="/docs/coding/git"
+    accent="from-purple-500 to-indigo-600"
+  />
+  <ModuleCard
+    icon={<GitFork />}
+    title="GitHub 使用指南"
+    description="注册、SSH、Fork + PR 协作、Issues、Pages、Student Pack"
+    href="/docs/coding/github"
+    accent="from-indigo-500 to-blue-600"
+  />
+  <ModuleCard
+    icon={<Terminal />}
+    title="Linux 与编译环境"
+    description="基础命令、SSH、CMake、CUDA 入门"
+    href="/docs/coding/linux"
+    accent="from-purple-600 to-pink-500"
+  />
+  <ModuleCard
+    icon={<Server />}
+    title="远程开发工作流"
+    description="SSH、VS Code Remote、tmux、conda 配额、代码同步、实验追踪"
+    href="/docs/coding/remote-dev"
+    accent="from-blue-500 to-violet-500"
+  />
+</ModuleCards>

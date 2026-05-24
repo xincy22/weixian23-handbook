@@ -3,12 +3,30 @@ title: "就业、实习与行业认知资源"
 description: "整理各专业方向的行业去向、企业岗位、实习入口和简历面试准备资源。"
 ---
 
+import { Building2, ClipboardList, FileUser } from 'lucide-react';
+
 整理各专业方向的行业去向、企业岗位、实习入口和简历面试准备资源。
 
----
-
-## 本目录内容
-
-- [行业方向概览](./industries.mdx) — 各专业对应的行业与典型公司
-- [实习信息入口](./internship.mdx) — 学校就业网、招聘公众号、牛客、BOSS、实习僧等
-- [简历与面试准备](./resume.mdx) — 简历模板、面试经验、专业基础准备
+<ModuleCards>
+  <ModuleCard
+    icon={<Building2 />}
+    title="行业方向概览"
+    description="各专业对应的行业与典型公司"
+    href="/docs/career/industries"
+    accent="from-purple-600 to-pink-500"
+  />
+  <ModuleCard
+    icon={<ClipboardList />}
+    title="实习信息入口"
+    description="学校就业网、招聘公众号、牛客、BOSS、实习僧等"
+    href="/docs/career/internship"
+    accent="from-fuchsia-500 to-purple-600"
+  />
+  <ModuleCard
+    icon={<FileUser />}
+    title="简历与面试准备"
+    description="简历模板、面试经验、专业基础准备"
+    href="/docs/career/resume"
+    accent="from-purple-500 to-indigo-600"
+  />
+</ModuleCards>

@@ -164,3 +164,66 @@ html > body[data-scroll-locked] {
 .fade-in-up {
   animation: fade-in-up 0.6s ease-out backwards;
 }
+
+/* ============================================
+   文档正文：紫色化的细节装饰
+   选择器特异性提示：Fumadocs typography 用 .prose code 等直接选择器
+   （特异性 0,1,1），我们必须 ≥ 它，并放在 @import 之后才能覆盖。
+   用 .prose.prose 把特异性拉到 (0,2,0)，可靠覆盖。
+   ============================================ */
+
+/* 行内代码：浅紫底 + 紫字 */
+.prose.prose :not(pre) > code {
+  background: oklch(95% 0.04 312 / 0.6);
+  color: oklch(38% 0.18 312);
+  border: 1px solid oklch(85% 0.06 312 / 0.6);
+  border-radius: 0.375rem;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.875em;
+  font-weight: 500;
+}
+
+.dark .prose.prose :not(pre) > code {
+  background: oklch(28% 0.05 312 / 0.5);
+  color: oklch(82% 0.12 312);
+  border-color: oklch(40% 0.08 312 / 0.5);
+}
+
+/* 引用块：左侧紫色竖条 + 浅紫背景，去掉默认斜体和引号 */
+.prose.prose blockquote {
+  border-inline-start: 3px solid var(--color-fd-primary);
+  background: oklch(96% 0.025 312 / 0.6);
+  border-radius: 0 0.5rem 0.5rem 0;
+  padding: 0.875rem 1.25rem;
+  font-style: normal;
+  font-weight: normal;
+  margin-block: 1.5rem;
+}
+
+.dark .prose.prose blockquote {
+  background: oklch(25% 0.04 312 / 0.4);
+}
+
+/* 关掉 typography 默认的 “开/闭引号” 装饰（中文里很丑） */
+.prose.prose blockquote p:first-of-type::before,
+.prose.prose blockquote p:last-of-type::after {
+  content: none;
+}
+
+.prose.prose blockquote p {
+  margin-block: 0;
+}
+
+.prose.prose blockquote p + p {
+  margin-block-start: 0.5rem;
+}
+
+/* 文本选中色 */
+::selection {
+  background: oklch(80% 0.12 312 / 0.4);
+  color: var(--color-fd-foreground);
+}
+
+.dark ::selection {
+  background: oklch(50% 0.18 312 / 0.5);
+}

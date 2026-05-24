@@ -3,14 +3,44 @@ title: "AI 工具与 API"
 description: "纯工具参考。找工具、查定价、看配置方法、复制 Prompt。"
 ---
 
+import { LayoutGrid, KeyRound, Workflow, FileText, BookOpen } from 'lucide-react';
+
 纯工具参考。找工具、查定价、看配置方法、复制 Prompt。
 
----
-
-## 本目录内容
-
-- [AI 工具大全](./ai-tools-list.mdx) — 所有工具分类汇总 + 外部资源链接
-- [API 配置指南](./api-setup.mdx) — 班级 API 试点方案 + 各工具配置方法
-- [AI 工程演进](./engineering/index.mdx) — Prompt → Context → MCP → Skills → Harness 这条主线
-- [Prompt 模板：全部模板](./prompts/all-templates.mdx) — 7 大场景的 Prompt 模板，复制即用
-- [Prompt 模板：资源与进阶](./prompts/prompt-resources.mdx) — 外部 Prompt 仓库、平台、学习资源
+<ModuleCards>
+  <ModuleCard
+    icon={<LayoutGrid />}
+    title="AI 工具大全"
+    description="所有工具分类汇总 + 外部资源链接"
+    href="/docs/ai-tools/ai-tools-list"
+    accent="from-fuchsia-500 to-purple-600"
+  />
+  <ModuleCard
+    icon={<KeyRound />}
+    title="API 配置指南"
+    description="班级 API 试点方案 + 各工具配置方法"
+    href="/docs/ai-tools/api-setup"
+    accent="from-purple-500 to-indigo-600"
+  />
+  <ModuleCard
+    icon={<Workflow />}
+    title="AI 工程演进"
+    description="Prompt → Context → MCP → Skills → Harness 这条主线"
+    href="/docs/ai-tools/engineering"
+    accent="from-indigo-500 to-blue-600"
+  />
+  <ModuleCard
+    icon={<FileText />}
+    title="Prompt 模板"
+    description="7 大场景的 Prompt 模板，复制即用"
+    href="/docs/ai-tools/prompts/all-templates"
+    accent="from-blue-500 to-cyan-500"
+  />
+  <ModuleCard
+    icon={<BookOpen />}
+    title="Prompt 资源与进阶"
+    description="外部 Prompt 仓库、平台、学习资源"
+    href="/docs/ai-tools/prompts/prompt-resources"
+    accent="from-violet-500 to-fuchsia-500"
+  />
+</ModuleCards>
