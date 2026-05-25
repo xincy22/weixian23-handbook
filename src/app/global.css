@@ -227,3 +227,13 @@ html > body[data-scroll-locked] {
 .dark ::selection {
   background: oklch(50% 0.18 312 / 0.5);
 }
+
+/* ============================================
+   隐藏 Fumadocs TOC 的 "No Headings" 占位框
+   保留 TOC 容器空间避免不同页面间内容区水平偏移，
+   但去掉视觉上的"空盒子"。
+   定位方式：TOC 容器 #nd-toc 里那个 .rounded-lg.border.bg-fd-card 就是 TOCEmpty。
+   ============================================ */
+#nd-toc .rounded-lg.border.bg-fd-card {
+  display: none;
+}

@@ -73,7 +73,7 @@ description: "一句话简介"
 ### 表格 / 链接 / 代码块
 
 - 表格用标准 Markdown 表格
-- 站内链接用相对路径：`[Python 环境配置](/docs/coding/python)`
+- 站内链接用**绝对路径**：`[Python 环境配置](/docs/coding/python)`（不要用 `./python.mdx` 这种相对路径，dev 模式会 500）
 - 外部链接：`[DeepSeek](https://chat.deepseek.com)`
 - 代码块**一定要标语言**：
 
@@ -98,6 +98,55 @@ MDX 把 `<...>` 当成 JSX 标签解析，所以正文里用到 `<` 的地方要
 
 - 行内：`$E = mc^2$`
 - 行间：`$$\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}$$`
+
+### 卡片网格（ModuleCard）
+
+想做一组带图标的导航卡片（像各模块首页那样），用站内的 `<ModuleCards>` + `<ModuleCard>`。这两个组件已经全局注入到 MDX，**不需要 import**。
+
+```mdx
+import { Bot, KeyRound } from 'lucide-react';
+
+<ModuleCards>
+  <ModuleCard
+    icon={<Bot />}
+    title="AI 工具大全"
+    description="所有工具分类汇总"
+    href="/docs/ai-tools/ai-tools-list"
+    accent="from-fuchsia-500 to-purple-600"
+  />
+  <ModuleCard
+    icon={<KeyRound />}
+    title="API 配置指南"
+    description="班级 API 试点 + 各工具配置"
+    href="/docs/ai-tools/api-setup"
+    accent="from-purple-500 to-indigo-600"
+  />
+</ModuleCards>
+```
+
+**Props：**
+
+| Prop | 必填 | 说明 |
+| --- | --- | --- |
+| `title` | ✅ | 卡片标题 |
+| `href` | ✅ | 跳转路径，**绝对路径** `/docs/...` |
+| `description` | 可选 | 描述文字 |
+| `icon` | 可选 | lucide-react 图标，需先 import |
+| `accent` | 可选 | Tailwind 渐变类，默认紫色 |
+| `cta` | 可选 | 右下角按钮文字，默认 "进入" |
+
+**常用 accent 配色：**
+
+```
+from-fuchsia-500 to-purple-600    品红→紫
+from-purple-500 to-indigo-600     紫→靛
+from-indigo-500 to-blue-600       靛→蓝
+from-blue-500 to-cyan-500         蓝→青
+from-violet-500 to-fuchsia-500    紫罗兰→品红
+from-purple-600 to-pink-500       紫→粉
+```
+
+**图标查询：** [lucide.dev/icons](https://lucide.dev/icons)（注意 lucide-react v1.16 移除了 `Github`，用 `GitFork` 替代）。
 
 ---
 
