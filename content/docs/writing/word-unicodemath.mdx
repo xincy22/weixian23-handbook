@@ -344,7 +344,92 @@ $$f(x)=\begin{cases}x^2, & x\geq 0\\-x^2, & x&lt;0\end{cases}$$
 
 ---
 
-## 十三、实战示例
+## 十三、公式编号
+
+> 公式编号不是 UnicodeMath 语法的一部分，而是 Word 文档排版和引用管理的一部分。
+> 如果文档里会增删公式，不要只靠手打编号；至少要用交叉引用，最好让编号本身也自动生成。
+
+### 先选方法
+
+| 需求 | 推荐方法 | 适合场景 |
+| --- | --- | --- |
+| 只写短文档，公式很少 | 手动编号 + 交叉引用 | 临时作业、不会频繁改公式顺序 |
+| 公式编号要和公式同一行并靠右 | 无边框表格 / 制表位 + `SEQ` 字段 | 论文、报告、需要 `(1)`、`(2)` 这种版式 |
+| 需要 Word 原生题注和公式目录 | 题注（Caption）+ 交叉引用 | 学校模板要求题注、需要生成公式目录 |
+
+### 手动编号：最快，但最容易错
+
+最简单的做法是在公式右侧直接输入 `(1)`、`(2)`。这个方法只适合公式很少、后面基本不会调整顺序的文档。
+
+更稳的排版方式是用**无边框表格**：
+
+1. 插入一个 `1 行 2 列` 表格
+2. 左侧单元格放公式，并设置为居中
+3. 右侧单元格放编号，如 `(1)`，并设置为右对齐
+4. 选中表格，把边框设为“无框线”
+
+也可以用**制表位**：把公式所在段落设置为中间制表位和右对齐制表位，公式放中间，编号放右侧。制表位更轻量，但容易受页面宽度、段落样式影响；对新手来说，无边框表格通常更稳定。
+
+**注意**：如果编号是手打的，删除或插入公式后，后面的编号不会自动变化。至少要先给每个编号加书签，再在正文引用处使用“交叉引用”，不要在正文里手打“见公式 (3)”。
+
+### 自动编号：用 SEQ 字段
+
+如果想保持“公式居中、编号靠右”的论文版式，同时又希望编号能自动更新，推荐用 `SEQ` 字段生成编号。
+
+基本做法：
+
+1. 先按上面的方式做好版式：无边框表格或制表位
+2. 在编号位置输入左括号 `(`
+3. 按 `Ctrl` + `F9` 插入字段大括号
+4. 在字段大括号里输入 `SEQ Eq`，形成 `{ SEQ Eq }`
+5. 在字段后输入右括号 `)`
+6. 选中字段，按 `F9` 更新，显示为 `(1)`
+
+字段代码看起来像这样：
+
+```
+({ SEQ Eq })
+```
+
+这里的 `Eq` 是序列名，可以换成 `Equation`，但全文必须统一。下一处公式继续插入同样的 `{ SEQ Eq }`，更新后会显示为 `(2)`、`(3)`。
+
+### 自动引用：书签 + 交叉引用
+
+`SEQ` 字段负责生成编号；正文里的“见公式 (1)”要用交叉引用，不要手打。
+
+推荐流程：
+
+1. 选中整个编号，包括括号，例如 `(1)`
+2. `插入` → `书签`，给它起一个有意义的名字，如 `eq_energy`
+3. 在正文需要引用的地方，选择 `引用` → `交叉引用`
+4. 引用类型选择“书签”，引用内容选择“书签文字”
+5. 选择对应书签，插入引用
+
+这样正文里的编号会跟随书签文字更新。为了避免误删书签，编号附近不要随意剪切粘贴；移动公式时，最好整体移动公式、编号和书签所在内容。
+
+### 题注：Word 原生自动编号
+
+Word 也有官方的题注编号方式：选中公式后，进入 `引用` → `插入题注`，标签选择 `Equation` 或新建“公式”标签。之后正文可以通过 `引用` → `交叉引用` 引用对应题注。
+
+题注的优点是原生、稳定，也方便生成公式目录。但它通常更适合把题注放在对象上方或下方；如果你想要“公式在中间、编号在同一行最右侧”的版式，题注不如 `SEQ` 字段 + 无边框表格灵活。
+
+如果需要 `(1.1)` 这种带章节号的编号，题注可以在“编号...”里加入章节号；前提是章节标题必须使用稳定的标题样式和多级列表。不要只手动把标题加粗放大，否则 Word 无法可靠识别章节层级。
+
+### 更新和排错
+
+| 问题 | 处理 |
+| --- | --- |
+| 删除或移动公式后编号没变 | 在正文中按 `Ctrl` + `A` 全选，再按 `F9` 更新字段 |
+| 看到 `{ SEQ Eq }` 而不是数字 | 按 `Alt` + `F9` 切换字段代码显示 |
+| 交叉引用没有更新 | 全选全文后按 `F9`，导出 PDF 前一定检查一遍 |
+| 编号格式被更新弄乱 | 把括号放在字段外，样式尽量设置在单元格/段落上 |
+| 章节号不对 | 检查标题是否用了 Word 的标题样式和多级列表 |
+
+**推荐工作流**：公式定稿前可以先用无边框表格占位；编号一律用 `SEQ` 字段；正文引用一律用书签和交叉引用；最终导出前在正文中执行一次 `Ctrl` + `A`、`F9`，再人工检查编号顺序。不要把公式编号放进文本框；文本框、页眉、页脚里的字段通常需要单独更新。
+
+---
+
+## 十四、实战示例
 
 | 公式 | UnicodeMath 输入 |
 | --- | --- |
@@ -357,7 +442,7 @@ $$f(x)=\begin{cases}x^2, & x\geq 0\\-x^2, & x&lt;0\end{cases}$$
 
 ---
 
-## 十四、UnicodeMath vs LaTeX 对比
+## 十五、UnicodeMath vs LaTeX 对比
 
 | 操作 | UnicodeMath | LaTeX | 渲染结果 |
 | --- | --- | --- | --- |
@@ -377,7 +462,7 @@ $$f(x)=\begin{cases}x^2, & x\geq 0\\-x^2, & x&lt;0\end{cases}$$
 
 ---
 
-## 十五、效率技巧
+## 十六、效率技巧
 
 1. **不要用鼠标点公式面板** — `Alt`+`=` 进入后直接打字
 2. **善用括号分组** — 多字符的分子/分母/上下标都要加 `()`
@@ -387,7 +472,7 @@ $$f(x)=\begin{cases}x^2, & x\geq 0\\-x^2, & x&lt;0\end{cases}$$
 
 ---
 
-## 十六、常见问题
+## 十七、常见问题
 
 | 问题 | 解决 |
 | --- | --- |
@@ -405,5 +490,8 @@ $$f(x)=\begin{cases}x^2, & x\geq 0\\-x^2, & x&lt;0\end{cases}$$
 
 - **UnicodeMath 完整规范 (UTN#28)**：[unicode.org/notes/tn28](https://www.unicode.org/notes/tn28/)（PDF，Murray Sargent 编写，包含所有语法细节）
 - **Microsoft 官方文档**：[Linear format equations using UnicodeMath and LaTeX in Word](https://support.microsoft.com/en-us/office/linear-format-equations-using-unicodemath-and-latex-in-word-2e00618d-b1fd-49d8-8cb4-8d17f25754f8)
+- **Microsoft 题注文档**：[Add, format, or delete captions in Word](https://support.microsoft.com/en-us/office/add-format-or-delete-captions-in-word-82fa82a4-f0f3-438f-a422-34bb5cef9c81)
+- **Microsoft 交叉引用文档**：[Create a cross-reference](https://support.microsoft.com/en-us/office/create-a-cross-reference-300b208c-e45a-487a-880b-a02767d9774b)
+- **Microsoft 字段代码列表**：[List of field codes in Word](https://support.microsoft.com/en-gb/office/list-of-field-codes-in-word-1ad6d91a-55a7-4a8d-b535-cf7888659a51)
 - **Math in Office 博客**：[devblogs.microsoft.com/math-in-office](https://devblogs.microsoft.com/math-in-office/)（Murray Sargent 的博客，有大量技巧和更新）
 - **UnicodeMathML 在线试验场**：[murrayiii.github.io/UnicodeMathML/playground](https://murrayiii.github.io/UnicodeMathML/playground/)（在浏览器中实时测试 UnicodeMath 语法）
