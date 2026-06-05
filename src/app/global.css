@@ -104,25 +104,7 @@ html > body[data-scroll-locked] {
   animation: shimmer 4s linear infinite;
 }
 
-/* 彩虹分割线 */
-.rainbow-divider {
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    #ff0080,
-    #ff8c00,
-    #ffd700,
-    #00d2ff,
-    #5e60ce,
-    #c77dff,
-    transparent
-  );
-  background-size: 200% 100%;
-  animation: shimmer 6s linear infinite;
-}
-
-/* 顶栏彩带边界：覆盖 Fumadocs 默认灰色 border-b，复用首页彩虹分割线动效。 */
+/* 顶栏彩带边界：覆盖 Fumadocs 默认灰色 border-b，复用 shimmer 动效与彩虹配色。 */
 #nd-nav > div,
 #nd-subnav {
   border-bottom-color: transparent;

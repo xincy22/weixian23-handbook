@@ -152,8 +152,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* 彩虹分割线 */}
-        <div className="rainbow-divider w-full" />
       </section>
 
       {/* 模块卡片区 */}
