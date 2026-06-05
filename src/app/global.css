@@ -10,6 +10,16 @@
    ============================================ */
 
 :root {
+  /* Fumadocs 模板底色 - 亮模式
+     默认 neutral 模板的 94%-96% 灰在截图进 PDF 时会显得偏黄偏脏；
+     这里仅清理模板表面色，不影响首页的紫色渐变与粒子背景。 */
+  --color-fd-background: hsl(0, 0%, 100%);
+  --color-fd-muted: hsl(220, 20%, 97%);
+  --color-fd-popover: hsl(0, 0%, 100%);
+  --color-fd-card: hsl(0, 0%, 100%);
+  --color-fd-border: hsla(220, 16%, 82%, 0.55);
+  --color-fd-secondary: hsl(220, 20%, 97%);
+
   /* 主题色 - 亮模式 */
   --color-fd-primary: oklch(38.5% 0.176 312);            /* 清华紫 #660874 */
   --color-fd-primary-foreground: oklch(98% 0.005 285);
@@ -110,6 +120,45 @@ html > body[data-scroll-locked] {
   );
   background-size: 200% 100%;
   animation: shimmer 6s linear infinite;
+}
+
+/* 顶栏彩带边界：覆盖 Fumadocs 默认灰色 border-b，复用首页彩虹分割线动效。 */
+#nd-nav > div,
+#nd-subnav {
+  border-bottom-color: transparent;
+}
+
+#nd-nav::after,
+#nd-subnav::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  height: 2px;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #ff0080,
+    #ff8c00,
+    #ffd700,
+    #00d2ff,
+    #5e60ce,
+    #c77dff,
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: shimmer 6s linear infinite;
+  box-shadow: 0 0 18px oklch(70% 0.2 312 / 0.25);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #nd-nav::after,
+  #nd-subnav::after {
+    animation: none;
+  }
 }
 
 /* 渐变文字 */
