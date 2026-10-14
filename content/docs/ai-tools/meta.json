@@ -4,6 +4,7 @@
   "icon": "Bot",
   "pages": [
     "index",
+    "sharing",
     "ai-tools-list",
     "api-setup",
     "prompts",
